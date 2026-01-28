@@ -27,4 +27,19 @@ Features
     - Multi-select with visual feedback
     - "Generate with Selected Styles" to create new variant based on selected properties
     - Selection count displayed in header
+- LLM Integration
+    - Settings panel (gear icon, top right) for configuring LLM provider
+    - Local mode: LM Studio (OpenAI-compatible API at localhost:1234)
+    - Cloud mode: Anthropic Claude API
+    - Test connection button to verify setup
+    - Settings persisted in localStorage
+- Editable input panes
+    - "What I'm Describing" and "My Guidance" are now editable textareas
+    - Content used as context for LLM generation
+- Generation features
+    - "Generate More" creates 2 new alternatives using current setting/guidance
+    - "Generate with Selected Styles" creates 1 alternative with specified style properties
+    - "Generate New Version" (from reactions) creates 1 alternative incorporating user feedback
+    - Loading states shown during generation
+    - Alternatives parsed for style tags (tone, technique, pacing)
 
