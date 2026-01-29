@@ -1,0 +1,14 @@
+{
+  "name": "writing-style-explorer",
+  "version": "1.0.0",
+  "description": "AI-assisted writing style explorer",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:screenshot": "playwright test test/screenshot.spec.js",
+    "serve": "npx serve ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  }
+}

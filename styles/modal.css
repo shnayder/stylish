@@ -1,0 +1,220 @@
+/* Drill-down Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.visible {
+  display: flex;
+}
+
+.drill-down-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.modal-header .close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.modal-header .close-modal:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.selected-text-box {
+  background: #fff8e0;
+  border-left: 3px solid #f0c000;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  font-style: italic;
+  color: #555;
+}
+
+.initial-reaction-box {
+  background: #f0f0f0;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.initial-reaction-box label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #888;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.conversation-area {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.conversation-messages {
+  padding: 15px;
+}
+
+.conv-message {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.conv-message:last-child {
+  margin-bottom: 0;
+}
+
+.conv-message .speaker {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #888;
+  flex-shrink: 0;
+  width: 50px;
+}
+
+.conv-message.coach .speaker {
+  color: #5a7a5a;
+}
+
+.conv-message .content {
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.conv-message.coach .content {
+  color: #444;
+}
+
+.conversation-input {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.conversation-input textarea {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: none;
+  min-height: 60px;
+}
+
+.conversation-input textarea:focus {
+  outline: none;
+  border-color: #5a7a5a;
+}
+
+.conversation-input button {
+  align-self: flex-end;
+}
+
+.proposed-rule {
+  background: #f0f8f0;
+  border: 1px solid #c0e0c0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+.proposed-rule.visible {
+  display: block;
+}
+
+.proposed-rule h4 {
+  margin: 0 0 10px 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #5a7a5a;
+}
+
+.proposed-rule .rule-preview {
+  margin-bottom: 15px;
+}
+
+.proposed-rule .rule-preview .principle {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.proposed-rule .rule-preview .examples {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.proposed-rule textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #c0e0c0;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  min-height: 80px;
+  margin-bottom: 10px;
+  display: none;
+}
+
+.proposed-rule textarea.editing {
+  display: block;
+}
+
+.proposed-rule .rule-preview.editing {
+  display: none;
+}
+
+.modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
