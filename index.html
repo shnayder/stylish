@@ -111,6 +111,23 @@
       position: relative;
     }
 
+    .alternative .remove-alternative {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      padding: 4px 8px;
+    }
+
+    .alternative .remove-alternative:hover {
+      color: #c00;
+    }
+
     .alternative.selected {
       box-shadow: 0 0 0 2px #5a7a5a, 0 2px 8px rgba(0,0,0,0.12);
     }
@@ -630,14 +647,15 @@
     /* Editable panes */
     .pane textarea {
       width: 100%;
-      min-height: 150px;
+      min-height: 80px;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-family: inherit;
       font-size: 0.95rem;
       line-height: 1.6;
-      resize: vertical;
+      resize: none;
+      overflow: hidden;
       color: #444;
     }
 
@@ -648,6 +666,404 @@
 
     .pane textarea::placeholder {
       color: #999;
+    }
+
+    /* Style Guide Section */
+    .style-guide {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .style-guide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .style-guide-header h2 {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #666;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .style-guide-header .rule-count {
+      font-size: 0.85rem;
+      color: #888;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .style-guide-header .toggle-icon {
+      color: #888;
+      font-size: 0.8rem;
+    }
+
+    .style-guide-content {
+      margin-top: 15px;
+      display: none;
+    }
+
+    .style-guide-content.expanded {
+      display: block;
+    }
+
+    .style-guide.empty .style-guide-content {
+      color: #999;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    .style-rule {
+      background: #f8f8f8;
+      border-radius: 6px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .style-rule .rule-principle {
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .style-rule .rule-examples {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .style-rule .rule-examples .avoid {
+      color: #a55;
+    }
+
+    .style-rule .rule-examples .prefer {
+      color: #5a5;
+    }
+
+    .style-rule .rule-original {
+      font-size: 0.85rem;
+      color: #555;
+      margin: 8px 0;
+      padding: 8px 10px;
+      background: #fff;
+      border-radius: 4px;
+      font-style: italic;
+    }
+
+    .style-rule .rule-original .example-label {
+      font-style: normal;
+      font-weight: 500;
+      color: #888;
+    }
+
+    .style-rule .rule-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 5px;
+    }
+
+    .style-rule .rule-actions button {
+      background: none;
+      border: none;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 2px 6px;
+    }
+
+    .style-rule .rule-actions button:hover {
+      color: #666;
+    }
+
+    .style-rule .rule-actions button.remove:hover {
+      color: #c00;
+    }
+
+    .style-rule.editing {
+      background: #fff;
+      border: 1px solid #5a7a5a;
+    }
+
+    .style-rule .edit-form {
+      display: none;
+    }
+
+    .style-rule.editing .edit-form {
+      display: block;
+    }
+
+    .style-rule.editing .rule-display {
+      display: none;
+    }
+
+    .style-rule .edit-form label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #888;
+      margin: 10px 0 4px 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .style-rule .edit-form label:first-child {
+      margin-top: 0;
+    }
+
+    .style-rule .edit-form input,
+    .style-rule .edit-form textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+
+    .style-rule .edit-form textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .style-rule .edit-form input:focus,
+    .style-rule .edit-form textarea:focus {
+      outline: none;
+      border-color: #5a7a5a;
+    }
+
+    .style-rule .edit-form .edit-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* Drill-down Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.visible {
+      display: flex;
+    }
+
+    .drill-down-modal {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    .modal-header .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #999;
+      cursor: pointer;
+      padding: 0 5px;
+    }
+
+    .modal-header .close-modal:hover {
+      color: #333;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .selected-text-box {
+      background: #fff8e0;
+      border-left: 3px solid #f0c000;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      font-style: italic;
+      color: #555;
+    }
+
+    .initial-reaction-box {
+      background: #f0f0f0;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .initial-reaction-box label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #888;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .conversation-area {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .conversation-messages {
+      padding: 15px;
+    }
+
+    .conv-message {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .conv-message:last-child {
+      margin-bottom: 0;
+    }
+
+    .conv-message .speaker {
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: #888;
+      flex-shrink: 0;
+      width: 50px;
+    }
+
+    .conv-message.coach .speaker {
+      color: #5a7a5a;
+    }
+
+    .conv-message .content {
+      font-size: 0.95rem;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .conv-message.coach .content {
+      color: #444;
+    }
+
+    .conversation-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .conversation-input textarea {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: none;
+      min-height: 60px;
+    }
+
+    .conversation-input textarea:focus {
+      outline: none;
+      border-color: #5a7a5a;
+    }
+
+    .conversation-input button {
+      align-self: flex-end;
+    }
+
+    .proposed-rule {
+      background: #f0f8f0;
+      border: 1px solid #c0e0c0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .proposed-rule.visible {
+      display: block;
+    }
+
+    .proposed-rule h4 {
+      margin: 0 0 10px 0;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: #5a7a5a;
+    }
+
+    .proposed-rule .rule-preview {
+      margin-bottom: 15px;
+    }
+
+    .proposed-rule .rule-preview .principle {
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .proposed-rule .rule-preview .examples {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .proposed-rule textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #c0e0c0;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      min-height: 80px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .proposed-rule textarea.editing {
+      display: block;
+    }
+
+    .proposed-rule .rule-preview.editing {
+      display: none;
+    }
+
+    .modal-footer {
+      padding: 15px 20px;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
     }
   </style>
 </head>
@@ -722,28 +1138,46 @@ Context: First arrival of weary travelers seeking sanctuary</textarea>
       </div>
 
       <div class="pane">
-        <h2>My Guidance</h2>
-        <textarea id="guidance-input" placeholder="How should this be described?
+        <h2>General Style</h2>
+        <textarea id="style-input" placeholder="Style rules that apply to your whole project...
 
 Example:
-Goals:
-- Convey sense of relief and safety after danger
-- Show the otherworldly, timeless quality
+- First person POV
+- Past tense
+- Spare, grounded prose
+- Avoid adverbs
+- Show don't tell">- First person POV from Bilbo
+- Past tense
+- Spare, grounded prose style
+- Avoid purple prose or overly ornate language
+- Show don't tell</textarea>
+      </div>
+    </div>
 
-Avoid:
-- Purple prose or overly ornate language
-- Info-dumping history or lore
+    <div class="input-section" style="margin-top: -10px;">
+      <div class="pane" style="grid-column: 1 / -1;">
+        <h2>This Scene</h2>
+        <textarea id="scene-input" placeholder="What this specific scene should accomplish...
 
-Length: 2-3 paragraphs">Goals:
-- Convey sense of relief and safety after danger
+Example:
+- Build tension before the reveal
+- Convey exhaustion and relief
+- Foreshadow the danger ahead">- Convey sense of relief and safety after danger
 - Show the otherworldly, timeless quality of the Elves
 - Use sensory details beyond just visual
+- Length: 2-3 paragraphs</textarea>
+      </div>
+    </div>
 
-Avoid:
-- Purple prose or overly ornate language
-- Info-dumping history or lore
-
-Length: 2-3 paragraphs</textarea>
+    <!-- Style Guide Section -->
+    <div class="style-guide" id="style-guide">
+      <div class="style-guide-header" id="style-guide-header">
+        <h2>Style Guide <span class="rule-count" id="rule-count"></span></h2>
+        <span class="toggle-icon" id="toggle-icon">expand</span>
+      </div>
+      <div class="style-guide-content" id="style-guide-content">
+        <p class="empty-message">No style rules yet. Select text in alternatives and drill down to crystallize your preferences.</p>
+        <div class="rules-list" id="rules-list"></div>
       </div>
     </div>
 
@@ -786,7 +1220,49 @@ Length: 2-3 paragraphs</textarea>
     <textarea id="popup-reaction-input" placeholder="What do you think about this?"></textarea>
     <div class="popup-actions">
       <button class="action-btn" id="popup-cancel">Cancel</button>
+      <button class="action-btn" id="popup-drill-down">Drill Down</button>
       <button class="action-btn primary" id="popup-save">Add Reaction</button>
+    </div>
+  </div>
+
+  <!-- Drill-down modal -->
+  <div class="modal-overlay" id="drill-down-overlay">
+    <div class="drill-down-modal">
+      <div class="modal-header">
+        <h3>Exploring Style</h3>
+        <button class="close-modal" id="close-drill-down">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="selected-text-box" id="modal-selected-text"></div>
+        <div class="initial-reaction-box">
+          <label>Your initial reaction</label>
+          <div id="modal-initial-reaction"></div>
+        </div>
+        <div class="conversation-area">
+          <div class="conversation-messages" id="conversation-messages">
+          </div>
+        </div>
+        <div class="conversation-input">
+          <textarea id="coach-input" placeholder="Type your response..."></textarea>
+          <button class="action-btn primary" id="send-to-coach">Send</button>
+        </div>
+        <div class="proposed-rule" id="proposed-rule">
+          <h4>Proposed Style Rule</h4>
+          <div class="rule-preview" id="rule-preview">
+            <div class="principle" id="preview-principle"></div>
+            <div class="examples" id="preview-examples"></div>
+          </div>
+          <textarea id="rule-edit-area" placeholder="Edit the rule..."></textarea>
+          <div style="display: flex; gap: 10px;">
+            <button class="action-btn" id="edit-rule-btn">Edit</button>
+            <button class="action-btn" id="save-rule-edit" style="display: none;">Done Editing</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" id="keep-exploring">Keep Exploring</button>
+        <button class="action-btn primary" id="add-to-style-guide" disabled>Add to Style Guide</button>
+      </div>
     </div>
   </div>
 
@@ -968,8 +1444,27 @@ Length: 2-3 paragraphs</textarea>
       return document.getElementById('setting-input').value;
     }
 
+    function getStyleInput() {
+      return document.getElementById('style-input').value;
+    }
+
+    function getSceneInput() {
+      return document.getElementById('scene-input').value;
+    }
+
     function getGuidanceInput() {
-      return document.getElementById('guidance-input').value;
+      const style = getStyleInput().trim();
+      const scene = getSceneInput().trim();
+
+      let guidance = '';
+      if (style) {
+        guidance += `General style rules:\n${style}`;
+      }
+      if (scene) {
+        if (guidance) guidance += '\n\n';
+        guidance += `For this scene:\n${scene}`;
+      }
+      return guidance;
     }
 
     const SYSTEM_PROMPT = `You are a creative writing assistant specializing in prose style and description. You help writers explore different ways to describe settings, finding the voice and style that resonates with them.
@@ -983,14 +1478,39 @@ When generating descriptions:
 
 When asked to describe your stylistic choices, use brief, specific labels (1-3 words each) for tone, technique, and pacing.`;
 
+    function getStyleGuideText() {
+      if (styleGuide.length === 0) return '';
+
+      const rulesText = styleGuide.map(rule => {
+        let text = `- ${rule.principle}`;
+        if (rule.originalExample && rule.betterVersion) {
+          text += `\n  NOT: "${rule.originalExample}"`;
+          text += `\n  BETTER: "${rule.betterVersion}"`;
+        }
+        if (rule.avoid && rule.avoid.length > 0) {
+          text += `\n  Avoid patterns like: ${rule.avoid.join(', ')}`;
+        }
+        if (rule.prefer && rule.prefer.length > 0) {
+          text += `\n  Prefer patterns like: ${rule.prefer.join(', ')}`;
+        }
+        return text;
+      }).join('\n');
+
+      return `\nStyle rules from the author (follow these strictly):
+${rulesText}
+`;
+    }
+
     function buildGenerationPrompt(settingInfo, guidance, additionalInstructions = '') {
+      const styleGuideText = getStyleGuideText();
+
       return `Write a description of the following setting:
 
 ${settingInfo}
 
 Writing guidance from the author:
 ${guidance}
-
+${styleGuideText}
 ${additionalInstructions}
 
 First, output a JSON line with style tags, then the description. Format:
@@ -1215,6 +1735,161 @@ His companions were already heading down the path, but Bilbo lingered. He had th
     // Selected styles
     let selectedStyles = new Set();
 
+    // Style Guide - persisted per project
+    let styleGuide = [];
+    let styleGuideExpanded = false;
+
+    function loadStyleGuide() {
+      const saved = localStorage.getItem('writingStyleGuide');
+      if (saved) {
+        styleGuide = JSON.parse(saved);
+      }
+      renderStyleGuide();
+    }
+
+    function saveStyleGuide() {
+      localStorage.setItem('writingStyleGuide', JSON.stringify(styleGuide));
+      renderStyleGuide();
+    }
+
+    function addStyleRule(rule) {
+      styleGuide.push({
+        id: `rule-${Date.now()}`,
+        ...rule
+      });
+      saveStyleGuide();
+    }
+
+    function removeStyleRule(ruleId) {
+      styleGuide = styleGuide.filter(r => r.id !== ruleId);
+      saveStyleGuide();
+    }
+
+    function renderStyleGuide() {
+      const countEl = document.getElementById('rule-count');
+      const contentEl = document.getElementById('style-guide-content');
+      const rulesListEl = document.getElementById('rules-list');
+      const emptyMsg = contentEl.querySelector('.empty-message');
+      const guideEl = document.getElementById('style-guide');
+
+      countEl.textContent = styleGuide.length > 0 ? `(${styleGuide.length} rules)` : '';
+
+      if (styleGuide.length === 0) {
+        guideEl.classList.add('empty');
+        emptyMsg.style.display = 'block';
+        rulesListEl.innerHTML = '';
+      } else {
+        guideEl.classList.remove('empty');
+        emptyMsg.style.display = 'none';
+        rulesListEl.innerHTML = styleGuide.map(rule => `
+          <div class="style-rule" data-rule-id="${rule.id}">
+            <div class="rule-actions">
+              <button class="edit" data-rule-id="${rule.id}" title="Edit">edit</button>
+              <button class="remove" data-rule-id="${rule.id}" title="Remove">&times;</button>
+            </div>
+            <div class="rule-display">
+              <div class="rule-principle">${escapeHtml(rule.principle)}</div>
+              ${rule.originalExample ? `
+                <div class="rule-original">
+                  <span class="example-label">Example:</span> "${escapeHtml(rule.originalExample)}"
+                  ${rule.betterVersion ? `<br><span class="example-label">Better:</span> "${escapeHtml(rule.betterVersion)}"` : ''}
+                </div>
+              ` : ''}
+              <div class="rule-examples">
+                ${rule.avoid && rule.avoid.length > 0 ? `<span class="avoid">Avoid: ${rule.avoid.join(', ')}</span>` : ''}
+                ${rule.avoid && rule.avoid.length > 0 && rule.prefer && rule.prefer.length > 0 ? ' | ' : ''}
+                ${rule.prefer && rule.prefer.length > 0 ? `<span class="prefer">Prefer: ${rule.prefer.join(', ')}</span>` : ''}
+              </div>
+            </div>
+            <div class="edit-form">
+              <label>Principle</label>
+              <input type="text" class="edit-principle" value="${escapeHtml(rule.principle || '')}">
+              <label>Original Example</label>
+              <textarea class="edit-original">${escapeHtml(rule.originalExample || '')}</textarea>
+              <label>Better Version</label>
+              <textarea class="edit-better">${escapeHtml(rule.betterVersion || '')}</textarea>
+              <label>Avoid (comma-separated)</label>
+              <input type="text" class="edit-avoid" value="${escapeHtml((rule.avoid || []).join(', '))}">
+              <label>Prefer (comma-separated)</label>
+              <input type="text" class="edit-prefer" value="${escapeHtml((rule.prefer || []).join(', '))}">
+              <div class="edit-actions">
+                <button class="action-btn cancel-edit" data-rule-id="${rule.id}">Cancel</button>
+                <button class="action-btn primary save-edit" data-rule-id="${rule.id}">Save</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Add event listeners
+        rulesListEl.querySelectorAll('.remove').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeStyleRule(e.target.dataset.ruleId);
+          });
+        });
+
+        rulesListEl.querySelectorAll('.edit').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const ruleEl = e.target.closest('.style-rule');
+            ruleEl.classList.add('editing');
+          });
+        });
+
+        rulesListEl.querySelectorAll('.cancel-edit').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const ruleEl = e.target.closest('.style-rule');
+            ruleEl.classList.remove('editing');
+            renderStyleGuide(); // Reset form values
+          });
+        });
+
+        rulesListEl.querySelectorAll('.save-edit').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const ruleId = e.target.dataset.ruleId;
+            const ruleEl = e.target.closest('.style-rule');
+            saveRuleEdit(ruleId, ruleEl);
+          });
+        });
+      }
+    }
+
+    function saveRuleEdit(ruleId, ruleEl) {
+      const rule = styleGuide.find(r => r.id === ruleId);
+      if (!rule) return;
+
+      rule.principle = ruleEl.querySelector('.edit-principle').value.trim();
+      rule.originalExample = ruleEl.querySelector('.edit-original').value.trim() || null;
+      rule.betterVersion = ruleEl.querySelector('.edit-better').value.trim() || null;
+
+      const avoidStr = ruleEl.querySelector('.edit-avoid').value.trim();
+      rule.avoid = avoidStr ? avoidStr.split(',').map(s => s.trim()).filter(s => s) : [];
+
+      const preferStr = ruleEl.querySelector('.edit-prefer').value.trim();
+      rule.prefer = preferStr ? preferStr.split(',').map(s => s.trim()).filter(s => s) : [];
+
+      saveStyleGuide();
+    }
+
+    function toggleStyleGuide() {
+      const contentEl = document.getElementById('style-guide-content');
+      const toggleIcon = document.getElementById('toggle-icon');
+      styleGuideExpanded = !styleGuideExpanded;
+      contentEl.classList.toggle('expanded', styleGuideExpanded);
+      toggleIcon.textContent = styleGuideExpanded ? 'collapse' : 'expand';
+    }
+
+    // Drill-down modal state
+    let drillDownState = {
+      selectedText: '',
+      initialReaction: '',
+      alternativeId: null,
+      conversation: [],
+      proposedRule: null
+    };
+
     // Store all reactions
     let reactions = [];
     let reactionIdCounter = 0;
@@ -1229,6 +1904,7 @@ His companions were already heading down the path, but Bilbo lingered. He had th
       const container = document.getElementById('alternatives');
       container.innerHTML = alternatives.map((alt, index) => `
         <div class="alternative${index === 0 ? ' selected' : ''}" data-alt-id="${alt.id}">
+          <button class="remove-alternative" data-alt-id="${alt.id}" title="Remove">&times;</button>
           <div class="style-tags">
             ${alt.tags.map(tag => `<span class="tag ${tag.type}">${tag.text}</span>`).join('')}
           </div>
@@ -1259,6 +1935,26 @@ His companions were already heading down the path, but Bilbo lingered. He had th
       document.querySelectorAll('.description-text').forEach(el => {
         el.addEventListener('mouseup', handleTextSelection);
       });
+
+      // Add event listeners for remove buttons
+      document.querySelectorAll('.remove-alternative').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const altId = e.target.dataset.altId;
+          removeAlternative(altId);
+        });
+      });
+    }
+
+    function removeAlternative(altId) {
+      const index = alternatives.findIndex(a => a.id === altId);
+      if (index !== -1) {
+        alternatives.splice(index, 1);
+        // Also remove any reactions for this alternative
+        reactions = reactions.filter(r => r.alternativeId !== altId);
+        renderAlternatives();
+        renderAllReactions();
+        updatePanelButtons();
+      }
     }
 
     function handleAddReaction(e) {
@@ -1453,13 +2149,316 @@ His companions were already heading down the path, but Bilbo lingered. He had th
     }
 
     // ============================================
+    // Drill-Down Modal & Coach
+    // ============================================
+
+    const COACH_SYSTEM_PROMPT = `You are a writing coach helping a writer articulate their stylistic preferences. Your role is to:
+
+1. Ask clarifying questions to help them understand WHY they react to certain writing choices
+2. Use specific terminology for writing concepts when helpful (e.g., "filtering", "purple prose", "show don't tell")
+3. Be curious and non-judgmental - there are no wrong preferences
+4. Help them move from vague feelings ("I don't like this") to specific principles ("Avoid naming emotions directly")
+5. After 2-3 exchanges, propose a crystallized style rule
+
+When proposing a rule, format it as JSON on a single line:
+{"principle": "Short rule description", "avoid": ["example phrase to avoid"], "prefer": ["preferred alternative"], "betterVersion": "a rewrite of the original text following this rule"}
+
+The betterVersion should be a concrete rewrite of the specific text they selected, demonstrating the principle.
+
+Keep your responses concise (2-3 sentences for questions, slightly longer when proposing rules).`;
+
+    function openDrillDown(selectedText, initialReaction, alternativeId) {
+      drillDownState = {
+        selectedText,
+        initialReaction,
+        alternativeId,
+        conversation: [],
+        proposedRule: null
+      };
+
+      // Update modal UI
+      document.getElementById('modal-selected-text').textContent = `"${selectedText}"`;
+      document.getElementById('modal-initial-reaction').textContent = initialReaction || '(no initial reaction)';
+      document.getElementById('conversation-messages').innerHTML = '';
+      document.getElementById('coach-input').value = '';
+      document.getElementById('proposed-rule').classList.remove('visible');
+      document.getElementById('add-to-style-guide').disabled = true;
+
+      // Show modal
+      document.getElementById('drill-down-overlay').classList.add('visible');
+
+      // Start the coaching conversation
+      startCoachConversation();
+    }
+
+    function closeDrillDown() {
+      document.getElementById('drill-down-overlay').classList.remove('visible');
+      drillDownState = {
+        selectedText: '',
+        initialReaction: '',
+        alternativeId: null,
+        conversation: [],
+        proposedRule: null
+      };
+    }
+
+    async function startCoachConversation() {
+      const prompt = `The writer selected this text from a description:
+"${drillDownState.selectedText}"
+
+Their initial reaction: "${drillDownState.initialReaction || 'They want to explore why this doesn\'t work for them'}"
+
+Ask ONE short question (1-2 sentences) to help them articulate what specifically they react to. Offer 2-3 specific possibilities. Do not include any meta-instructions in your response.`;
+
+      try {
+        let response = await callLLM(prompt, COACH_SYSTEM_PROMPT);
+        // Clean up any echoed instructions
+        response = response.replace(/Do not include.*$/gm, '').trim();
+        addCoachMessage(response);
+      } catch (e) {
+        addCoachMessage("I'd love to help you explore this. What specifically bothers you about this passage - is it the word choice, the rhythm, or the idea being expressed?");
+      }
+    }
+
+    async function sendToCoach() {
+      const input = document.getElementById('coach-input');
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
+
+      // Add user message
+      addUserMessage(userMessage);
+      input.value = '';
+
+      // Build conversation history for context - just the messages, clearly formatted
+      const conversationText = drillDownState.conversation
+        .map(m => `${m.role === 'user' ? 'WRITER' : 'COACH'}: ${m.content}`)
+        .join('\n\n');
+
+      const shouldPropose = drillDownState.conversation.length >= 4;
+
+      const prompt = `You are helping a writer explore their reaction to this text:
+"${drillDownState.selectedText}"
+
+Their initial reaction: "${drillDownState.initialReaction || 'wants to explore'}"
+
+CONVERSATION:
+${conversationText}
+
+YOUR TASK: ${shouldPropose
+  ? 'Based on the conversation, propose a style rule. Output ONLY the JSON rule, nothing else: {"principle": "...", "avoid": [...], "prefer": [...]}'
+  : 'Ask ONE short clarifying question (1-2 sentences max) to help them articulate their preference. Do not repeat what they said. Do not include any instructions in your response.'}`;
+
+      try {
+        let response = await callLLM(prompt, COACH_SYSTEM_PROMPT);
+
+        // Clean up response - remove any echoed instructions or conversation
+        response = response
+          .replace(/^(WRITER|COACH|Writer|Coach):\s*/gm, '')
+          .replace(/Continue helping.*$/gm, '')
+          .replace(/Ask another question.*$/gm, '')
+          .replace(/YOUR TASK:.*$/gm, '')
+          .replace(/CONVERSATION:.*$/gm, '')
+          .trim();
+
+        addCoachMessage(response);
+
+        // Check if response contains a proposed rule
+        const ruleMatch = response.match(/\{[^}]*"principle"[^}]*\}/);
+        if (ruleMatch) {
+          try {
+            const rule = JSON.parse(ruleMatch[0]);
+            showProposedRule(rule);
+          } catch (e) {
+            // Couldn't parse rule, continue conversation
+          }
+        }
+      } catch (e) {
+        addCoachMessage("I'm having trouble connecting. Could you tell me more about what you're looking for in this description?");
+      }
+    }
+
+    function addUserMessage(content) {
+      drillDownState.conversation.push({ role: 'user', content });
+      const messagesEl = document.getElementById('conversation-messages');
+      messagesEl.innerHTML += `
+        <div class="conv-message user">
+          <span class="speaker">You</span>
+          <div class="content">${escapeHtml(content)}</div>
+        </div>
+      `;
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function addCoachMessage(content) {
+      drillDownState.conversation.push({ role: 'coach', content });
+      const messagesEl = document.getElementById('conversation-messages');
+
+      // Strip out any JSON from display
+      const displayContent = content.replace(/\{[^}]*"principle"[^}]*\}/g, '').trim();
+
+      if (displayContent) {
+        messagesEl.innerHTML += `
+          <div class="conv-message coach">
+            <span class="speaker">Coach</span>
+            <div class="content">${escapeHtml(displayContent)}</div>
+          </div>
+        `;
+      }
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showProposedRule(rule) {
+      // Always include the original example from the drill-down
+      rule.originalExample = drillDownState.selectedText;
+
+      // If the LLM suggested a better version, include it
+      if (rule.betterVersion) {
+        // Already included
+      }
+
+      drillDownState.proposedRule = rule;
+
+      const previewEl = document.getElementById('rule-preview');
+      const principleEl = document.getElementById('preview-principle');
+      const examplesEl = document.getElementById('preview-examples');
+
+      principleEl.textContent = rule.principle || '';
+
+      let examplesHtml = '';
+
+      // Show original example
+      if (rule.originalExample) {
+        examplesHtml += `<div style="margin-bottom: 8px; font-style: italic; color: #666;">
+          <span style="font-style: normal; color: #888;">Original:</span> "${escapeHtml(rule.originalExample)}"
+        </div>`;
+      }
+      if (rule.betterVersion) {
+        examplesHtml += `<div style="margin-bottom: 8px; font-style: italic; color: #5a5;">
+          <span style="font-style: normal; color: #888;">Better:</span> "${escapeHtml(rule.betterVersion)}"
+        </div>`;
+      }
+
+      if (rule.avoid && rule.avoid.length > 0) {
+        examplesHtml += `<span class="avoid">Avoid: ${rule.avoid.join(', ')}</span>`;
+      }
+      if (rule.prefer && rule.prefer.length > 0) {
+        if (rule.avoid && rule.avoid.length > 0) examplesHtml += '<br>';
+        examplesHtml += `<span class="prefer">Prefer: ${rule.prefer.join(', ')}</span>`;
+      }
+      examplesEl.innerHTML = examplesHtml;
+
+      document.getElementById('proposed-rule').classList.add('visible');
+      document.getElementById('add-to-style-guide').disabled = false;
+    }
+
+    function toggleRuleEdit() {
+      const previewEl = document.getElementById('rule-preview');
+      const editArea = document.getElementById('rule-edit-area');
+      const editBtn = document.getElementById('edit-rule-btn');
+      const saveBtn = document.getElementById('save-rule-edit');
+
+      if (editArea.style.display === 'none' || !editArea.style.display) {
+        // Start editing
+        editArea.value = JSON.stringify(drillDownState.proposedRule, null, 2);
+        editArea.style.display = 'block';
+        previewEl.style.display = 'none';
+        editBtn.style.display = 'none';
+        saveBtn.style.display = 'inline-block';
+      } else {
+        // Save edit
+        try {
+          drillDownState.proposedRule = JSON.parse(editArea.value);
+          showProposedRule(drillDownState.proposedRule);
+        } catch (e) {
+          alert('Invalid JSON format');
+          return;
+        }
+        editArea.style.display = 'none';
+        previewEl.style.display = 'block';
+        editBtn.style.display = 'inline-block';
+        saveBtn.style.display = 'none';
+      }
+    }
+
+    function addRuleToStyleGuide() {
+      if (drillDownState.proposedRule) {
+        addStyleRule(drillDownState.proposedRule);
+        closeDrillDown();
+        // Expand style guide to show new rule
+        if (!styleGuideExpanded) {
+          toggleStyleGuide();
+        }
+      }
+    }
+
+    // ============================================
     // Initialize
     // ============================================
 
+    // Auto-resize textareas to fit content
+    function autoResizeTextarea(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    function setupAutoResize() {
+      const textareas = document.querySelectorAll('#setting-input, #style-input, #scene-input');
+      textareas.forEach(textarea => {
+        autoResizeTextarea(textarea);
+        textarea.addEventListener('input', () => autoResizeTextarea(textarea));
+      });
+    }
+
     loadSettings();
+    loadStyleGuide();
     renderAlternatives();
     renderAllReactions();
     renderStylePalette();
+    setupAutoResize();
+
+    // ============================================
+    // Style Guide Event Listeners
+    // ============================================
+
+    document.getElementById('style-guide-header').addEventListener('click', toggleStyleGuide);
+
+    // ============================================
+    // Drill-Down Modal Event Listeners
+    // ============================================
+
+    document.getElementById('close-drill-down').addEventListener('click', closeDrillDown);
+
+    document.getElementById('drill-down-overlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('drill-down-overlay')) {
+        closeDrillDown();
+      }
+    });
+
+    document.getElementById('send-to-coach').addEventListener('click', sendToCoach);
+
+    document.getElementById('coach-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendToCoach();
+      }
+    });
+
+    document.getElementById('edit-rule-btn').addEventListener('click', toggleRuleEdit);
+    document.getElementById('save-rule-edit').addEventListener('click', toggleRuleEdit);
+
+    document.getElementById('keep-exploring').addEventListener('click', () => {
+      document.getElementById('proposed-rule').classList.remove('visible');
+      document.getElementById('add-to-style-guide').disabled = true;
+      drillDownState.proposedRule = null;
+    });
+
+    document.getElementById('add-to-style-guide').addEventListener('click', addRuleToStyleGuide);
 
     // ============================================
     // Settings Panel Event Listeners
@@ -1522,6 +2521,19 @@ His companions were already heading down the path, but Bilbo lingered. He had th
       }
     });
 
+    document.getElementById('popup-drill-down').addEventListener('click', () => {
+      const inputEl = document.getElementById('popup-reaction-input');
+      const reactionText = inputEl.value.trim();
+
+      if (currentSelection.text) {
+        // Capture values before hideSelectionPopup clears them
+        const selectedText = currentSelection.text;
+        const altId = currentSelection.alternativeId;
+        hideSelectionPopup();
+        openDrillDown(selectedText, reactionText, altId);
+      }
+    });
+
     // Allow Enter to submit in popup
     document.getElementById('popup-reaction-input').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -1547,9 +2559,9 @@ His companions were already heading down the path, but Bilbo lingered. He had th
     // Other Button Event Listeners
     // ============================================
 
-    // Apply to Guidance button - adds reactions as guidance
+    // Apply to Guidance button - adds reactions to scene guidance
     document.getElementById('apply-to-guidance').addEventListener('click', () => {
-      const guidanceEl = document.getElementById('guidance-input');
+      const sceneEl = document.getElementById('scene-input');
       const reactionText = reactions.map(r => {
         if (r.quote) {
           return `- Re "${truncate(r.quote, 40)}": ${r.text}`;
@@ -1557,8 +2569,9 @@ His companions were already heading down the path, but Bilbo lingered. He had th
         return `- ${r.text}`;
       }).join('\n');
 
-      guidanceEl.value += '\n\nFeedback from reviewing alternatives:\n' + reactionText;
-      alert('Reactions added to guidance!');
+      sceneEl.value += '\n\nFeedback from reviewing alternatives:\n' + reactionText;
+      autoResizeTextarea(sceneEl);
+      alert('Reactions added to scene guidance!');
     });
 
     document.getElementById('clear-styles').addEventListener('click', clearStyles);
