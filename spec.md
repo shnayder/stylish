@@ -104,11 +104,11 @@ Each described in the following subsections.
     - "Generate New Version" (from reactions) creates 1 alternative incorporating user feedback
     - Loading states shown during generation
     - Alternatives parsed for style tags (tone, technique, pacing)
+- JSON export and import for backup
+  - export all the data to json. 
+  - loading from JSON will be more painful as schemas change, but perhaps best-effort makes sense
 
 ## Roadmap -- not implemented yet
-
-- "safety" -- export all the data to json. 
-  - loading from JSON will be more painful as schemas change, but perhaps best-effort makes sense
 
 - Style guide
     - CRUD -- add new rules, remove rules. Edit already supported.
@@ -130,4 +130,11 @@ Each described in the following subsections.
 
 - Reactions
   - should go into style guide
+  - let me go over the text and say how happy I am with it. Highlighter style? 
+    - and then dig into what I do and don't like
+        - ideally with guesses from computer, informed by style guide
 
+- To do queue? 
+    - help me see what to do next... we'll worry about that later. Just having markup of what I don't like is an implicit todo list.
+
+- for real testing, will want to be able to open different files, have basic local/global style guide management -- some things are specific to a story, some are my general preferences.

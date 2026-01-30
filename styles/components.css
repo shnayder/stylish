@@ -549,3 +549,85 @@
   gap: 8px;
   justify-content: flex-end;
 }
+
+/* Better version row with Suggest button */
+.style-rule .better-version-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.style-rule .better-version-row textarea {
+  flex: 1;
+}
+
+.style-rule .suggest-btn {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 0;
+}
+
+/* Suggestions container */
+.style-rule .suggestions-container {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f0f8f0;
+  border: 1px solid #c0e0c0;
+  border-radius: 6px;
+}
+
+.style-rule .suggestions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5a7a5a;
+  text-transform: uppercase;
+}
+
+.style-rule .suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.style-rule .suggestion-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.style-rule .suggestion-item:hover {
+  border-color: #5a7a5a;
+}
+
+.style-rule .suggestion-text {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.style-rule .suggestion-item .use-suggestion {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+}
+
+.style-rule .suggestion-loading,
+.style-rule .suggestion-error {
+  padding: 10px;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+.style-rule .suggestion-error {
+  color: #a55;
+}

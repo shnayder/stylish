@@ -6,6 +6,8 @@ import {
   styleGuideExpanded
 } from '../state.js';
 import { escapeHtml } from '../utils.js';
+import { callLLM } from '../llm.js';
+import { SYSTEM_PROMPT } from '../prompts.js';
 
 export function initStyleGuide() {
   loadFromStorage();
@@ -55,7 +57,17 @@ export function renderStyleGuide() {
           <label>Original Example</label>
           <textarea class="edit-original">${escapeHtml(rule.originalExample || '')}</textarea>
           <label>Better Version</label>
-          <textarea class="edit-better">${escapeHtml(rule.betterVersion || '')}</textarea>
+          <div class="better-version-row">
+            <textarea class="edit-better">${escapeHtml(rule.betterVersion || '')}</textarea>
+            <button class="action-btn suggest-btn" data-rule-id="${rule.id}" ${!rule.originalExample ? 'disabled title="Add an original example first"' : ''}>Suggest</button>
+          </div>
+          <div class="suggestions-container" data-rule-id="${rule.id}" style="display: none;">
+            <div class="suggestions-header">
+              <span>Suggestions</span>
+              <button class="action-btn suggest-more-btn" data-rule-id="${rule.id}">More</button>
+            </div>
+            <div class="suggestions-list"></div>
+          </div>
           <label>Avoid (comma-separated)</label>
           <input type="text" class="edit-avoid" value="${escapeHtml((rule.avoid || []).join(', '))}">
           <label>Prefer (comma-separated)</label>
@@ -102,7 +114,122 @@ export function renderStyleGuide() {
         saveRuleEdit(ruleId, ruleEl);
       });
     });
+
+    // Suggest button listeners
+    rulesListEl.querySelectorAll('.suggest-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const ruleId = e.target.dataset.ruleId;
+        const ruleEl = e.target.closest('.style-rule');
+        generateSuggestions(ruleId, ruleEl);
+      });
+    });
+
+    rulesListEl.querySelectorAll('.suggest-more-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const ruleId = e.target.dataset.ruleId;
+        const ruleEl = e.target.closest('.style-rule');
+        generateSuggestions(ruleId, ruleEl, true);
+      });
+    });
   }
+}
+
+async function generateSuggestions(ruleId, ruleEl, append = false) {
+  const originalExample = ruleEl.querySelector('.edit-original').value.trim();
+  const principle = ruleEl.querySelector('.edit-principle').value.trim();
+  const avoidStr = ruleEl.querySelector('.edit-avoid').value.trim();
+  const preferStr = ruleEl.querySelector('.edit-prefer').value.trim();
+
+  if (!originalExample) {
+    alert('Please add an original example first');
+    return;
+  }
+
+  const suggestBtn = ruleEl.querySelector('.suggest-btn');
+  const suggestMoreBtn = ruleEl.querySelector('.suggest-more-btn');
+  const container = ruleEl.querySelector('.suggestions-container');
+  const listEl = container.querySelector('.suggestions-list');
+
+  // Show loading state
+  suggestBtn.disabled = true;
+  suggestMoreBtn.disabled = true;
+  suggestBtn.textContent = 'Loading...';
+
+  if (!append) {
+    listEl.innerHTML = '<div class="suggestion-loading">Generating suggestions...</div>';
+  }
+  container.style.display = 'block';
+
+  const prompt = buildSuggestionPrompt(originalExample, principle, avoidStr, preferStr);
+
+  try {
+    const response = await callLLM(prompt, SYSTEM_PROMPT);
+    const suggestions = parseSuggestions(response);
+
+    if (!append) {
+      listEl.innerHTML = '';
+    } else {
+      // Remove loading indicator if present
+      const loadingEl = listEl.querySelector('.suggestion-loading');
+      if (loadingEl) loadingEl.remove();
+    }
+
+    suggestions.forEach((suggestion, i) => {
+      const suggestionEl = document.createElement('div');
+      suggestionEl.className = 'suggestion-item';
+      suggestionEl.innerHTML = `
+        <div class="suggestion-text">${escapeHtml(suggestion)}</div>
+        <button class="action-btn use-suggestion" data-index="${i}">Use</button>
+      `;
+      suggestionEl.querySelector('.use-suggestion').addEventListener('click', (e) => {
+        e.stopPropagation();
+        ruleEl.querySelector('.edit-better').value = suggestion;
+        container.style.display = 'none';
+      });
+      listEl.appendChild(suggestionEl);
+    });
+  } catch (e) {
+    listEl.innerHTML = `<div class="suggestion-error">Failed to generate suggestions: ${e.message}</div>`;
+  }
+
+  suggestBtn.disabled = false;
+  suggestMoreBtn.disabled = false;
+  suggestBtn.textContent = 'Suggest';
+}
+
+function buildSuggestionPrompt(originalExample, principle, avoidStr, preferStr) {
+  let prompt = `Rewrite this text following a specific style rule.
+
+Original text:
+"${originalExample}"
+
+Style rule: ${principle || 'Improve the writing'}`;
+
+  if (avoidStr) {
+    prompt += `\n\nPatterns to avoid: ${avoidStr}`;
+  }
+  if (preferStr) {
+    prompt += `\n\nPreferred patterns: ${preferStr}`;
+  }
+
+  prompt += `
+
+Generate 4 different rewrites of the original text, each applying the style rule in a slightly different way. Number them 1-4, one per line. Just output the rewrites, no explanations.`;
+
+  return prompt;
+}
+
+function parseSuggestions(response) {
+  // Split by newlines and filter out empty lines and numbering
+  const lines = response.split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .map(line => line.replace(/^\d+[\.\):\-]\s*/, '').replace(/^["']|["']$/g, '').trim())
+    .filter(line => line.length > 10); // Filter out very short lines
+
+  return lines.slice(0, 5); // Return up to 5 suggestions
 }
 
 function saveRuleEdit(ruleId, ruleEl) {
