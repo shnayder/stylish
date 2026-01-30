@@ -1,7 +1,9 @@
 // Settings panel UI
 
-import { settings, loadSettings, saveSettingsToStorage } from '../state.js';
+import { settings, loadSettings, saveSettingsToStorage, exportState, importState } from '../state.js';
 import { testConnection as testLLMConnection } from '../llm.js';
+
+let onDataImported = null;
 
 let statusTimeoutId = null;
 
@@ -16,7 +18,7 @@ export function initSettings() {
   }
 }
 
-function applySettingsToUI() {
+export function applySettingsToUI() {
   document.querySelector(`input[name="provider"][value="${settings.provider}"]`).checked = true;
   document.getElementById('local-url').value = settings.localUrl;
   document.getElementById('anthropic-key').value = settings.anthropicKey;
@@ -84,6 +86,10 @@ function setupSettingsEventListeners() {
   document.getElementById('test-connection').addEventListener('click', testConnection);
   document.getElementById('save-settings').addEventListener('click', saveSettings);
 
+  // Export/Import buttons
+  document.getElementById('export-data').addEventListener('click', exportData);
+  document.getElementById('import-data').addEventListener('click', importData);
+
   // Close settings when clicking outside
   document.addEventListener('click', (e) => {
     const panel = document.getElementById('settings-panel');
@@ -94,4 +100,61 @@ function setupSettingsEventListeners() {
       panel.classList.remove('visible');
     }
   });
+}
+
+// Set callback for when data is imported (called from main.js)
+export function setDataImportedCallback(callback) {
+  onDataImported = callback;
+}
+
+// Export all data as JSON file
+export function exportData() {
+  const state = exportState();
+
+  // Add input pane content
+  state.inputs = {
+    setting: document.getElementById('setting-input').value,
+    style: document.getElementById('style-input').value,
+    scene: document.getElementById('scene-input').value
+  };
+
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `writing-style-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Import data from JSON file
+export function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      const inputs = importState(data);
+
+      // Restore input panes if present
+      if (inputs) {
+        if (inputs.setting) document.getElementById('setting-input').value = inputs.setting;
+        if (inputs.style) document.getElementById('style-input').value = inputs.style;
+        if (inputs.scene) document.getElementById('scene-input').value = inputs.scene;
+      }
+
+      // Trigger UI refresh (callback set from main.js)
+      onDataImported?.();
+
+      showSettingsStatus('Data imported successfully', 'success');
+    } catch (err) {
+      showSettingsStatus(`Import failed: ${err.message}`, 'error');
+    }
+  };
+  input.click();
 }

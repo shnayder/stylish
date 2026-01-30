@@ -260,3 +260,80 @@ export function addDrillDownMessage(role, content) {
 export function setProposedRule(rule) {
   drillDownState.proposedRule = rule;
 }
+
+// Export all state as JSON object
+export function exportState() {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    settings,
+    styleGuide,
+    alternatives,
+    reactions,
+    selectedStyles: Array.from(selectedStyles)
+  };
+}
+
+// Import state with best-effort loading
+export function importState(data) {
+  // Settings - merge with defaults for missing fields
+  if (data.settings && typeof data.settings === 'object') {
+    settings = { ...DEFAULT_SETTINGS, ...data.settings };
+    saveSettingsToStorage(settings);
+  }
+
+  // Style guide - validate each rule has required fields
+  if (Array.isArray(data.styleGuide)) {
+    styleGuide = data.styleGuide.filter(rule =>
+      rule && typeof rule.principle === 'string'
+    ).map(rule => ({
+      id: rule.id || `rule-${Date.now()}-${Math.random()}`,
+      principle: rule.principle,
+      originalExample: rule.originalExample || null,
+      betterVersion: rule.betterVersion || null,
+      avoid: Array.isArray(rule.avoid) ? rule.avoid : [],
+      prefer: Array.isArray(rule.prefer) ? rule.prefer : []
+    }));
+    saveStyleGuideToStorage();
+  }
+
+  // Alternatives - validate structure
+  if (Array.isArray(data.alternatives)) {
+    alternatives.length = 0;
+    data.alternatives.forEach(alt => {
+      if (alt && typeof alt.text === 'string') {
+        alternatives.push({
+          id: alt.id || `alt-${Date.now()}-${Math.random()}`,
+          tags: Array.isArray(alt.tags) ? alt.tags : [],
+          text: alt.text
+        });
+      }
+    });
+  }
+
+  // Reactions - validate structure
+  if (Array.isArray(data.reactions)) {
+    reactions.length = 0;
+    data.reactions.forEach(r => {
+      if (r && typeof r.text === 'string' && r.alternativeId) {
+        addReaction({
+          alternativeId: r.alternativeId,
+          quote: r.quote || null,
+          text: r.text
+        });
+      }
+    });
+  }
+
+  // Selected styles - validate each is a string
+  if (Array.isArray(data.selectedStyles)) {
+    selectedStyles.clear();
+    data.selectedStyles.forEach(s => {
+      if (typeof s === 'string') {
+        selectedStyles.add(s);
+      }
+    });
+  }
+
+  return data.inputs || null; // Return inputs for UI to handle
+}

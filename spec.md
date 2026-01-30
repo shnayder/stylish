@@ -105,3 +105,29 @@ Each described in the following subsections.
     - Loading states shown during generation
     - Alternatives parsed for style tags (tone, technique, pacing)
 
+## Roadmap -- not implemented yet
+
+- "safety" -- export all the data to json. 
+  - loading from JSON will be more painful as schemas change, but perhaps best-effort makes sense
+
+- Style guide
+    - CRUD -- add new rules, remove rules. Edit already supported.
+    - Flexibity
+        - allow multiple examples for a rule
+    - "Suggest" better version options in style guide edit view -- show 3-5 rewrites, let me pick one or generate more.
+    - auto-categorization. 
+        - Define a set of categories (dynamically ideally), add tags
+    - move "general style" pane into style guide
+
+- Applying style guide
+  - review some text with style guide in mind -- highlight places where rules seem to be broken, exceptions, etc. 
+     - let me clarify where I'm happy -- either making an exception, or can refine the rule, or prioritizing a different principle in tension with the first.
+
+- page org
+  - full style guide should be a separate tab
+  - main text view: scene context (what I'm describing, goals for the scene), scene-specific style guidelines (including most relevant from style guide), current text, variations
+  - modal for refining thoughts and opinions about some issue or question
+
+- Reactions
+  - should go into style guide
+

@@ -9,12 +9,12 @@ import { SYSTEM_PROMPT, buildGenerationPrompt, parseGeneratedResponse } from './
 import { setupAutoResize, autoResizeTextarea, truncate } from './utils.js';
 
 // UI modules
-import { initSettings } from './ui/settings.js';
+import { initSettings, setDataImportedCallback, applySettingsToUI } from './ui/settings.js';
 import {
   renderAlternatives, renderAllReactions,
   setReactionsChangedCallback, initPopupEventListeners
 } from './ui/alternatives.js';
-import { initStyleGuide } from './ui/styleGuide.js';
+import { initStyleGuide, renderStyleGuide } from './ui/styleGuide.js';
 import { initDrillDownEventListeners } from './ui/drillDown.js';
 import { renderStylePalette, setGenerateWithStylesCallback, initStylePaletteEventListeners } from './ui/stylePalette.js';
 
@@ -161,6 +161,15 @@ function init() {
   // Set up callbacks
   setReactionsChangedCallback(updatePanelButtons);
   setGenerateWithStylesCallback(generateWithStyles);
+  setDataImportedCallback(() => {
+    applySettingsToUI();
+    renderAlternatives();
+    renderAllReactions();
+    renderStylePalette();
+    renderStyleGuide();
+    setupAutoResize();
+    updatePanelButtons();
+  });
 
   // Initialize event listeners
   initPopupEventListeners();
