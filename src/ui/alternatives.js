@@ -7,6 +7,11 @@ import {
 } from '../state.js';
 import { truncate } from '../utils.js';
 import { openDrillDown } from './drillDown.js';
+import { openRewriteView } from './rewriteView.js';
+
+// Track selection position for rewrite
+let selectionStartIndex = -1;
+let selectionEndIndex = -1;
 
 let onReactionsChanged = null;
 
@@ -93,6 +98,18 @@ function handleTextSelection(e) {
   if (selectedText.length > 0) {
     const altId = e.currentTarget.dataset.altId;
     setCurrentSelection(selectedText, altId);
+
+    // Calculate start/end indices in the full text
+    const alt = alternatives.find(a => a.id === altId);
+    if (alt) {
+      const fullText = alt.text;
+      const startIdx = fullText.indexOf(selectedText);
+      if (startIdx !== -1) {
+        selectionStartIndex = startIdx;
+        selectionEndIndex = startIdx + selectedText.length;
+      }
+    }
+
     showSelectionPopup(e);
   }
 }
@@ -213,6 +230,23 @@ export function initPopupEventListeners() {
       const altId = currentSelection.alternativeId;
       hideSelectionPopup();
       openDrillDown(selectedText, reactionText, altId);
+    }
+  });
+
+  document.getElementById('popup-rewrite').addEventListener('click', () => {
+    if (currentSelection.text) {
+      // Capture values before hideSelectionPopup clears them
+      const selectedText = currentSelection.text;
+      const altId = currentSelection.alternativeId;
+      const startIdx = selectionStartIndex;
+      const endIdx = selectionEndIndex;
+
+      // Get the full text of the alternative
+      const alt = alternatives.find(a => a.id === altId);
+      if (alt) {
+        hideSelectionPopup();
+        openRewriteView(altId, alt.text, selectedText, startIdx, endIdx);
+      }
     }
   });
 

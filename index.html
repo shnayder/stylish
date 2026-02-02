@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles/main.css">
   <link rel="stylesheet" href="styles/components.css">
   <link rel="stylesheet" href="styles/modal.css">
+  <link rel="stylesheet" href="styles/rewrite.css">
 </head>
 <body>
   <!-- Settings toggle button -->
@@ -170,6 +171,7 @@ Example:
     <div class="popup-actions">
       <button class="action-btn" id="popup-cancel">Cancel</button>
       <button class="action-btn" id="popup-drill-down">Drill Down</button>
+      <button class="action-btn" id="popup-rewrite">Rewrite This</button>
       <button class="action-btn primary" id="popup-save">Add Reaction</button>
     </div>
   </div>
@@ -211,6 +213,54 @@ Example:
       <div class="modal-footer">
         <button class="action-btn" id="keep-exploring">Keep Exploring</button>
         <button class="action-btn primary" id="add-to-style-guide" disabled>Add to Style Guide</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rewrite View (full page, hidden by default) -->
+  <div class="rewrite-view" id="rewrite-view">
+    <div class="rewrite-header">
+      <button class="action-btn" id="rewrite-back">&larr; Back to Main</button>
+      <button class="action-btn primary" id="rewrite-replace">Replace Original</button>
+    </div>
+
+    <div class="rewrite-content">
+      <!-- Context and Current Sentence -->
+      <div class="rewrite-context-section">
+        <div class="context-before" id="context-before"></div>
+        <div class="current-sentence-wrapper">
+          <label>Current Sentence</label>
+          <textarea id="current-sentence" class="current-sentence"></textarea>
+        </div>
+        <div class="context-after" id="context-after"></div>
+      </div>
+
+      <!-- Directions to Explore -->
+      <div class="rewrite-directions-section">
+        <h3>Directions to Explore</h3>
+        <div class="active-directions" id="active-directions"></div>
+        <div class="more-directions-wrapper">
+          <button class="action-btn toggle-more-directions" id="toggle-more-directions">Show more directions</button>
+          <div class="more-directions" id="more-directions"></div>
+        </div>
+      </div>
+
+      <!-- Variations Grid -->
+      <div class="rewrite-variations-section">
+        <div class="variations-header">
+          <h3>Variations</h3>
+          <button class="action-btn primary" id="generate-more-variations">Generate More</button>
+        </div>
+        <div class="variations-by-direction" id="variations-by-direction"></div>
+      </div>
+
+      <!-- Consideration Set -->
+      <div class="rewrite-consideration-section">
+        <h3>Consideration Set <span class="consideration-count" id="consideration-count"></span></h3>
+        <div class="consideration-empty" id="consideration-empty">
+          Add variations you like here to compare them
+        </div>
+        <div class="consideration-list" id="consideration-list"></div>
       </div>
     </div>
   </div>

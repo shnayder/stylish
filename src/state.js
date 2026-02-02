@@ -261,6 +261,244 @@ export function setProposedRule(rule) {
   drillDownState.proposedRule = rule;
 }
 
+// Rewrite view state
+export let rewriteState = {
+  isOpen: false,
+  alternativeId: null,
+  fullText: '',
+  selectedText: '',
+  startIndex: -1,
+  endIndex: -1,
+  currentSentence: '',
+  activeDirections: [],
+  allDirections: [],
+  variationsByDirection: {}, // { directionId: [{ id, text, directionId, label }] }
+  considerationSet: [], // [{ id, text, comments: [], sourceDirection, label }]
+  loadingDirections: new Set() // Track which directions are currently loading
+};
+
+// Pre-defined variation directions with spectrum types
+// type: 'spectrum' = shows range from low to high
+// type: 'binary' = shows both poles
+// type: 'enhance' = shows degrees of the quality
+export const variationDirections = [
+  {
+    id: 'complexity',
+    name: 'Complexity',
+    description: 'Sentence structure complexity',
+    type: 'spectrum',
+    labels: ['Very Simple', 'Simple', 'Moderate', 'Complex', 'Very Complex']
+  },
+  {
+    id: 'concrete',
+    name: 'Concrete',
+    description: 'Specificity and tangibility of imagery',
+    type: 'spectrum',
+    labels: ['Very Abstract', 'Abstract', 'Balanced', 'Concrete', 'Very Concrete']
+  },
+  {
+    id: 'length',
+    name: 'Length',
+    description: 'Sentence length and detail',
+    type: 'spectrum',
+    labels: ['Very Short', 'Shorter', 'Similar', 'Longer', 'Much Longer']
+  },
+  {
+    id: 'voice',
+    name: 'Voice',
+    description: 'Active vs passive voice',
+    type: 'binary',
+    poles: ['Active Voice', 'Passive Voice']
+  },
+  {
+    id: 'figurative',
+    name: 'Figurative',
+    description: 'Metaphor and figurative language',
+    type: 'spectrum',
+    labels: ['Very Literal', 'Literal', 'Light Metaphor', 'Metaphorical', 'Highly Figurative']
+  },
+  {
+    id: 'emotion',
+    name: 'Emotion',
+    description: 'Emotional intensity',
+    type: 'spectrum',
+    labels: ['Detached', 'Understated', 'Moderate', 'Emotional', 'Intense']
+  },
+  {
+    id: 'tension',
+    name: 'Tension',
+    description: 'Tension and suspense level',
+    type: 'spectrum',
+    labels: ['Very Calm', 'Calm', 'Neutral', 'Tense', 'High Suspense']
+  },
+  {
+    id: 'pacing',
+    name: 'Pacing',
+    description: 'Speed and rhythm',
+    type: 'spectrum',
+    labels: ['Very Slow', 'Contemplative', 'Measured', 'Brisk', 'Urgent']
+  },
+  {
+    id: 'sensory-visual',
+    name: 'Visual',
+    description: 'Emphasize what is seen',
+    type: 'enhance',
+    labels: ['Subtle', 'Light', 'Moderate', 'Strong', 'Vivid']
+  },
+  {
+    id: 'sensory-auditory',
+    name: 'Sound',
+    description: 'Emphasize what is heard',
+    type: 'enhance',
+    labels: ['Subtle', 'Light', 'Moderate', 'Strong', 'Vivid']
+  },
+  {
+    id: 'sensory-tactile',
+    name: 'Touch',
+    description: 'Emphasize physical sensation',
+    type: 'enhance',
+    labels: ['Subtle', 'Light', 'Moderate', 'Strong', 'Vivid']
+  },
+  {
+    id: 'sensory-smell',
+    name: 'Smell',
+    description: 'Emphasize scents and aromas',
+    type: 'enhance',
+    labels: ['Subtle', 'Light', 'Moderate', 'Strong', 'Vivid']
+  },
+  {
+    id: 'rhythm',
+    name: 'Rhythm',
+    description: 'Focus on flow and cadence',
+    type: 'enhance',
+    labels: ['Plain', 'Light', 'Rhythmic', 'Musical', 'Highly Melodic']
+  },
+  {
+    id: 'prose-style',
+    name: 'Prose Style',
+    description: 'Spare vs ornate prose',
+    type: 'spectrum',
+    labels: ['Very Spare', 'Spare', 'Balanced', 'Rich', 'Ornate']
+  },
+  {
+    id: 'dialogue',
+    name: 'Dialogue',
+    description: 'Narrative vs dialogue',
+    type: 'binary',
+    poles: ['Pure Narrative', 'With Dialogue']
+  }
+];
+
+export function initRewriteState(alternativeId, fullText, selectedText, startIndex, endIndex) {
+  rewriteState = {
+    isOpen: true,
+    alternativeId,
+    fullText,
+    selectedText,
+    startIndex,
+    endIndex,
+    currentSentence: selectedText,
+    activeDirections: [],
+    allDirections: [...variationDirections],
+    variationsByDirection: {},
+    considerationSet: [],
+    loadingDirections: new Set()
+  };
+}
+
+export function closeRewriteState() {
+  rewriteState.isOpen = false;
+}
+
+export function setRewriteCurrentSentence(text) {
+  rewriteState.currentSentence = text;
+}
+
+export function setRewriteActiveDirections(directions) {
+  rewriteState.activeDirections = directions;
+}
+
+export function addRewriteActiveDirection(directionId) {
+  if (!rewriteState.activeDirections.includes(directionId)) {
+    rewriteState.activeDirections.push(directionId);
+  }
+}
+
+export function removeRewriteActiveDirection(directionId) {
+  rewriteState.activeDirections = rewriteState.activeDirections.filter(d => d !== directionId);
+}
+
+export function setRewriteVariationsForDirection(directionId, variations) {
+  rewriteState.variationsByDirection[directionId] = variations;
+}
+
+export function addToConsiderationSet(item) {
+  const id = `consider-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  rewriteState.considerationSet.push({
+    id,
+    text: item.text,
+    label: item.label || null,
+    comments: [],
+    sourceDirection: item.sourceDirection || null
+  });
+  return id;
+}
+
+export function removeFromConsiderationSet(itemId) {
+  rewriteState.considerationSet = rewriteState.considerationSet.filter(c => c.id !== itemId);
+}
+
+export function updateConsiderationItem(itemId, updates) {
+  const item = rewriteState.considerationSet.find(c => c.id === itemId);
+  if (item) {
+    Object.assign(item, updates);
+  }
+}
+
+export function addCommentToConsiderationItem(itemId, comment) {
+  const item = rewriteState.considerationSet.find(c => c.id === itemId);
+  if (item) {
+    item.comments.push(comment);
+  }
+}
+
+export function startLoadingDirection(directionId) {
+  rewriteState.loadingDirections.add(directionId);
+}
+
+export function stopLoadingDirection(directionId) {
+  rewriteState.loadingDirections.delete(directionId);
+}
+
+export function isDirectionLoading(directionId) {
+  return rewriteState.loadingDirections.has(directionId);
+}
+
+export function isAnyDirectionLoading() {
+  return rewriteState.loadingDirections.size > 0;
+}
+
+// Get context sentences (before and after the selected text)
+export function getRewriteContext() {
+  const { fullText, startIndex, endIndex } = rewriteState;
+
+  // Get text before and after
+  const beforeText = fullText.substring(0, startIndex);
+  const afterText = fullText.substring(endIndex);
+
+  // Split into sentences (simple approach - split on . ! ? followed by space or end)
+  const sentenceRegex = /[^.!?]*[.!?]+/g;
+
+  const beforeSentences = beforeText.match(sentenceRegex) || [];
+  const afterSentences = afterText.match(sentenceRegex) || [];
+
+  // Get last 2-3 sentences before and first 2-3 after
+  const contextBefore = beforeSentences.slice(-3).join('').trim();
+  const contextAfter = afterSentences.slice(0, 3).join('').trim();
+
+  return { contextBefore, contextAfter };
+}
+
 // Export all state as JSON object
 export function exportState() {
   return {

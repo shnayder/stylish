@@ -132,4 +132,72 @@ test.describe('Writing Style Explorer - Visual Tests', () => {
       fullPage: true
     });
   });
+
+  test('selection popup has Rewrite This button', async ({ page }) => {
+    // Select text in the first alternative
+    const descriptionText = page.locator('.description-text').first();
+
+    // Triple-click to select a paragraph
+    await descriptionText.click({ clickCount: 3 });
+
+    // Wait for popup to appear
+    const popup = page.locator('#selection-popup');
+    await expect(popup).toHaveClass(/visible/, { timeout: 1000 });
+
+    // Verify Rewrite This button exists
+    const rewriteBtn = page.locator('#popup-rewrite');
+    await expect(rewriteBtn).toBeVisible();
+    await expect(rewriteBtn).toHaveText('Rewrite This');
+  });
+
+  test('rewrite view opens and has correct structure', async ({ page }) => {
+    // Select text in the first alternative
+    const descriptionText = page.locator('.description-text').first();
+    await descriptionText.click({ clickCount: 3 });
+
+    // Wait for popup and click Rewrite This
+    const popup = page.locator('#selection-popup');
+    await expect(popup).toHaveClass(/visible/, { timeout: 1000 });
+    await page.locator('#popup-rewrite').click();
+
+    // Wait for rewrite view to open
+    const rewriteView = page.locator('#rewrite-view');
+    await expect(rewriteView).toHaveClass(/visible/, { timeout: 1000 });
+
+    // Verify main sections exist
+    await expect(page.locator('#rewrite-back')).toBeVisible();
+    await expect(page.locator('#rewrite-replace')).toBeVisible();
+    await expect(page.locator('#current-sentence')).toBeVisible();
+    await expect(page.locator('#active-directions')).toBeVisible();
+    await expect(page.locator('#toggle-more-directions')).toBeVisible(); // More directions toggle button
+    await expect(page.locator('#variations-by-direction')).toBeVisible();
+    await expect(page.locator('.rewrite-consideration-section')).toBeVisible(); // Consideration section wrapper
+
+    // Main container should be hidden
+    await expect(page.locator('.container')).toHaveClass(/hidden/);
+
+    await rewriteView.screenshot({
+      path: 'test/screenshots/rewrite-view.png'
+    });
+  });
+
+  test('rewrite view closes with back button', async ({ page }) => {
+    // Select text and open rewrite view
+    const descriptionText = page.locator('.description-text').first();
+    await descriptionText.click({ clickCount: 3 });
+    await page.locator('#popup-rewrite').click();
+
+    // Wait for rewrite view to open
+    const rewriteView = page.locator('#rewrite-view');
+    await expect(rewriteView).toHaveClass(/visible/, { timeout: 1000 });
+
+    // Click back button
+    await page.locator('#rewrite-back').click();
+
+    // Rewrite view should be hidden
+    await expect(rewriteView).not.toHaveClass(/visible/);
+
+    // Main container should be visible again
+    await expect(page.locator('.container')).not.toHaveClass(/hidden/);
+  });
 });

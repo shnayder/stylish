@@ -17,6 +17,7 @@ import {
 import { initStyleGuide, renderStyleGuide } from './ui/styleGuide.js';
 import { initDrillDownEventListeners } from './ui/drillDown.js';
 import { renderStylePalette, setGenerateWithStylesCallback, initStylePaletteEventListeners } from './ui/stylePalette.js';
+import { initRewriteView, setReplaceCallback } from './ui/rewriteView.js';
 
 // Input helpers
 function getSettingInput() {
@@ -175,6 +176,13 @@ function init() {
   initPopupEventListeners();
   initDrillDownEventListeners();
   initStylePaletteEventListeners();
+  initRewriteView();
+
+  // Set up rewrite view callback
+  setReplaceCallback(() => {
+    renderAlternatives();
+    renderAllReactions();
+  });
 
   // Generation button listeners
   document.querySelector('.regenerate-btn').addEventListener('click', () => {
