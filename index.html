@@ -13,6 +13,39 @@
   <!-- Settings toggle button -->
   <button class="settings-toggle" id="settings-toggle">Settings</button>
 
+  <!-- Stats toggle button -->
+  <button class="stats-toggle" id="stats-toggle">Stats</button>
+
+  <!-- Stats panel -->
+  <div class="stats-panel" id="stats-panel">
+    <h3>LLM Usage Stats</h3>
+    <div class="stats-summary">
+      <div class="stat-item">
+        <span class="stat-label">Total Calls</span>
+        <span class="stat-value" id="stat-calls">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Input Tokens</span>
+        <span class="stat-value" id="stat-input-tokens">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Output Tokens</span>
+        <span class="stat-value" id="stat-output-tokens">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Total Tokens</span>
+        <span class="stat-value" id="stat-total-tokens">0</span>
+      </div>
+    </div>
+    <div class="stats-costs">
+      <h4>Estimated API Costs</h4>
+      <div class="cost-grid" id="cost-grid"></div>
+    </div>
+    <div class="stats-actions">
+      <button class="action-btn" id="reset-stats">Reset Stats</button>
+    </div>
+  </div>
+
   <!-- Settings panel -->
   <div class="settings-panel" id="settings-panel">
     <h3>LLM Configuration</h3>
@@ -261,6 +294,45 @@ Example:
           Add variations you like here to compare them
         </div>
         <div class="consideration-list" id="consideration-list"></div>
+      </div>
+
+      <!-- Feedback Log -->
+      <div class="feedback-log-section">
+        <div class="feedback-log-header" id="feedback-log-header">
+          <h3>Feedback Log <span class="feedback-count" id="feedback-count"></span></h3>
+          <button class="toggle-feedback-log" id="toggle-feedback-log">Expand</button>
+        </div>
+        <div class="feedback-log-content" id="feedback-log-content">
+          <div class="feedback-log-empty" id="feedback-log-empty">
+            Vote on variations or add annotations to build your feedback log
+          </div>
+          <div class="feedback-log-list" id="feedback-log-list"></div>
+          <div class="feedback-log-actions" id="feedback-log-actions">
+            <button class="action-btn" id="clear-feedback">Clear All</button>
+            <button class="action-btn primary" id="synthesize-rules">Synthesize Rules</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Synthesis Modal -->
+  <div class="modal-overlay" id="synthesis-overlay">
+    <div class="synthesis-modal">
+      <div class="modal-header">
+        <h3>Synthesize Feedback into Style Rules</h3>
+        <button class="close-modal" id="close-synthesis">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="synthesis-loading" id="synthesis-loading">
+          <div class="synthesis-spinner"></div>
+          <p>Analyzing your feedback...</p>
+        </div>
+        <div class="synthesis-results" id="synthesis-results"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" id="cancel-synthesis">Cancel</button>
+        <button class="action-btn primary" id="apply-synthesis" disabled>Add Selected to Style Guide</button>
       </div>
     </div>
   </div>

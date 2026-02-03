@@ -29,6 +29,60 @@ export function setGenerating(value) {
   isGenerating = value;
 }
 
+// LLM Stats tracking
+export let llmStats = {
+  totalCalls: 0,
+  totalInputTokens: 0,
+  totalOutputTokens: 0,
+  callHistory: [] // Recent calls for detailed view
+};
+
+export function recordLLMCall(inputTokens, outputTokens, model = 'unknown') {
+  llmStats.totalCalls++;
+  llmStats.totalInputTokens += inputTokens;
+  llmStats.totalOutputTokens += outputTokens;
+  llmStats.callHistory.push({
+    timestamp: new Date().toISOString(),
+    inputTokens,
+    outputTokens,
+    model
+  });
+  // Keep only last 50 calls in history
+  if (llmStats.callHistory.length > 50) {
+    llmStats.callHistory.shift();
+  }
+}
+
+export function resetLLMStats() {
+  llmStats = {
+    totalCalls: 0,
+    totalInputTokens: 0,
+    totalOutputTokens: 0,
+    callHistory: []
+  };
+}
+
+// Pricing estimates (per 1M tokens, as of 2024)
+export const LLM_PRICING = {
+  'claude-3-haiku-20240307': { input: 0.25, output: 1.25 },
+  'claude-3-5-sonnet-20241022': { input: 3.00, output: 15.00 },
+  'claude-3-opus-20240229': { input: 15.00, output: 75.00 },
+  'gpt-4o': { input: 2.50, output: 10.00 },
+  'gpt-4o-mini': { input: 0.15, output: 0.60 },
+  'local': { input: 0, output: 0 }
+};
+
+export function estimateCost(model = 'claude-3-haiku-20240307') {
+  const pricing = LLM_PRICING[model] || LLM_PRICING['claude-3-haiku-20240307'];
+  const inputCost = (llmStats.totalInputTokens / 1000000) * pricing.input;
+  const outputCost = (llmStats.totalOutputTokens / 1000000) * pricing.output;
+  return {
+    input: inputCost,
+    output: outputCost,
+    total: inputCost + outputCost
+  };
+}
+
 // Style Guide - persisted per project
 export let styleGuide = [];
 export let styleGuideExpanded = false;
@@ -497,6 +551,110 @@ export function getRewriteContext() {
   const contextAfter = afterSentences.slice(0, 3).join('').trim();
 
   return { contextBefore, contextAfter };
+}
+
+// Feedback log for rewrite session
+export let feedbackLog = [];
+
+export function addFeedback(feedback) {
+  const id = `fb-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  feedbackLog.push({
+    id,
+    timestamp: new Date().toISOString(),
+    ...feedback
+  });
+  return id;
+}
+
+export function setVote(variationId, vote, context) {
+  // Find existing vote for this variation
+  const existing = feedbackLog.find(f =>
+    f.type === 'vote' && f.variationId === variationId
+  );
+
+  if (existing) {
+    if (existing.vote === vote) {
+      // Same vote = clear it
+      removeFeedback(existing.id);
+      return null;
+    } else {
+      // Different vote = update it
+      existing.vote = vote;
+      existing.timestamp = new Date().toISOString();
+      return existing.id;
+    }
+  } else {
+    // New vote
+    return addFeedback({
+      type: 'vote',
+      variationId,
+      vote,
+      ...context
+    });
+  }
+}
+
+export function getVoteForVariation(variationId) {
+  const fb = feedbackLog.find(f =>
+    f.type === 'vote' && f.variationId === variationId
+  );
+  return fb ? fb.vote : null;
+}
+
+export function addHighlightAnnotation(variationId, highlightedText, start, end, annotation, context) {
+  return addFeedback({
+    type: 'highlight',
+    variationId,
+    highlightedText,
+    highlightStart: start,
+    highlightEnd: end,
+    annotation,
+    ...context
+  });
+}
+
+export function addCardAnnotation(variationId, annotation, context) {
+  return addFeedback({
+    type: 'card_annotation',
+    variationId,
+    annotation,
+    ...context
+  });
+}
+
+export function updateFeedback(feedbackId, updates) {
+  const fb = feedbackLog.find(f => f.id === feedbackId);
+  if (fb) {
+    Object.assign(fb, updates);
+    fb.timestamp = new Date().toISOString();
+  }
+}
+
+export function removeFeedback(feedbackId) {
+  feedbackLog = feedbackLog.filter(f => f.id !== feedbackId);
+}
+
+export function clearFeedbackLog() {
+  feedbackLog = [];
+}
+
+export function getFeedbackByDirection() {
+  const groups = {};
+  for (const fb of feedbackLog) {
+    const dirId = fb.directionId || 'other';
+    if (!groups[dirId]) {
+      groups[dirId] = {
+        name: fb.directionName || 'Other',
+        items: []
+      };
+    }
+    groups[dirId].items.push(fb);
+  }
+  return groups;
+}
+
+export function getFeedbackCount() {
+  return feedbackLog.length;
 }
 
 // Export all state as JSON object

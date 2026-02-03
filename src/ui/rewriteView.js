@@ -18,9 +18,15 @@ import {
   isDirectionLoading,
   getRewriteContext,
   alternatives,
-  styleGuide
+  styleGuide,
+  setVote,
+  getVoteForVariation,
+  getFeedbackCount,
+  addHighlightAnnotation
 } from '../state.js';
 import { escapeHtml } from '../utils.js';
+import { renderFeedbackLog } from './feedbackLog.js';
+import { renderStats } from './stats.js';
 import { callLLM } from '../llm.js';
 import { SYSTEM_PROMPT } from '../prompts.js';
 
@@ -140,15 +146,30 @@ function renderVariations() {
         </div>
         <div class="variations-grid">
           ${isLoading ? '<div class="variation-loading">Generating variations...</div>' : ''}
-          ${variations.map(v => `
-            <div class="variation-card" data-variation-id="${v.id}">
+          ${variations.map(v => {
+            const vote = getVoteForVariation(v.id);
+            const voteUpClass = vote === 'up' ? ' voted' : '';
+            const voteDownClass = vote === 'down' ? ' voted' : '';
+            const cardVoteClass = vote === 'up' ? ' voted-up' : (vote === 'down' ? ' voted-down' : '');
+            return `
+            <div class="variation-card${cardVoteClass}" data-variation-id="${v.id}">
               ${v.label ? `<div class="variation-label">${escapeHtml(v.label)}</div>` : ''}
               <div class="variation-text">${escapeHtml(v.text)}</div>
-              <button class="action-btn add-to-consideration" data-variation-id="${v.id}" data-direction-id="${dirId}">
-                + Consider
-              </button>
+              <div class="variation-actions">
+                <div class="vote-buttons">
+                  <button class="vote-btn vote-up${voteUpClass}" data-variation-id="${v.id}" data-direction-id="${dirId}" title="I like this">
+                    <span class="vote-icon">👍</span>
+                  </button>
+                  <button class="vote-btn vote-down${voteDownClass}" data-variation-id="${v.id}" data-direction-id="${dirId}" title="I don't like this">
+                    <span class="vote-icon">👎</span>
+                  </button>
+                </div>
+                <button class="action-btn add-to-consideration" data-variation-id="${v.id}" data-direction-id="${dirId}">
+                  + Consider
+                </button>
+              </div>
             </div>
-          `).join('')}
+          `}).join('')}
         </div>
       </div>
     `;
@@ -171,6 +192,42 @@ function renderVariations() {
       }
     });
   });
+
+  // Add event listeners for vote buttons
+  container.querySelectorAll('.vote-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const variationId = btn.dataset.variationId;
+      const directionId = btn.dataset.directionId;
+      const isUpVote = btn.classList.contains('vote-up');
+      const vote = isUpVote ? 'up' : 'down';
+
+      const dir = variationDirections.find(d => d.id === directionId);
+      const variations = rewriteState.variationsByDirection[directionId] || [];
+      const variation = variations.find(v => v.id === variationId);
+
+      if (variation) {
+        setVote(variationId, vote, {
+          directionId,
+          directionName: dir ? dir.name : directionId,
+          variationLabel: variation.label,
+          variationText: variation.text,
+          originalSentence: rewriteState.currentSentence
+        });
+        renderVariations();
+        updateFeedbackCount();
+        renderFeedbackLog();
+      }
+    });
+  });
+}
+
+function updateFeedbackCount() {
+  const countEl = document.getElementById('feedback-count');
+  if (countEl) {
+    const count = getFeedbackCount();
+    countEl.textContent = count > 0 ? `(${count})` : '';
+    countEl.style.display = count > 0 ? 'inline' : 'none';
+  }
 }
 
 function renderConsiderationSet() {
@@ -421,6 +478,7 @@ async function generateVariationsForDirection(directionId) {
   stopLoadingDirection(directionId);
   renderDirections();
   renderVariations();
+  renderStats();
 }
 
 function buildVariationPrompt(dir, contextBefore, contextAfter, styleRules, relevantComments) {
@@ -544,6 +602,181 @@ function replaceOriginal() {
   }
 }
 
+// Text selection and annotation popup handling
+let currentSelectionContext = null;
+
+function handleTextSelection(e) {
+  const selection = window.getSelection();
+  const selectedText = selection.toString().trim();
+
+  // Hide existing popup first
+  hideAnnotationPopup();
+
+  if (!selectedText || selectedText.length < 3) {
+    return;
+  }
+
+  // Find the variation card containing the selection
+  const variationText = selection.anchorNode?.parentElement?.closest('.variation-text');
+  if (!variationText) return;
+
+  const variationCard = variationText.closest('.variation-card');
+  if (!variationCard) return;
+
+  const variationId = variationCard.dataset.variationId;
+  const directionId = variationCard.closest('.direction-variations')?.dataset.directionId;
+
+  if (!variationId || !directionId) return;
+
+  // Get the full variation text and selection position
+  const fullText = variationText.textContent;
+  const range = selection.getRangeAt(0);
+
+  // Calculate position within the text
+  const preCaretRange = range.cloneRange();
+  preCaretRange.selectNodeContents(variationText);
+  preCaretRange.setEnd(range.startContainer, range.startOffset);
+  const start = preCaretRange.toString().length;
+  const end = start + selectedText.length;
+
+  // Store context for annotation
+  currentSelectionContext = {
+    variationId,
+    directionId,
+    selectedText,
+    fullText,
+    start,
+    end
+  };
+
+  // Show annotation popup near the selection
+  const rect = range.getBoundingClientRect();
+  showAnnotationPopup(rect.left + rect.width / 2, rect.bottom);
+}
+
+function showAnnotationPopup(x, y) {
+  let popup = document.getElementById('annotation-popup');
+
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'annotation-popup';
+    popup.className = 'annotation-popup';
+    popup.innerHTML = `
+      <div class="annotation-popup-content">
+        <div class="annotation-selected-text"></div>
+        <button class="action-btn annotate-btn">💬 Annotate</button>
+        <button class="annotation-close">&times;</button>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    // Event listeners
+    popup.querySelector('.annotate-btn').addEventListener('click', openAnnotationForm);
+    popup.querySelector('.annotation-close').addEventListener('click', hideAnnotationPopup);
+  }
+
+  // Update content and position
+  popup.querySelector('.annotation-selected-text').textContent =
+    `"${currentSelectionContext.selectedText.substring(0, 40)}${currentSelectionContext.selectedText.length > 40 ? '...' : ''}"`;
+
+  // Position the popup
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  popup.style.left = `${Math.max(10, x - 80)}px`;
+  popup.style.top = `${y + scrollTop + 5}px`;
+  popup.classList.add('visible');
+}
+
+function hideAnnotationPopup() {
+  const popup = document.getElementById('annotation-popup');
+  if (popup) {
+    popup.classList.remove('visible');
+  }
+}
+
+function openAnnotationForm() {
+  hideAnnotationPopup();
+
+  if (!currentSelectionContext) return;
+
+  // Create annotation form modal
+  let form = document.getElementById('annotation-form-modal');
+  if (!form) {
+    form = document.createElement('div');
+    form.id = 'annotation-form-modal';
+    form.className = 'annotation-form-modal';
+    form.innerHTML = `
+      <div class="annotation-form-content">
+        <div class="annotation-form-header">
+          <h4>Add Annotation</h4>
+          <button class="annotation-form-close">&times;</button>
+        </div>
+        <div class="annotation-form-quote"></div>
+        <textarea class="annotation-form-input" placeholder="What's your reaction to this phrase?"></textarea>
+        <div class="annotation-form-actions">
+          <button class="action-btn cancel-annotation">Cancel</button>
+          <button class="action-btn primary save-annotation">Save</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(form);
+
+    // Event listeners
+    form.querySelector('.annotation-form-close').addEventListener('click', closeAnnotationForm);
+    form.querySelector('.cancel-annotation').addEventListener('click', closeAnnotationForm);
+    form.querySelector('.save-annotation').addEventListener('click', saveAnnotation);
+    form.addEventListener('click', (e) => {
+      if (e.target === form) closeAnnotationForm();
+    });
+  }
+
+  // Update content
+  form.querySelector('.annotation-form-quote').textContent = `"${currentSelectionContext.selectedText}"`;
+  form.querySelector('.annotation-form-input').value = '';
+  form.classList.add('visible');
+  form.querySelector('.annotation-form-input').focus();
+}
+
+function closeAnnotationForm() {
+  const form = document.getElementById('annotation-form-modal');
+  if (form) {
+    form.classList.remove('visible');
+  }
+  currentSelectionContext = null;
+}
+
+function saveAnnotation() {
+  if (!currentSelectionContext) return;
+
+  const form = document.getElementById('annotation-form-modal');
+  const annotation = form.querySelector('.annotation-form-input').value.trim();
+
+  if (!annotation) {
+    form.querySelector('.annotation-form-input').focus();
+    return;
+  }
+
+  const { variationId, directionId, selectedText, start, end } = currentSelectionContext;
+
+  // Get direction and variation info
+  const dir = variationDirections.find(d => d.id === directionId);
+  const variations = rewriteState.variationsByDirection[directionId] || [];
+  const variation = variations.find(v => v.id === variationId);
+
+  // Save to feedback log
+  addHighlightAnnotation(variationId, selectedText, start, end, annotation, {
+    directionId,
+    directionName: dir ? dir.name : directionId,
+    variationLabel: variation?.label,
+    variationText: variation?.text,
+    originalSentence: rewriteState.currentSentence
+  });
+
+  closeAnnotationForm();
+  updateFeedbackCount();
+  renderFeedbackLog();
+  renderVariations(); // Re-render to show highlight
+}
+
 export function initRewriteView() {
   // Back button
   document.getElementById('rewrite-back').addEventListener('click', closeRewriteView);
@@ -568,5 +801,16 @@ export function initRewriteView() {
   document.getElementById('generate-more-variations').addEventListener('click', async () => {
     // Regenerate for all active directions
     await generateVariationsForActiveDirections();
+  });
+
+  // Text selection for annotations in variations
+  document.getElementById('variations-by-direction').addEventListener('mouseup', handleTextSelection);
+
+  // Hide annotation popup on click outside
+  document.addEventListener('mousedown', (e) => {
+    const popup = document.getElementById('annotation-popup');
+    if (popup && !popup.contains(e.target)) {
+      hideAnnotationPopup();
+    }
   });
 }

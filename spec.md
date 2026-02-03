@@ -110,6 +110,20 @@ Each described in the following subsections.
 
 ## Roadmap -- not implemented yet
 
+- Single sentence rewriting view
+    - show local context -- previous few lines and following few lines.
+    - show current version, let me edit it directly
+    - suggest different directions of variation -- e.g. simpler/more complex sentence structure, more concrete vs more abstract imagery, etc. Some can be binary or a single continuous axis, others categorical (emphasize sound/touch/smell/etc).
+        - pick a few directions that seem most applicable and generate 5-10 variations along that axis
+        - also suggest another 10-20 different directions
+            - I can select one and add it to the set of alternatives
+    - at any time, I can pick one of the recommendations and add it to a "consideration set" of alternatives
+        - I can edit any of the sentences
+        - I can comment on the original or any of the consideration set alternatives, and my comments are fed back in when generating a new sentence.
+        - I can replace the original with one of the consideration set sentences. 
+    - I can update the original text with the new sentence. 
+        
+
 - Style guide
     - CRUD -- add new rules, remove rules. Edit already supported.
     - Flexibity

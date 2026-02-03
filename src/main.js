@@ -18,6 +18,9 @@ import { initStyleGuide, renderStyleGuide } from './ui/styleGuide.js';
 import { initDrillDownEventListeners } from './ui/drillDown.js';
 import { renderStylePalette, setGenerateWithStylesCallback, initStylePaletteEventListeners } from './ui/stylePalette.js';
 import { initRewriteView, setReplaceCallback } from './ui/rewriteView.js';
+import { initFeedbackLog, renderFeedbackLog, setOnSynthesizeCallback } from './ui/feedbackLog.js';
+import { openSynthesisModal, initSynthesis } from './ui/synthesis.js';
+import { initStats, renderStats } from './ui/stats.js';
 
 // Input helpers
 function getSettingInput() {
@@ -105,6 +108,7 @@ async function generateAlternatives(count = 2, additionalInstructions = '') {
   }
 
   setGenerating(false);
+  renderStats();
 }
 
 async function generateWithStyles() {
@@ -177,11 +181,19 @@ function init() {
   initDrillDownEventListeners();
   initStylePaletteEventListeners();
   initRewriteView();
+  initFeedbackLog();
+  initSynthesis();
+  initStats();
 
   // Set up rewrite view callback
   setReplaceCallback(() => {
     renderAlternatives();
     renderAllReactions();
+  });
+
+  // Set up feedback log to synthesis callback
+  setOnSynthesizeCallback(() => {
+    openSynthesisModal();
   });
 
   // Generation button listeners

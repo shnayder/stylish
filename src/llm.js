@@ -1,6 +1,6 @@
 // LLM API calls
 
-import { settings } from './state.js';
+import { settings, recordLLMCall } from './state.js';
 
 export async function callLLM(prompt, systemPrompt = '') {
   const provider = settings.provider;
@@ -43,7 +43,19 @@ async function callLocalLLM(prompt, systemPrompt) {
 
   const data = await response.json();
   console.log('LLM response:', data);
+
+  // Track token usage
+  const usage = data.usage || {};
+  const inputTokens = usage.prompt_tokens || estimateTokens(fullPrompt);
+  const outputTokens = usage.completion_tokens || estimateTokens(data.choices[0].message.content);
+  recordLLMCall(inputTokens, outputTokens, 'local');
+
   return data.choices[0].message.content;
+}
+
+// Simple token estimation (approx 4 chars per token)
+function estimateTokens(text) {
+  return Math.ceil((text || '').length / 4);
 }
 
 async function callAnthropicLLM(prompt, systemPrompt) {
@@ -71,6 +83,13 @@ async function callAnthropicLLM(prompt, systemPrompt) {
   }
 
   const data = await response.json();
+
+  // Track token usage
+  const usage = data.usage || {};
+  const inputTokens = usage.input_tokens || estimateTokens(prompt + (systemPrompt || ''));
+  const outputTokens = usage.output_tokens || estimateTokens(data.content[0].text);
+  recordLLMCall(inputTokens, outputTokens, 'claude-3-haiku-20240307');
+
   return data.content[0].text;
 }
 
