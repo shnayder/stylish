@@ -2,16 +2,41 @@
 
 import {
   styleGuide, loadStyleGuide as loadFromStorage,
-  removeStyleRule, updateStyleRule, toggleStyleGuideExpanded,
-  styleGuideExpanded
+  removeStyleRule, updateStyleRule
 } from '../state.js';
 import { escapeHtml } from '../utils.js';
 import { callLLM } from '../llm.js';
 import { SYSTEM_PROMPT } from '../prompts.js';
 import { openRefinement } from './refinement.js';
+import { updateTabBadge } from './tabs.js';
 
-export function initStyleGuide() {
-  loadFromStorage();
+// Track which rules are expanded (by ID)
+const expandedRules = new Set();
+
+function getExpandedRuleIds() {
+  return expandedRules;
+}
+
+function toggleRuleExpanded(ruleId) {
+  if (expandedRules.has(ruleId)) {
+    expandedRules.delete(ruleId);
+  } else {
+    expandedRules.add(ruleId);
+  }
+}
+
+function expandAllRules() {
+  styleGuide.forEach(r => expandedRules.add(r.id));
+  renderStyleGuide();
+}
+
+function collapseAllRules() {
+  expandedRules.clear();
+  renderStyleGuide();
+}
+
+export async function initStyleGuide() {
+  await loadFromStorage();
   renderStyleGuide();
   setupStyleGuideEventListeners();
 }
@@ -24,6 +49,7 @@ export function renderStyleGuide() {
   const guideEl = document.getElementById('style-guide');
 
   countEl.textContent = styleGuide.length > 0 ? `(${styleGuide.length} rules)` : '';
+  updateTabBadge(styleGuide.length);
 
   if (styleGuide.length === 0) {
     guideEl.classList.add('empty');
@@ -32,15 +58,26 @@ export function renderStyleGuide() {
   } else {
     guideEl.classList.remove('empty');
     emptyMsg.style.display = 'none';
-    rulesListEl.innerHTML = styleGuide.map(rule => `
-      <div class="style-rule" data-rule-id="${rule.id}">
+    const expandedIds = getExpandedRuleIds();
+    rulesListEl.innerHTML = styleGuide.map(rule => {
+      const hasDetails = (rule.avoid && rule.avoid.length > 0) ||
+        (rule.prefer && rule.prefer.length > 0) || rule.originalExample;
+      const isExpanded = expandedIds.has(rule.id);
+      return `
+      <div class="style-rule${isExpanded ? ' expanded' : ''}" data-rule-id="${rule.id}">
         <div class="rule-actions">
           <button class="edit" data-rule-id="${rule.id}" title="Edit">edit</button>
           <button class="refine" data-rule-id="${rule.id}" title="Refine with AI">refine</button>
           <button class="remove" data-rule-id="${rule.id}" title="Remove">&times;</button>
         </div>
         <div class="rule-display">
-          <div class="rule-principle">${escapeHtml(rule.principle)}</div>
+          <div class="rule-principle${hasDetails ? ' has-details' : ''}">${escapeHtml(rule.principle)}</div>
+          ${rule.categories && rule.categories.length > 0 ? `
+            <div class="rule-categories">
+              ${rule.categories.map(cat => `<span class="category-tag">${escapeHtml(cat).split('/').join('<span class="category-sep">/</span>')}</span>`).join('')}
+            </div>
+          ` : ''}
+          <div class="rule-details">
           ${rule.avoid && rule.avoid.length > 0 ? `
             <div class="rule-patterns avoid">
               <span class="pattern-label">Avoid:</span>
@@ -67,10 +104,13 @@ export function renderStyleGuide() {
               ` : ''}
             </div>
           ` : ''}
+          </div>
         </div>
         <div class="edit-form">
           <label>Principle</label>
           <textarea class="edit-principle">${escapeHtml(rule.principle || '')}</textarea>
+          <label>Categories <span class="field-hint">(comma-separated)</span></label>
+          <input type="text" class="edit-categories" value="${escapeHtml((rule.categories || []).join(', '))}" />
           <label>Avoid</label>
           <textarea class="edit-avoid">${escapeHtml((rule.avoid || []).join('\n'))}</textarea>
           <label>Prefer</label>
@@ -84,10 +124,19 @@ export function renderStyleGuide() {
             <button class="action-btn primary save-edit" data-rule-id="${rule.id}">Save</button>
           </div>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
-    // Add event listeners
+    // Add event listeners - principle click to expand/collapse
+    rulesListEl.querySelectorAll('.rule-principle.has-details').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const ruleEl = e.target.closest('.style-rule');
+        const ruleId = ruleEl.dataset.ruleId;
+        toggleRuleExpanded(ruleId);
+        ruleEl.classList.toggle('expanded');
+      });
+    });
+
     rulesListEl.querySelectorAll('.remove').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -329,35 +378,30 @@ function parseSuggestions(response) {
 function saveRuleEdit(ruleId, ruleEl) {
   const avoidStr = ruleEl.querySelector('.edit-avoid').value.trim();
   const preferStr = ruleEl.querySelector('.edit-prefer').value.trim();
+  const categoriesStr = ruleEl.querySelector('.edit-categories').value.trim();
 
   const updates = {
     principle: ruleEl.querySelector('.edit-principle').value.trim(),
     originalExample: ruleEl.querySelector('.edit-original').value.trim() || null,
     betterVersion: ruleEl.querySelector('.edit-better').value.trim() || null,
     avoid: avoidStr ? avoidStr.split('\n').map(s => s.trim()).filter(s => s) : [],
-    prefer: preferStr ? preferStr.split('\n').map(s => s.trim()).filter(s => s) : []
+    prefer: preferStr ? preferStr.split('\n').map(s => s.trim()).filter(s => s) : [],
+    categories: categoriesStr ? categoriesStr.split(',').map(s => s.trim()).filter(s => s) : []
   };
 
   updateStyleRule(ruleId, updates);
   renderStyleGuide();
 }
 
-export function toggleStyleGuide() {
-  const contentEl = document.getElementById('style-guide-content');
-  const toggleIcon = document.getElementById('toggle-icon');
-  const expanded = toggleStyleGuideExpanded();
-  contentEl.classList.toggle('expanded', expanded);
-  toggleIcon.textContent = expanded ? 'collapse' : 'expand';
-}
-
-export function expandStyleGuide() {
-  if (!styleGuideExpanded) {
-    toggleStyleGuide();
-  }
+async function reloadStyleGuide() {
+  await loadFromStorage();
+  renderStyleGuide();
 }
 
 function setupStyleGuideEventListeners() {
-  document.getElementById('style-guide-header').addEventListener('click', toggleStyleGuide);
+  document.getElementById('reload-style-guide').addEventListener('click', reloadStyleGuide);
+  document.getElementById('expand-all-rules').addEventListener('click', expandAllRules);
+  document.getElementById('collapse-all-rules').addEventListener('click', collapseAllRules);
 
   // Hide suggest popup on click outside
   document.addEventListener('mousedown', (e) => {

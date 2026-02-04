@@ -6,7 +6,7 @@
   "scripts": {
     "test": "playwright test",
     "test:screenshot": "playwright test test/screenshot.spec.js",
-    "serve": "npx serve ."
+    "serve": "node server.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0"

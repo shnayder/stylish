@@ -16,6 +16,7 @@ test.describe('Writing Style Explorer - Visual Tests', () => {
 
     // Verify main sections are present
     await expect(page.locator('h1')).toHaveText('Writing Style Explorer');
+    await expect(page.locator('.tab-bar')).toBeVisible();
     await expect(page.locator('#setting-input')).toBeVisible();
     await expect(page.locator('#style-input')).toBeVisible();
     await expect(page.locator('#scene-input')).toBeVisible();
@@ -90,24 +91,33 @@ test.describe('Writing Style Explorer - Visual Tests', () => {
     });
   });
 
-  test('style guide section expands and collapses', async ({ page }) => {
-    const header = page.locator('#style-guide-header');
-    const content = page.locator('#style-guide-content');
+  test('tab switching between Writing and Style Guide', async ({ page }) => {
+    const writingTab = page.locator('.tab[data-tab="writing"]');
+    const styleGuideTab = page.locator('.tab[data-tab="style-guide"]');
+    const writingContent = page.locator('#tab-writing');
+    const styleGuideContent = page.locator('#tab-style-guide');
 
-    // Initially collapsed
-    await expect(content).not.toHaveClass(/expanded/);
+    // Writing tab is active by default
+    await expect(writingTab).toHaveClass(/active/);
+    await expect(writingContent).not.toHaveClass(/hidden/);
+    await expect(styleGuideContent).toHaveClass(/hidden/);
 
-    // Click to expand
-    await header.click();
-    await expect(content).toHaveClass(/expanded/);
+    // Switch to Style Guide tab
+    await styleGuideTab.click();
+    await expect(styleGuideTab).toHaveClass(/active/);
+    await expect(writingTab).not.toHaveClass(/active/);
+    await expect(styleGuideContent).not.toHaveClass(/hidden/);
+    await expect(writingContent).toHaveClass(/hidden/);
 
-    await page.locator('.style-guide').screenshot({
-      path: 'test/screenshots/style-guide-expanded.png'
+    await page.locator('#tab-style-guide').screenshot({
+      path: 'test/screenshots/style-guide-tab.png'
     });
 
-    // Click to collapse
-    await header.click();
-    await expect(content).not.toHaveClass(/expanded/);
+    // Switch back to Writing tab
+    await writingTab.click();
+    await expect(writingTab).toHaveClass(/active/);
+    await expect(writingContent).not.toHaveClass(/hidden/);
+    await expect(styleGuideContent).toHaveClass(/hidden/);
   });
 
   test('responsive layout at different widths', async ({ page }) => {
@@ -169,7 +179,7 @@ test.describe('Writing Style Explorer - Visual Tests', () => {
     await expect(page.locator('#rewrite-replace')).toBeVisible();
     await expect(page.locator('#current-sentence')).toBeVisible();
     await expect(page.locator('#active-directions')).toBeVisible();
-    await expect(page.locator('#toggle-more-directions')).toBeVisible(); // More directions toggle button
+    await expect(page.locator('#more-directions')).toBeVisible(); // More directions chips
     await expect(page.locator('#variations-by-direction')).toBeVisible();
     await expect(page.locator('.rewrite-consideration-section')).toBeVisible(); // Consideration section wrapper
 

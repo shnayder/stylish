@@ -121,7 +121,7 @@ function addCoachMessage(content) {
     messagesEl.innerHTML += `
       <div class="conv-message coach">
         <span class="speaker">Coach</span>
-        <div class="content">${escapeHtml(displayContent)}</div>
+        <div class="content">${escapeHtml(displayContent).replace(/\n/g, '<br>')}</div>
       </div>
     `;
   }

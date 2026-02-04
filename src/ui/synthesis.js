@@ -12,6 +12,7 @@ import { SYSTEM_PROMPT } from '../prompts.js';
 import { renderStyleGuide } from './styleGuide.js';
 import { renderFeedbackLog } from './feedbackLog.js';
 import { renderStats } from './stats.js';
+import { switchTab } from './tabs.js';
 
 let proposedRules = [];
 let selectedRuleIds = new Set();
@@ -361,14 +362,7 @@ function applySelectedRules() {
   closeSynthesisModal();
   renderStyleGuide();
   renderFeedbackLog();
-
-  // Optionally expand style guide to show new rules
-  const content = document.getElementById('style-guide-content');
-  if (content && !content.classList.contains('expanded')) {
-    content.classList.add('expanded');
-    const icon = document.getElementById('toggle-icon');
-    if (icon) icon.textContent = 'collapse';
-  }
+  switchTab('style-guide');
 }
 
 export function initSynthesis() {

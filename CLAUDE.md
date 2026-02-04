@@ -19,32 +19,44 @@ AI-assisted writing style explorer that helps writers find and articulate descri
 **Structure:**
 ```
 /
-├── index.html          # HTML shell, loads CSS and JS module
+├── index.html              # HTML shell, loads CSS and JS module
+├── server.js               # Dev server: static files + style guide & category registry APIs
+├── style-guide.json        # Style guide data (human-editable JSON)
+├── category-registry.json  # Category definitions for rule resolution pipeline
 ├── styles/
-│   ├── main.css        # Base styles, layout, settings panel
-│   ├── components.css  # Alternatives, reactions, style palette, style guide
-│   └── modal.css       # Drill-down modal
+│   ├── main.css            # Base styles, layout, settings panel, tabs
+│   ├── components.css      # Alternatives, reactions, style palette, style guide, analyzer
+│   ├── modal.css           # Drill-down modal
+│   └── rewrite.css         # Rewrite view styles
 ├── src/
-│   ├── main.js         # Entry point, initialization, event wiring
-│   ├── state.js        # All app state, localStorage persistence
-│   ├── llm.js          # LLM API calls (local + cloud)
-│   ├── prompts.js      # Prompt templates and response parsing
-│   ├── utils.js        # Shared utilities
+│   ├── main.js             # Entry point, initialization, event wiring
+│   ├── state.js            # All app state, localStorage + file-backed persistence
+│   ├── llm.js              # LLM API calls (local + cloud)
+│   ├── prompts.js          # Prompt templates and response parsing
+│   ├── resolution.js       # Hierarchical rule resolution pipeline
+│   ├── utils.js            # Shared utilities
 │   └── ui/
 │       ├── settings.js     # Settings panel
 │       ├── alternatives.js # Alternatives grid, reactions
-│       ├── styleGuide.js   # Style guide section
+│       ├── styleGuide.js   # Style guide tab
+│       ├── tabs.js         # Tab switching (Writing / Style Guide)
 │       ├── drillDown.js    # Coaching modal
-│       └── stylePalette.js # Style properties palette
+│       ├── stylePalette.js # Style properties palette
+│       ├── rewriteView.js  # Sentence rewrite view
+│       ├── feedbackLog.js  # Feedback log in rewrite view
+│       ├── synthesis.js    # Feedback synthesis modal
+│       ├── refinement.js   # Style rule refinement modal
+│       ├── stats.js        # LLM usage stats panel
+│       └── analyzer.js     # Text analyzer (rule resolution UI)
 ├── test/
 │   └── screenshot.spec.js  # Playwright visual tests
-├── package.json        # npm config
-└── playwright.config.js # Test config
+├── package.json            # npm config
+└── playwright.config.js    # Test config
 ```
 
 **LLM:** Dual support for local (LM Studio at localhost:1234) and cloud (Claude API).
 
-**State:** localStorage for settings, style guide, and session data.
+**State:** Style guide stored in `style-guide.json` and category registry in `category-registry.json`, both via server API (localStorage as backup). Settings and session data in localStorage.
 
 **Testing:** Playwright for automated browser tests and screenshots.
 
@@ -57,20 +69,31 @@ npm install
 # Run tests
 npm test
 
-# Serve locally (for testing or to avoid file:// issues)
+# Serve locally (starts Node server on port 3000)
 npm run serve
 ```
 
 ## Development Conventions
+
+### Planning features
+
+Plan in this order — **user-facing design first, implementation second, code last:**
+
+1. **UX/design first:** What does the user see and do? Describe the interaction flow, what appears on screen, what the user clicks/types, what feedback they get. Use plain language. Don't mention CSS classes, module names, or data structures at this stage.
+2. **Implementation plan:** Once the UX is agreed on, describe the technical approach — what modules are involved, what data flows where, what the LLM calls look like, what state changes. Update `ARCHITECTURE.md` if the feature adds new modules or significant patterns.
+3. **Code:** Write the code. Follow existing patterns.
+
+When discussing a feature with the user, stay at the appropriate level. A UX conversation should not include implementation details like planned CSS class names or function signatures.
 
 ### When adding features
 1. Check if it fits the high-level design in `spec.md`
 2. Document new features in the Features section of `spec.md`
 3. Place code in the appropriate module based on responsibility
 4. Follow existing patterns for state management and UI updates
+5. Update `ARCHITECTURE.md` if adding new modules, APIs, or significant patterns
 
 ### Module responsibilities
-- `state.js` - State changes and localStorage. Export state variables and functions to modify them.
+- `state.js` - State changes, localStorage, and file-backed persistence (style guide). Export state variables and functions to modify them.
 - `llm.js` - LLM API calls only. No UI, no state management.
 - `prompts.js` - Prompt construction and response parsing. Imports state for context.
 - `ui/*.js` - Render functions and event listeners for specific UI sections.

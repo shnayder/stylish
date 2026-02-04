@@ -83,11 +83,66 @@ export function estimateCost(model = 'claude-3-haiku-20240307') {
   };
 }
 
-// Style Guide - persisted per project
-export let styleGuide = [];
-export let styleGuideExpanded = false;
+// Category Registry - persisted to file via server API (localStorage as backup)
+export let categoryRegistry = {};
 
-export function loadStyleGuide() {
+export async function loadCategoryRegistry() {
+  try {
+    const res = await fetch('/api/category-registry');
+    if (res.ok) {
+      categoryRegistry = await res.json();
+      localStorage.setItem('categoryRegistry', JSON.stringify(categoryRegistry));
+      return categoryRegistry;
+    }
+  } catch (err) {
+    console.warn('Failed to load category registry from server, falling back to localStorage:', err);
+  }
+  const saved = localStorage.getItem('categoryRegistry');
+  if (saved) {
+    categoryRegistry = JSON.parse(saved);
+  }
+  return categoryRegistry;
+}
+
+export function saveCategoryRegistry() {
+  localStorage.setItem('categoryRegistry', JSON.stringify(categoryRegistry));
+  fetch('/api/category-registry', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(categoryRegistry)
+  }).catch(err => console.warn('Failed to save category registry to server:', err));
+}
+
+export function buildCategoryIndex() {
+  const index = new Map();
+  for (const rule of styleGuide) {
+    if (!Array.isArray(rule.categories)) continue;
+    for (const cat of rule.categories) {
+      if (!index.has(cat)) {
+        index.set(cat, []);
+      }
+      index.get(cat).push(rule.id);
+    }
+  }
+  return index;
+}
+
+// Style Guide - persisted to file via server API (localStorage as backup)
+export let styleGuide = [];
+
+export async function loadStyleGuide() {
+  try {
+    const res = await fetch('/api/style-guide');
+    if (res.ok) {
+      styleGuide = await res.json();
+      // Keep localStorage in sync as backup
+      localStorage.setItem('writingStyleGuide', JSON.stringify(styleGuide));
+      return styleGuide;
+    }
+  } catch (err) {
+    console.warn('Failed to load style guide from server, falling back to localStorage:', err);
+  }
+  // Fallback to localStorage
   const saved = localStorage.getItem('writingStyleGuide');
   if (saved) {
     styleGuide = JSON.parse(saved);
@@ -96,7 +151,14 @@ export function loadStyleGuide() {
 }
 
 export function saveStyleGuideToStorage() {
+  // localStorage backup
   localStorage.setItem('writingStyleGuide', JSON.stringify(styleGuide));
+  // Fire-and-forget save to server
+  fetch('/api/style-guide', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(styleGuide)
+  }).catch(err => console.warn('Failed to save style guide to server:', err));
 }
 
 export function addStyleRule(rule) {
@@ -118,11 +180,6 @@ export function updateStyleRule(ruleId, updates) {
     Object.assign(rule, updates);
     saveStyleGuideToStorage();
   }
-}
-
-export function toggleStyleGuideExpanded() {
-  styleGuideExpanded = !styleGuideExpanded;
-  return styleGuideExpanded;
 }
 
 // Alternatives data

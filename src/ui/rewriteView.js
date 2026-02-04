@@ -789,14 +789,6 @@ export function initRewriteView() {
     setRewriteCurrentSentence(e.target.value);
   });
 
-  // Toggle more directions
-  document.getElementById('toggle-more-directions').addEventListener('click', () => {
-    const moreContainer = document.getElementById('more-directions');
-    const btn = document.getElementById('toggle-more-directions');
-    const isExpanded = moreContainer.classList.toggle('expanded');
-    btn.textContent = isExpanded ? 'Hide more directions' : 'Show more directions';
-  });
-
   // Generate more variations
   document.getElementById('generate-more-variations').addEventListener('click', async () => {
     // Regenerate for all active directions

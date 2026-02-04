@@ -94,10 +94,16 @@
   <div class="container">
     <h1>Writing Style Explorer</h1>
 
-    <div class="input-section">
-      <div class="pane">
-        <h2>What I'm Describing</h2>
-        <textarea id="setting-input" placeholder="Describe your setting...
+    <div class="tab-bar">
+      <button class="tab active" data-tab="writing">Writing</button>
+      <button class="tab" data-tab="style-guide">Style Guide <span id="tab-rule-count"></span></button>
+    </div>
+
+    <div class="tab-content" id="tab-writing">
+      <div class="input-section">
+        <div class="pane">
+          <h2>What I'm Describing</h2>
+          <textarea id="setting-input" placeholder="Describe your setting...
 
 Example:
 Setting: Rivendell, the Last Homely House
@@ -118,11 +124,11 @@ Known details:
 - Twilight atmosphere, stars visible even at dusk
 
 Context: First arrival of weary travelers seeking sanctuary</textarea>
-      </div>
+        </div>
 
-      <div class="pane">
-        <h2>General Style</h2>
-        <textarea id="style-input" placeholder="Style rules that apply to your whole project...
+        <div class="pane">
+          <h2>General Style</h2>
+          <textarea id="style-input" placeholder="Style rules that apply to your whole project...
 
 Example:
 - First person POV
@@ -134,13 +140,13 @@ Example:
 - Spare, grounded prose style
 - Avoid purple prose or overly ornate language
 - Show don't tell</textarea>
+        </div>
       </div>
-    </div>
 
-    <div class="input-section" style="margin-top: -10px;">
-      <div class="pane" style="grid-column: 1 / -1;">
-        <h2>This Scene</h2>
-        <textarea id="scene-input" placeholder="What this specific scene should accomplish...
+      <div class="input-section" style="margin-top: -10px;">
+        <div class="pane" style="grid-column: 1 / -1;">
+          <h2>This Scene</h2>
+          <textarea id="scene-input" placeholder="What this specific scene should accomplish...
 
 Example:
 - Build tension before the reveal
@@ -149,22 +155,10 @@ Example:
 - Show the otherworldly, timeless quality of the Elves
 - Use sensory details beyond just visual
 - Length: 2-3 paragraphs</textarea>
+        </div>
       </div>
-    </div>
 
-    <!-- Style Guide Section -->
-    <div class="style-guide" id="style-guide">
-      <div class="style-guide-header" id="style-guide-header">
-        <h2>Style Guide <span class="rule-count" id="rule-count"></span></h2>
-        <span class="toggle-icon" id="toggle-icon">expand</span>
-      </div>
-      <div class="style-guide-content" id="style-guide-content">
-        <p class="empty-message">No style rules yet. Select text in alternatives and drill down to crystallize your preferences.</p>
-        <div class="rules-list" id="rules-list"></div>
-      </div>
-    </div>
-
-    <div class="alternatives-header">
+      <div class="alternatives-header">
       <h2>Alternatives</h2>
       <button class="regenerate-btn">Generate More</button>
     </div>
@@ -195,6 +189,49 @@ Example:
         <button class="action-btn primary" id="generate-with-reactions" disabled>Generate New Version</button>
       </div>
     </div>
+    </div><!-- /tab-writing -->
+
+    <div class="tab-content hidden" id="tab-style-guide">
+      <div class="rule-analyzer" id="rule-analyzer">
+        <div class="analyzer-header">
+          <h2>Analyze Text</h2>
+        </div>
+        <div class="analyzer-input">
+          <textarea id="analyzer-text" placeholder="Paste text to analyze against your style guide..."></textarea>
+          <button class="action-btn primary" id="analyze-btn">Analyze</button>
+        </div>
+        <div class="analyzer-results" id="analyzer-results" style="display:none">
+          <div class="analyzer-stage" id="stage-categories">
+            <h4>Matched Categories</h4>
+            <div class="stage-content" id="stage-categories-content"></div>
+          </div>
+          <div class="analyzer-stage" id="stage-candidates">
+            <h4>Candidate Rules <span class="stage-count" id="stage-candidates-count"></span></h4>
+            <div class="stage-content" id="stage-candidates-content"></div>
+          </div>
+          <div class="analyzer-stage" id="stage-evaluated">
+            <h4>Evaluation</h4>
+            <div class="stage-content" id="stage-evaluated-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="style-guide" id="style-guide">
+        <div class="style-guide-header" id="style-guide-header">
+          <h2>Style Guide <span class="rule-count" id="rule-count"></span></h2>
+          <div class="style-guide-actions">
+            <button class="action-btn" id="expand-all-rules">Expand All</button>
+            <button class="action-btn" id="collapse-all-rules">Collapse All</button>
+            <button class="action-btn" id="reload-style-guide">Reload from file</button>
+          </div>
+        </div>
+        <div class="style-guide-content" id="style-guide-content">
+          <p class="empty-message">No style rules yet. Select text in alternatives and drill down to crystallize your preferences.</p>
+          <div class="rules-list" id="rules-list"></div>
+        </div>
+      </div>
+    </div><!-- /tab-style-guide -->
+
   </div>
 
   <!-- Selection popup (hidden by default) -->
@@ -272,10 +309,8 @@ Example:
       <div class="rewrite-directions-section">
         <h3>Directions to Explore</h3>
         <div class="active-directions" id="active-directions"></div>
-        <div class="more-directions-wrapper">
-          <button class="action-btn toggle-more-directions" id="toggle-more-directions">Show more directions</button>
-          <div class="more-directions" id="more-directions"></div>
-        </div>
+        <h4 class="more-directions-header">Explore other directions?</h4>
+        <div class="more-directions" id="more-directions"></div>
       </div>
 
       <!-- Variations Grid -->

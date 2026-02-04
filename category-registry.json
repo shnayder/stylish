@@ -1,0 +1,62 @@
+{
+  "metaphor": {
+    "description": "Figurative comparisons, similes, analogies — clarity, coherence, cliché avoidance"
+  },
+  "description/senses": {
+    "description": "Sensory detail — sight, sound, smell, taste, touch — specificity and grounding"
+  },
+  "diction": {
+    "description": "Word choice — precision, register, verb strength, avoiding inflation"
+  },
+  "imagery": {
+    "description": "Concrete images vs abstract labels — visual stability, picturable detail"
+  },
+  "abstraction": {
+    "description": "Abstract statements — earning their place, grounding generalizations, level management"
+  },
+  "rhythm": {
+    "description": "Sentence length variation, cadence, emphasis through brevity, matching energy"
+  },
+  "pacing": {
+    "description": "Information density per paragraph — slowing at key moments, speeding through routine"
+  },
+  "repetition": {
+    "description": "Intentional vs accidental repetition — echoing, variation, evolution over time"
+  },
+  "transitions": {
+    "description": "Shifts in time, place, perspective, or tone — clarity and smoothness of movement"
+  },
+  "voice": {
+    "description": "Narrative voice consistency — perspective limitations, personality, genre alignment"
+  },
+  "tone": {
+    "description": "Emotional register of a scene — establishing, sustaining, and shifting mood"
+  },
+  "register": {
+    "description": "Formality level — matching context, speaker, and audience; avoiding drift"
+  },
+  "authorial": {
+    "description": "Author presence — commentary, thematic explicitness, immersion maintenance"
+  },
+  "clarity": {
+    "description": "Comprehensibility — intentional vs accidental ambiguity, baseline readability"
+  },
+  "implication": {
+    "description": "Show vs tell — behavioral cues over labels, trusting the reader, knowing when to be direct"
+  },
+  "causality": {
+    "description": "Cause and effect — plausible motivations, earned outcomes, avoiding coincidence"
+  },
+  "scene": {
+    "description": "Scene construction — orientation, spatial awareness, ending with change or pressure"
+  },
+  "character": {
+    "description": "Character rendering — thought vs action balance, behavior under pressure, psychological progression"
+  },
+  "dialogue": {
+    "description": "Dialogue craft — subtext, natural speech, grounding with action beats"
+  },
+  "world": {
+    "description": "Worldbuilding — internal consistency, implied depth, natural revelation"
+  }
+}

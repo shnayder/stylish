@@ -2,7 +2,7 @@
 
 import {
   alternatives, addAlternative, reactions, selectedStyles,
-  isGenerating, setGenerating
+  isGenerating, setGenerating, loadCategoryRegistry
 } from './state.js';
 import { callLLM } from './llm.js';
 import { SYSTEM_PROMPT, buildGenerationPrompt, parseGeneratedResponse } from './prompts.js';
@@ -22,6 +22,8 @@ import { initFeedbackLog, renderFeedbackLog, setOnSynthesizeCallback } from './u
 import { openSynthesisModal, initSynthesis } from './ui/synthesis.js';
 import { initStats, renderStats } from './ui/stats.js';
 import { initRefinement } from './ui/refinement.js';
+import { initTabs } from './ui/tabs.js';
+import { initAnalyzer } from './ui/analyzer.js';
 
 // Input helpers
 function getSettingInput() {
@@ -153,10 +155,12 @@ function updatePanelButtons() {
 }
 
 // Initialize application
-function init() {
+async function init() {
   // Initialize UI components
   initSettings();
-  initStyleGuide();
+  initTabs();
+  await initStyleGuide();
+  await loadCategoryRegistry();
 
   // Render initial state
   renderAlternatives();
@@ -186,6 +190,7 @@ function init() {
   initSynthesis();
   initStats();
   initRefinement();
+  initAnalyzer();
 
   // Set up rewrite view callback
   setReplaceCallback(() => {

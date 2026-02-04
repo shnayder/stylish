@@ -4,7 +4,7 @@ This is a UI exploration of an AI-assisted writing style explorer. There are a m
 
 ## Goals and hypotheses
 
-Hypothesis: it is now possible to fairly easily capture more granular aspects of a user’s writing style and related preferences, and this can be useful. It can help generate better suggestions, and show them useful context.  
+Hypothesis: it is now possible to explicitly capture more granular aspects of a user’s writing style and related preferences, and having such a detailed and articulated style guide can be useful. In particular, it can augment simply providing a lot of examples of a user's previous writing or writing they want to emulate, and making the AI pick up on the patterns implicitly. It can help generate better suggestions, and show them useful context. 
 
 More granular hypotheses or goals:
 - Assistance. the system should ultimately generate good suggestions.
@@ -87,10 +87,12 @@ Each described in the following subsections.
     - "This Scene" - goals specific to this description (mood, tension, purpose)
     - Content used as context for LLM generation
 - Style Guide (per-project)
-    - Collapsible section showing crystallized style rules
+    - Dedicated tab (separate from the main Writing tab)
     - Each rule has: principle, avoid examples, prefer examples
     - Rules are fed into all generation prompts
-    - Persisted in localStorage
+    - Persisted to `style-guide.json` on disk (via server API), with localStorage as backup
+    - "Reload from file" button to pick up external edits to the JSON file
+    - Human-editable JSON format (pretty-printed)
 - Style Drill-Down (coaching conversation)
     - Select text + click "Drill Down" to explore your reaction
     - Modal opens with AI writing coach
@@ -138,7 +140,7 @@ Each described in the following subsections.
      - let me clarify where I'm happy -- either making an exception, or can refine the rule, or prioritizing a different principle in tension with the first.
 
 - page org
-  - full style guide should be a separate tab
+  - ~~full style guide should be a separate tab~~ DONE
   - main text view: scene context (what I'm describing, goals for the scene), scene-specific style guidelines (including most relevant from style guide), current text, variations
   - modal for refining thoughts and opinions about some issue or question
 

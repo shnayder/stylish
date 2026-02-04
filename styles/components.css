@@ -386,7 +386,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
+}
+
+.style-guide-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .style-guide-header h2 {
@@ -404,18 +408,8 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.style-guide-header .toggle-icon {
-  color: #888;
-  font-size: 0.8rem;
-}
-
 .style-guide-content {
   margin-top: 15px;
-  display: none;
-}
-
-.style-guide-content.expanded {
-  display: block;
 }
 
 .style-guide.empty .style-guide-content {
@@ -435,7 +429,50 @@
 .style-rule .rule-principle {
   font-weight: 500;
   color: #333;
-  margin-bottom: 6px;
+}
+
+.style-rule .rule-principle.has-details {
+  cursor: pointer;
+}
+
+.style-rule .rule-principle.has-details::before {
+  content: '▸ ';
+  color: #aaa;
+  font-size: 0.8em;
+}
+
+.style-rule.expanded .rule-principle.has-details::before {
+  content: '▾ ';
+}
+
+.style-rule .rule-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.style-rule .category-tag {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #eef0ee;
+  color: #6a7a6a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.style-rule .category-tag .category-sep {
+  color: #aaa;
+  margin: 0 1px;
+}
+
+.style-rule .rule-details {
+  display: none;
+  margin-top: 8px;
+}
+
+.style-rule.expanded .rule-details {
+  display: block;
 }
 
 .style-rule .rule-patterns {
@@ -716,4 +753,191 @@
 
 .suggest-popup-close:hover {
   color: #666;
+}
+
+/* Rule Analyzer */
+.rule-analyzer {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
+
+.rule-analyzer .analyzer-header h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.rule-analyzer .analyzer-input {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.rule-analyzer .analyzer-input textarea {
+  flex: 1;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.rule-analyzer .analyzer-input textarea:focus {
+  outline: none;
+  border-color: #5a7a5a;
+}
+
+.rule-analyzer .analyzer-input button {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 0;
+}
+
+.analyzer-results {
+  margin-top: 16px;
+  border-top: 1px solid #eee;
+  padding-top: 16px;
+}
+
+.analyzer-stage {
+  margin-bottom: 14px;
+}
+
+.analyzer-stage h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.analyzer-stage .stage-count {
+  font-weight: normal;
+  color: #aaa;
+}
+
+.analyzer-stage .category-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: #eef0ee;
+  color: #6a7a6a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 2px 4px 2px 0;
+}
+
+.analyzer-empty {
+  color: #999;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.analyzer-error {
+  color: #c00;
+  font-size: 0.85rem;
+  padding: 8px;
+  background: #fff0f0;
+  border-radius: 4px;
+}
+
+/* Candidates list */
+.candidates-details {
+  font-size: 0.85rem;
+}
+
+.candidates-details summary {
+  cursor: pointer;
+  color: #666;
+  padding: 4px 0;
+}
+
+.candidates-details summary:hover {
+  color: #333;
+}
+
+.candidate-rule {
+  padding: 4px 0;
+  color: #555;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.candidate-rule:last-child {
+  border-bottom: none;
+}
+
+.candidate-id {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #999;
+  margin-right: 6px;
+}
+
+/* Evaluation items */
+.evaluation-item {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: #f8f8f8;
+  border-radius: 6px;
+}
+
+.evaluation-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.evaluation-principle {
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.evaluation-note {
+  font-size: 0.82rem;
+  color: #666;
+  margin-top: 6px;
+  padding-left: 70px;
+  line-height: 1.5;
+}
+
+.assessment-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  flex-shrink: 0;
+  min-width: 55px;
+  text-align: center;
+}
+
+.assessment-badge.follows {
+  background: #e8f5e8;
+  color: #2a7a2a;
+}
+
+.assessment-badge.violates {
+  background: #fde8e8;
+  color: #a52a2a;
+}
+
+.assessment-badge.partial {
+  background: #fff8e1;
+  color: #8a6d00;
 }

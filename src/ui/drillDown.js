@@ -12,7 +12,8 @@ import {
   cleanCoachResponse
 } from '../prompts.js';
 import { escapeHtml } from '../utils.js';
-import { renderStyleGuide, expandStyleGuide } from './styleGuide.js';
+import { renderStyleGuide } from './styleGuide.js';
+import { switchTab } from './tabs.js';
 
 export function openDrillDown(selectedText, initialReaction, alternativeId) {
   initDrillDownState(selectedText, initialReaction, alternativeId);
@@ -194,7 +195,7 @@ function addRuleToStyleGuide() {
     addStyleRule(drillDownState.proposedRule);
     closeDrillDown();
     renderStyleGuide();
-    expandStyleGuide();
+    switchTab('style-guide');
   }
 }
 
