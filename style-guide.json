@@ -1,49 +1,57 @@
-[{
-      "id": "rule-1769723405308",
-      "principle": "Prefer metaphors that create a vivid mental image or convey meaning effectively",
-      "originalExample": "Rivendell lay in its valley like a held breath",
-      "betterVersion": "Rivendell lay in its valley, silent and serene as a lake at twilight.",
-      "avoid": [
-        "metaphors that are too vague, overly abstract, or don't make literal or figurative sense"
-      ],
-      "prefer": [
-        "concrete and vivid details",
-        "abstract metaphors when they successfully convey intended meanings"
-      ],
-      "categories": ["metaphor"]
-    },
-    {
-      "id": "rule-1770144835360",
-      "principle": "Metaphor should feel natural to the senses it invokes.",
-      "originalExample": "“The air bore an unfamiliar taste.”\n“The silence felt loud in his mouth.”\n“The darkness tasted old.”",
-      "betterVersion": "“The air smelled metallic.”\n“A bitter tang hung in the air.”\n“The air stung the back of his throat.”\n“Smoke left a sharpness on his tongue.” (contact is explicit)\n“The room carried the faint sweetness of decay.”\n Silence swirled around him, a palpable sensation he could almost touch.",
-      "avoid": [
-        "* unmotivated sensory reassignment (e.g., air is smelled or felt, not tasted.)",
-        "* Ambient phenomena assigned contact-based sensations unless the mechanism is clear or narratively important",
-        "* Sensory descriptions that trigger interpretive questions (“Is this literal? Figurative? Supernatural?”) when the story doesn’t want that attention"
-      ],
-      "prefer": [
-        "* Metaphors that extend an expected sensory channel (smell → air, sound → space, light → vision)",
-        "* Taste- or touch-adjacent language that remains passive (tang, sharpness, bite, edge)",
-        "* Explicit bodily interaction when using contact-based senses (breathing, swallowing, touching, biting)",
-        "* Cross-modal shifts used deliberately to signal intrusion, danger, altered states, or the uncanny"
-      ],
-      "categories": ["description/senses", "metaphor"]
-    },
-    {
-      "id": "rule-1770144835360",
-      "principle": "Use measured and rhythmic language to describe natural sounds",
-      "originalExample": "The sound reached them before the sight—water falling, not crashing but singing, a chord sustained across centuries.",
-      "betterVersion": "Describe natural sounds using rhythmic and measured language",
-      "avoid": [
-        "overly complex or lengthy descriptions"
-      ],
-      "prefer": [
-        "measured pacing and rhythmic language"
-      ],
-      "categories": ["description/senses"]
-    },
-{
+[
+  {
+    "id": "rule-1769723405308",
+    "principle": "Prefer metaphors that create a vivid mental image or convey meaning effectively",
+    "originalExample": "Rivendell lay in its valley like a held breath",
+    "betterVersion": "Rivendell lay in its valley, silent and serene as a lake at twilight.",
+    "avoid": [
+      "metaphors that are too vague, overly abstract, or don't make literal or figurative sense"
+    ],
+    "prefer": [
+      "concrete and vivid details",
+      "abstract metaphors when they successfully convey intended meanings"
+    ],
+    "categories": [
+      "metaphor"
+    ]
+  },
+  {
+    "id": "rule-1770144835360",
+    "principle": "Metaphor should feel natural to the senses it invokes.",
+    "originalExample": "“The air bore an unfamiliar taste.”\n“The silence felt loud in his mouth.”\n“The darkness tasted old.”",
+    "betterVersion": "“The air smelled metallic.”\n“A bitter tang hung in the air.”\n“The air stung the back of his throat.”\n“Smoke left a sharpness on his tongue.” (contact is explicit)\n“The room carried the faint sweetness of decay.”\n Silence swirled around him, a palpable sensation he could almost touch.",
+    "avoid": [
+      "* unmotivated sensory reassignment (e.g., air is smelled or felt, not tasted.)",
+      "* Ambient phenomena assigned contact-based sensations unless the mechanism is clear or narratively important",
+      "* Sensory descriptions that trigger interpretive questions (“Is this literal? Figurative? Supernatural?”) when the story doesn’t want that attention"
+    ],
+    "prefer": [
+      "* Metaphors that extend an expected sensory channel (smell → air, sound → space, light → vision)",
+      "* Taste- or touch-adjacent language that remains passive (tang, sharpness, bite, edge)",
+      "* Explicit bodily interaction when using contact-based senses (breathing, swallowing, touching, biting)",
+      "* Cross-modal shifts used deliberately to signal intrusion, danger, altered states, or the uncanny"
+    ],
+    "categories": [
+      "description/senses",
+      "metaphor"
+    ]
+  },
+  {
+    "id": "rule-1770144835360",
+    "principle": "Use measured and rhythmic language to describe natural sounds",
+    "originalExample": "The sound reached them before the sight—water falling, not crashing but singing, a chord sustained across centuries.",
+    "betterVersion": "They heard it before they saw it—a steady rush, water over stone, each note blending into the next like a long-held chord.",
+    "avoid": [
+      "overly complex or lengthy descriptions"
+    ],
+    "prefer": [
+      "measured pacing and rhythmic language"
+    ],
+    "categories": [
+      "description/senses"
+    ]
+  },
+  {
     "id": "rule-met-001",
     "principle": "Prefer metaphors that clarify or deepen meaning, not merely decorate.",
     "originalExample": "Her thoughts were a storm of chaos.",
@@ -56,7 +64,9 @@
       "metaphors that sharpen or specify an otherwise abstract idea",
       "figurative language that earns its space"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-002",
@@ -71,7 +81,9 @@
       "a single governing image carried through consistently",
       "metaphors that survive literal scrutiny"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-003",
@@ -86,7 +98,9 @@
       "one metaphorical frame per beat",
       "intentional clashes used for humor, disorientation, or emphasis"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-004",
@@ -101,7 +115,9 @@
       "metaphors grounded in the character’s lived environment",
       "comparisons the viewpoint character could plausibly make"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-005",
@@ -116,7 +132,9 @@
       "images that carry comparable emotional force",
       "restraint when the moment is already powerful"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-006",
@@ -131,7 +149,9 @@
       "concrete, familiar source images",
       "metaphors that resolve instantly"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-007",
@@ -146,7 +166,9 @@
       "short, decisive metaphorical strikes",
       "leaving some implications unstated"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-008",
@@ -161,7 +183,9 @@
       "fresh phrasing",
       "clichés twisted, inverted, or made specific"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-009",
@@ -176,7 +200,9 @@
       "clean, direct language in high-motion moments",
       "metaphors placed in reflective beats"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-010",
@@ -191,7 +217,9 @@
       "metaphors filtered through character psychology",
       "comparisons that imply values or fears"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-011",
@@ -206,7 +234,9 @@
       "language that preserves the intended ontological level",
       "clear signals when metaphor is figurative, not literal"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-012",
@@ -221,7 +251,9 @@
       "metaphors that shift or deepen over time",
       "progression that mirrors narrative change"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-013",
@@ -236,7 +268,9 @@
       "implicative imagery",
       "room for reader inference"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-014",
@@ -251,7 +285,9 @@
       "suggestive rather than numeric imagery",
       "weight and scale conveyed indirectly"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-met-015",
@@ -266,7 +302,9 @@
       "restraint",
       "literal statements when they carry more power"
     ],
-    "categories": ["metaphor"]
+    "categories": [
+      "metaphor"
+    ]
   },
   {
     "id": "rule-sense-001",
@@ -281,7 +319,9 @@
       "at least one concrete sensory cue per new scene",
       "details that establish physical presence"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-002",
@@ -296,7 +336,9 @@
       "named sources of sensations",
       "distinctive, identifying details"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-003",
@@ -311,7 +353,9 @@
       "selective sensory focus",
       "one or two dominant impressions"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-004",
@@ -326,7 +370,9 @@
       "details shaped by experience, mood, and goals",
       "character-filtered perception"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-005",
@@ -341,7 +387,9 @@
       "details that reinforce or meaningfully contrast the mood",
       "explicit framing when contrast is intentional"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-006",
@@ -356,7 +404,9 @@
       "occasional use of sound, smell, touch, or temperature",
       "multi-sensory grounding where appropriate"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-007",
@@ -371,7 +421,9 @@
       "sensory clues that suggest past use or habits",
       "details that imply narrative context"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-008",
@@ -386,7 +438,9 @@
       "sensory details that shift with time or action",
       "changes that mirror narrative movement"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-009",
@@ -401,7 +455,9 @@
       "language that supports immersion",
       "precision only when it matters"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-010",
@@ -416,7 +472,9 @@
       "bodily or environmental signals of emotion",
       "indirect emotional expression"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-011",
@@ -431,7 +489,9 @@
       "clean, controlled language",
       "specific but limited sensation cues"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-012",
@@ -446,7 +506,9 @@
       "physically plausible sensations",
       "clear signaling when expectations are broken deliberately"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-013",
@@ -461,7 +523,9 @@
       "describing what replaces the missing stimulus",
       "negative space used intentionally"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-014",
@@ -476,7 +540,9 @@
       "compressed, bodily sensations",
       "sensory focus that matches pace"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-sense-015",
@@ -491,7 +557,9 @@
       "direct, readable sensory language",
       "clarity over flourish"
     ],
-    "categories": ["description/senses"]
+    "categories": [
+      "description/senses"
+    ]
   },
   {
     "id": "rule-dict-001",
@@ -506,7 +574,9 @@
       "specific verbs and adjectives",
       "words that narrow meaning"
     ],
-    "categories": ["diction"]
+    "categories": [
+      "diction"
+    ]
   },
   {
     "id": "rule-dict-002",
@@ -521,7 +591,9 @@
       "plain language where it serves clarity",
       "elevation only when tone demands it"
     ],
-    "categories": ["diction"]
+    "categories": [
+      "diction"
+    ]
   },
   {
     "id": "rule-dict-003",
@@ -534,7 +606,9 @@
     "prefer": [
       "strong, direct verbs"
     ],
-    "categories": ["diction"]
+    "categories": [
+      "diction"
+    ]
   },
   {
     "id": "rule-img-001",
@@ -547,7 +621,9 @@
     "prefer": [
       "visible, tangible details"
     ],
-    "categories": ["imagery"]
+    "categories": [
+      "imagery"
+    ]
   },
   {
     "id": "rule-img-002",
@@ -560,7 +636,9 @@
     "prefer": [
       "clear spatial or physical anchors"
     ],
-    "categories": ["imagery"]
+    "categories": [
+      "imagery"
+    ]
   },
   {
     "id": "rule-img-003",
@@ -573,7 +651,9 @@
     "prefer": [
       "images that imply states indirectly"
     ],
-    "categories": ["imagery"]
+    "categories": [
+      "imagery"
+    ]
   },
   {
     "id": "rule-abs-001",
@@ -586,7 +666,9 @@
     "prefer": [
       "specific cases that imply general truths"
     ],
-    "categories": ["abstraction"]
+    "categories": [
+      "abstraction"
+    ]
   },
   {
     "id": "rule-abs-002",
@@ -599,7 +681,9 @@
     "prefer": [
       "smooth integration of idea and detail"
     ],
-    "categories": ["abstraction"]
+    "categories": [
+      "abstraction"
+    ]
   },
   {
     "id": "rule-abs-003",
@@ -612,7 +696,9 @@
     "prefer": [
       "evidence before conclusion"
     ],
-    "categories": ["abstraction"]
+    "categories": [
+      "abstraction"
+    ]
   },
   {
     "id": "rule-rhy-001",
@@ -625,7 +711,9 @@
     "prefer": [
       "intentional variation"
     ],
-    "categories": ["rhythm"]
+    "categories": [
+      "rhythm"
+    ]
   },
   {
     "id": "rule-rhy-002",
@@ -638,33 +726,39 @@
     "prefer": [
       "strategic brevity"
     ],
-    "categories": ["rhythm"]
+    "categories": [
+      "rhythm"
+    ]
   },
   {
     "id": "rule-rhy-003",
     "principle": "Let sentence rhythm match scene energy.",
-    "originalExample": "The chase was described in long, winding sentences.",
-    "betterVersion": "He ran. Slipped. Kept going.",
+    "originalExample": "He sprinted down the corridor, his heart hammering in his chest as his legs pumped beneath him while the heavy footsteps of his pursuer echoed louder and louder behind him, growing ever closer with each passing second.",
+    "betterVersion": "He ran. Footsteps behind him. Faster. A door—locked. Another. Open. Through.",
     "avoid": [
       "mismatched cadence"
     ],
     "prefer": [
       "rhythm aligned with action"
     ],
-    "categories": ["rhythm"]
+    "categories": [
+      "rhythm"
+    ]
   },
   {
     "id": "rule-pace-001",
     "principle": "Control how much new information appears per paragraph.",
-    "originalExample": "Three new characters, a backstory, and a twist appeared at once.",
-    "betterVersion": "The scene introduced one change at a time.",
+    "originalExample": "Marcus, a retired colonel with a limp from Kandahar who’d recently divorced his second wife, entered the bar where Elena, the owner’s daughter who’d studied abroad and returned reluctantly, was arguing with Jin, a local journalist investigating the mayor’s corruption scandal, about whether the package should be opened.",
+    "betterVersion": "A man pushed through the bar’s front door. A woman behind the counter stopped mid-sentence and looked at him.\n“We’re closed,” she said.\nHe set a package on the bar. “I think you’ll want to see this.”",
     "avoid": [
       "information dumps"
     ],
     "prefer": [
       "incremental revelation"
     ],
-    "categories": ["pacing"]
+    "categories": [
+      "pacing"
+    ]
   },
   {
     "id": "rule-pace-002",
@@ -677,20 +771,24 @@
     "prefer": [
       "expanded beats for key moments"
     ],
-    "categories": ["pacing"]
+    "categories": [
+      "pacing"
+    ]
   },
   {
     "id": "rule-pace-003",
     "principle": "Speed up during transitions or routine actions.",
-    "originalExample": "Every step of the commute was described.",
-    "betterVersion": "The commute passed without incident.",
+    "originalExample": "She locked the front door, checked it twice, walked to the car, unlocked it, adjusted the mirror, buckled her seatbelt, started the engine, checked the mirrors again, put the car in reverse, backed out slowly, shifted to drive, and turned onto the street.",
+    "betterVersion": "She locked up and drove to the office.",
     "avoid": [
       "over-describing routine"
     ],
     "prefer": [
       "summary when nothing changes"
     ],
-    "categories": ["pacing"]
+    "categories": [
+      "pacing"
+    ]
   },
   {
     "id": "rule-rep-001",
@@ -703,7 +801,9 @@
     "prefer": [
       "purposeful echoing"
     ],
-    "categories": ["repetition"]
+    "categories": [
+      "repetition"
+    ]
   },
   {
     "id": "rule-rep-002",
@@ -716,20 +816,24 @@
     "prefer": [
       "conceptual variation"
     ],
-    "categories": ["repetition"]
+    "categories": [
+      "repetition"
+    ]
   },
   {
     "id": "rule-rep-003",
     "principle": "Patterns should evolve, not loop.",
-    "originalExample": "Each chapter ended the same way.",
-    "betterVersion": "Each ending echoed the last, but darker.",
+    "originalExample": "She dreamed of the house again. The same rooms, the same hallway. She dreamed of the house again. The same rooms, the same hallway.",
+    "betterVersion": "She dreamed of the house again—but this time the door at the end of the hall was open, and something moved behind it.",
     "avoid": [
       "static repetition"
     ],
     "prefer": [
       "development over time"
     ],
-    "categories": ["repetition"]
+    "categories": [
+      "repetition"
+    ]
   },
   {
     "id": "rule-trans-001",
@@ -742,7 +846,9 @@
     "prefer": [
       "explicit or smoothly implied transitions"
     ],
-    "categories": ["transitions"]
+    "categories": [
+      "transitions"
+    ]
   },
   {
     "id": "rule-trans-002",
@@ -755,7 +861,9 @@
     "prefer": [
       "bridging beats"
     ],
-    "categories": ["transitions"]
+    "categories": [
+      "transitions"
+    ]
   },
   {
     "id": "rule-trans-003",
@@ -768,20 +876,24 @@
     "prefer": [
       "continuous motion"
     ],
-    "categories": ["transitions"]
+    "categories": [
+      "transitions"
+    ]
   },
   {
     "id": "rule-voice-001",
     "principle": "Maintain a consistent narrative voice.",
-    "originalExample": "The tone shifted randomly between formal and casual.",
-    "betterVersion": "The narration kept a steady, conversational tone.",
+    "originalExample": "The village lay nestled among ancient hills, timeless and serene. Dude, the place was totally dead though. Not a single establishment remained open for commerce past the hour of six.",
+    "betterVersion": "The village sat quiet among the hills. Nothing stayed open past six. Even the pub closed early, its windows dark by the time the last light left the sky.",
     "avoid": [
       "unmotivated voice shifts"
     ],
     "prefer": [
       "stable narrative personality"
     ],
-    "categories": ["voice"]
+    "categories": [
+      "voice"
+    ]
   },
   {
     "id": "rule-voice-002",
@@ -794,98 +906,114 @@
     "prefer": [
       "knowledge consistent with perspective"
     ],
-    "categories": ["voice"]
+    "categories": [
+      "voice"
+    ]
   },
   {
     "id": "rule-voice-003",
     "principle": "Let voice reflect genre and audience expectations.",
-    "originalExample": "A thriller narrated like a textbook.",
-    "betterVersion": "A tight, urgent narrative voice.",
+    "originalExample": "The killer was inside the house. One might note, upon careful examination, that the perpetrator had gained ingress to the domicile through means as yet undetermined by the investigative authorities.",
+    "betterVersion": "The killer was inside the house. She could hear him—footsteps overhead, slow and deliberate, like he had all the time in the world.",
     "avoid": [
       "voice-genre mismatch"
     ],
     "prefer": [
       "voice tuned to context"
     ],
-    "categories": ["voice"]
+    "categories": [
+      "voice"
+    ]
   },
   {
     "id": "rule-tone-001",
     "principle": "Establish emotional tone early in a scene.",
-    "originalExample": "The mood was unclear until the end.",
-    "betterVersion": "The unease was immediate.",
+    "originalExample": "They walked into the building. There were some rooms. People were around. Eventually it became clear that something was off.",
+    "betterVersion": "Something was wrong the moment they walked in. The lobby sat empty, the reception desk unmanned, and the lights buzzed with a faint, unsteady flicker.",
     "avoid": [
       "emotional ambiguity without intent"
     ],
     "prefer": [
       "early tonal signals"
     ],
-    "categories": ["tone"]
+    "categories": [
+      "tone"
+    ]
   },
   {
     "id": "rule-tone-002",
     "principle": "Avoid emotional whiplash without narrative cause.",
-    "originalExample": "Grief turned to humor instantly.",
-    "betterVersion": "The joke landed awkwardly, too soon.",
+    "originalExample": "She wept over his casket, her whole body shaking. “Hey, anyone want pizza?” she said, wiping her eyes with a grin.",
+    "betterVersion": "She wept over his casket. Afterward, someone suggested food, voice careful. She wiped her eyes and nodded. Not ready, but she understood they had to go.",
     "avoid": [
       "sudden emotional reversals"
     ],
     "prefer": [
       "earned shifts"
     ],
-    "categories": ["tone"]
+    "categories": [
+      "tone"
+    ]
   },
   {
     "id": "rule-tone-003",
     "principle": "Sustain tone across paragraphs unless changing deliberately.",
-    "originalExample": "Tone drifted scene to scene.",
-    "betterVersion": "The emotional register held steady.",
+    "originalExample": "The procession moved in silence, each step heavy with grief. Then Barry tripped and everyone cracked up. The weight of loss pressed down on the mourners like a physical force.",
+    "betterVersion": "The procession moved in silence. At the graveside, someone coughed—a small, embarrassed sound that made everyone look away. No one spoke. No one needed to.",
     "avoid": [
       "tone leakage"
     ],
     "prefer": [
       "coherent emotional throughlines"
     ],
-    "categories": ["tone"]
+    "categories": [
+      "tone"
+    ]
   },
   {
     "id": "rule-reg-001",
     "principle": "Match formality to context and speaker.",
-    "originalExample": "A child spoke like a legal document.",
-    "betterVersion": "The child spoke simply.",
+    "originalExample": "“Mother,” said the five-year-old, “I find myself in a state of considerable displeasure regarding the nutritional offerings presented at this evening’s repast.”",
+    "betterVersion": "“Mom, I don’t want this,” he said, pushing the plate away.",
     "avoid": [
       "register-character mismatch"
     ],
     "prefer": [
       "plausible speech and narration"
     ],
-    "categories": ["register"]
+    "categories": [
+      "register"
+    ]
   },
   {
     "id": "rule-reg-002",
     "principle": "Avoid unmotivated shifts in register.",
-    "originalExample": "Casual prose suddenly became academic.",
-    "betterVersion": "Register remained consistent.",
+    "originalExample": "She walked through the market, enjoying the colors and smells. The olfactory stimuli, combined with chromatic variance, produced a not-unpleasant neurological response. She bought some apples.",
+    "betterVersion": "She walked through the market—cinnamon and roasting nuts, bright pyramids of fruit. She bought some apples and kept walking.",
     "avoid": [
       "register drift"
     ],
     "prefer": [
       "stable linguistic level"
     ],
-    "categories": ["register"]
+    "categories": [
+      "register"
+    ]
   },
   {
     "id": "rule-reg-003",
     "principle": "Use elevated register sparingly for emphasis.",
-    "originalExample": "Everything was described grandly.",
-    "betterVersion": "Key moments were elevated.",
+    "originalExample": "He beheld the magnificent splendor of the resplendent dawn as it cast its glorious radiance upon the sublime landscape. He consumed a magnificent breakfast. He brushed his resplendent teeth.",
+    "betterVersion": "He ate breakfast and brushed his teeth. Outside, the dawn was breaking over the mountains, and for a moment he stood still, held by the light.",
     "avoid": [
       "constant high register"
     ],
     "prefer": [
       "contrast through restraint"
     ],
-    "categories": ["register"]
+    "categories": [
+      "register"
+    ]
   },
   {
     "id": "rule-auth-001",
@@ -898,7 +1026,9 @@
     "prefer": [
       "character-mediated evaluation"
     ],
-    "categories": ["authorial"]
+    "categories": [
+      "authorial"
+    ]
   },
   {
     "id": "rule-auth-002",
@@ -911,59 +1041,69 @@
     "prefer": [
       "implicit thematic work"
     ],
-    "categories": ["authorial"]
+    "categories": [
+      "authorial"
+    ]
   },
   {
     "id": "rule-auth-003",
     "principle": "When present, authorial voice should be consistent.",
-    "originalExample": "Occasional asides appeared randomly.",
-    "betterVersion": "A steady, controlled narrative presence.",
+    "originalExample": "The city sprawled beneath them, indifferent and vast. (But isn’t that always the way? Reader, I digress.) She turned from the window, composed and deliberate.",
+    "betterVersion": "The city sprawled beneath them, indifferent as always. She turned from the window, her reflection sliding across the glass like a thought she couldn’t hold.",
     "avoid": [
       "sporadic intrusion"
     ],
     "prefer": [
       "clear narrative stance"
     ],
-    "categories": ["authorial"]
+    "categories": [
+      "authorial"
+    ]
   },
   {
     "id": "rule-clar-001",
     "principle": "Be clear by default; ambiguity should be intentional.",
-    "originalExample": "It wasn’t clear what happened.",
-    "betterVersion": "The cause remained deliberately unclear.",
+    "originalExample": "He gave it to him after he told him about it, but he didn’t believe him, so he asked the other one instead.",
+    "betterVersion": "Martin handed the file to Reeves after Cho mentioned it. Reeves didn’t trust the numbers, so he asked Foster to verify.",
     "avoid": [
       "accidental confusion"
     ],
     "prefer": [
       "controlled ambiguity"
     ],
-    "categories": ["clarity"]
+    "categories": [
+      "clarity"
+    ]
   },
   {
     "id": "rule-clar-002",
     "principle": "Ambiguity should reward rereading.",
-    "originalExample": "Vague but empty phrasing.",
-    "betterVersion": "Ambiguity with multiple interpretations.",
+    "originalExample": "Things happened in ways that were sort of unclear and might have meant something or other.",
+    "betterVersion": "She said she was happy for them. She said it twice.",
     "avoid": [
       "meaningless vagueness"
     ],
     "prefer": [
       "productive uncertainty"
     ],
-    "categories": ["clarity"]
+    "categories": [
+      "clarity"
+    ]
   },
   {
     "id": "rule-clar-003",
     "principle": "Do not hide basic information behind style.",
-    "originalExample": "Unclear who spoke.",
-    "betterVersion": "Dialogue attribution clarified.",
+    "originalExample": "Words fell between them, sharp-edged and glistening, a cascade of meaning that tumbled through the charged air while something fundamental shifted.\n“I know,” came the reply.",
+    "betterVersion": "“I’m leaving,” she said.\n“I know.” The word sat between them, sharp and final.",
     "avoid": [
       "confusion at sentence level"
     ],
     "prefer": [
       "baseline comprehensibility"
     ],
-    "categories": ["clarity"]
+    "categories": [
+      "clarity"
+    ]
   },
   {
     "id": "rule-imp-001",
@@ -976,7 +1116,9 @@
     "prefer": [
       "behavioral cues"
     ],
-    "categories": ["implication"]
+    "categories": [
+      "implication"
+    ]
   },
   {
     "id": "rule-imp-002",
@@ -989,20 +1131,24 @@
     "prefer": [
       "evidence-first storytelling"
     ],
-    "categories": ["implication"]
+    "categories": [
+      "implication"
+    ]
   },
   {
     "id": "rule-imp-003",
     "principle": "State meaning directly when subtlety would obscure intent.",
-    "originalExample": "Hints piled up but went nowhere.",
-    "betterVersion": "The truth was stated plainly.",
+    "originalExample": "He glanced at the clock. He tapped his fingers. He shifted in his seat. He looked at the door. He straightened his collar. He cleared his throat.",
+    "betterVersion": "He checked the clock again. He was afraid she wouldn’t come.",
     "avoid": [
       "unnecessary opacity"
     ],
     "prefer": [
       "clarity at critical moments"
     ],
-    "categories": ["implication"]
+    "categories": [
+      "implication"
+    ]
   },
   {
     "id": "rule-caus-001",
@@ -1015,7 +1161,9 @@
     "prefer": [
       "traceable causes"
     ],
-    "categories": ["causality"]
+    "categories": [
+      "causality"
+    ]
   },
   {
     "id": "rule-caus-002",
@@ -1028,72 +1176,84 @@
     "prefer": [
       "motivated action"
     ],
-    "categories": ["causality"]
+    "categories": [
+      "causality"
+    ]
   },
   {
     "id": "rule-caus-003",
     "principle": "Do not rely on coincidence to resolve major conflicts.",
-    "originalExample": "Everything worked out by chance.",
-    "betterVersion": "Choices led to resolution.",
+    "originalExample": "Just as the villain raised his sword, a tree fell on him. The lost key washed up at the hero’s feet, and a stranger who happened to know the antidote appeared from nowhere.",
+    "betterVersion": "She remembered the herbalist’s warning from weeks ago. She turned back toward the riverbank where she’d seen the plant growing and began to search.",
     "avoid": [
       "convenient coincidence"
     ],
     "prefer": [
       "earned outcomes"
     ],
-    "categories": ["causality"]
+    "categories": [
+      "causality"
+    ]
   },
   {
     "id": "rule-scene-001",
     "principle": "Orient the reader early in each scene.",
-    "originalExample": "Dialogue began without context.",
-    "betterVersion": "The setting was established first.",
+    "originalExample": "“You can’t be serious.”\n“I’ve never been more serious.”\n“This changes everything.”\n“I know.”\nThey were in a hospital. It was Tuesday.",
+    "betterVersion": "Rain streaked the hospital windows. In the hallway outside the ICU, David turned to her.\n“You can’t be serious,” he said.\n“I’ve never been more serious.”",
     "avoid": [
       "disembodied scenes"
     ],
     "prefer": [
       "clear location and participants"
     ],
-    "categories": ["scene"]
+    "categories": [
+      "scene"
+    ]
   },
   {
     "id": "rule-scene-002",
     "principle": "Maintain spatial awareness throughout the scene.",
-    "originalExample": "Characters teleported around the room.",
-    "betterVersion": "Movement tracked logically.",
+    "originalExample": "He stood by the window. He opened the front door. He reached out and touched her hand—she was right beside him. He leaned against the bookshelf across the room.",
+    "betterVersion": "He stood by the window, watching the street below. Behind him, the door opened. He turned. She was in the doorway, coat still on, bag in hand.",
     "avoid": [
       "spatial confusion"
     ],
     "prefer": [
       "consistent physical layout"
     ],
-    "categories": ["scene"]
+    "categories": [
+      "scene"
+    ]
   },
   {
     "id": "rule-scene-003",
     "principle": "End scenes with a sense of change or pressure.",
-    "originalExample": "The scene ended neutrally.",
-    "betterVersion": "Something had shifted.",
+    "originalExample": "They ate dinner. They washed the dishes. They said goodnight.",
+    "betterVersion": "They washed the dishes in silence. At the foot of the stairs, she paused.\n“I called a lawyer today,” she said, and went up without waiting for an answer.",
     "avoid": [
       "static endings"
     ],
     "prefer": [
       "forward momentum"
     ],
-    "categories": ["scene"]
+    "categories": [
+      "scene"
+    ]
   },
   {
     "id": "rule-char-001",
     "principle": "Balance inner thought with observable action.",
-    "originalExample": "Pages of internal monologue.",
-    "betterVersion": "Thought punctuated by action.",
+    "originalExample": "He thought about his childhood. He remembered the summers at the lake. He wondered whether those days had been truly happy or only seemed so now. He considered the nature of memory itself, how it distorts and gilds. He thought about his mother, and then about mortality in general.",
+    "betterVersion": "The lake reminded him of those summers—the dock, his mother calling them in for dinner. He picked up a stone and skipped it across the water. Three bounces. He used to get five.",
     "avoid": [
       "excessive introspection"
     ],
     "prefer": [
       "externalization of thought"
     ],
-    "categories": ["character"]
+    "categories": [
+      "character"
+    ]
   },
   {
     "id": "rule-char-002",
@@ -1106,98 +1266,113 @@
     "prefer": [
       "revealing choices"
     ],
-    "categories": ["character"]
+    "categories": [
+      "character"
+    ]
   },
   {
     "id": "rule-char-003",
     "principle": "Avoid repeating the same internal note.",
-    "originalExample": "She worried again.",
-    "betterVersion": "Her worry changed shape.",
+    "originalExample": "She worried about the interview. Over breakfast, she worried about the interview. On the train, she thought about how worried she was about the interview.",
+    "betterVersion": "She rehearsed answers over breakfast. On the train, the worry shifted—not the questions anymore but the panel. That woman from the second round, the one who hadn’t smiled.",
     "avoid": [
       "static inner states"
     ],
     "prefer": [
       "psychological progression"
     ],
-    "categories": ["character"]
+    "categories": [
+      "character"
+    ]
   },
   {
     "id": "rule-dia-001",
     "principle": "Dialogue should serve purpose beyond information transfer.",
-    "originalExample": "On-the-nose exposition.",
-    "betterVersion": "Information embedded in conflict.",
+    "originalExample": "“As you know, Bob, our company was founded in 1987 by your father, who is also my mentor, and we’re currently facing bankruptcy due to the embezzlement scandal.”",
+    "betterVersion": "“Your father built this company from nothing.” He let that hang. “You know what he’d say if he saw these books.”\nBob stared at the desk.\n“He’d say someone has to answer for it.”",
     "avoid": [
       "pure exposition dialogue"
     ],
     "prefer": [
       "subtext and tension"
     ],
-    "categories": ["dialogue"]
+    "categories": [
+      "dialogue"
+    ]
   },
   {
     "id": "rule-dia-002",
     "principle": "Dialogue should sound spoken, not written.",
-    "originalExample": "Formally structured sentences.",
-    "betterVersion": "Natural speech rhythms.",
+    "originalExample": "“I would like to inform you that I am experiencing a significant amount of frustration regarding the situation that has recently transpired,” she stated.",
+    "betterVersion": "“I can’t believe this,” she said. “I really—no. I can’t.”",
     "avoid": [
       "overly polished dialogue"
     ],
     "prefer": [
       "spoken cadence"
     ],
-    "categories": ["dialogue"]
+    "categories": [
+      "dialogue"
+    ]
   },
   {
     "id": "rule-dia-003",
     "principle": "Use action beats to ground dialogue.",
-    "originalExample": "Talking heads.",
-    "betterVersion": "Dialogue interleaved with movement.",
+    "originalExample": "“I don’t think we should,” she said.\n“Why not?” he said.\n“Because it’s wrong,” she said.\n“Since when do you care?” he said.\n“Since now,” she said.",
+    "betterVersion": "“I don’t think we should.” She set her glass down.\n“Why not?”\n“Because it’s wrong.” She wasn’t looking at him.\nHe leaned back. “Since when do you care?”\n“Since now.” She looked up.",
     "avoid": [
       "floating dialogue"
     ],
     "prefer": [
       "physical context"
     ],
-    "categories": ["dialogue"]
+    "categories": [
+      "dialogue"
+    ]
   },
   {
     "id": "rule-world-001",
     "principle": "Maintain internal consistency of rules and facts.",
-    "originalExample": "Rules changed scene to scene.",
-    "betterVersion": "Constraints remained stable.",
+    "originalExample": "In chapter three, the river was uncrossable—a mile wide and churning with rapids. In chapter seven, the characters waded across it in a paragraph with no explanation.",
+    "betterVersion": "The river was low this time of year, barely reaching their knees. Nothing like the spring floods she’d described, when the water swallowed the road and carried whole trees downstream.",
     "avoid": [
       "contradictions"
     ],
     "prefer": [
       "coherent world logic"
     ],
-    "categories": ["world"]
+    "categories": [
+      "world"
+    ]
   },
   {
     "id": "rule-world-002",
     "principle": "Imply depth beyond what is shown.",
-    "originalExample": "World felt thin.",
-    "betterVersion": "Hints of unseen systems.",
+    "originalExample": "The kingdom had a king and a castle and an army. That was it. Nothing else existed in this world.",
+    "betterVersion": "The innkeeper counted the coins twice and set two aside—the temple tax, he said, though the nearest temple was three days’ ride. Old habits, he added, and didn’t explain further.",
     "avoid": [
       "fully explained worlds"
     ],
     "prefer": [
       "suggested complexity"
     ],
-    "categories": ["world"]
+    "categories": [
+      "world"
+    ]
   },
   {
     "id": "rule-world-003",
     "principle": "Let world details emerge naturally through use.",
-    "originalExample": "An info dump explained everything.",
-    "betterVersion": "Details surfaced through action.",
+    "originalExample": "The Zanthi are a people who live for three hundred years, have blue skin, communicate through scent, and organize their society into twelve castes based on birth season. Their calendar has fifteen months.",
+    "betterVersion": "She pressed her wrist to his in greeting—a gesture he’d learned meant trust among her people. Her skin was cool, faintly blue in the lamplight. He still didn’t understand half their customs, but this one he’d earned.",
     "avoid": [
       "expository blocks"
     ],
     "prefer": [
       "contextual revelation"
     ],
-    "categories": ["world"]
+    "categories": [
+      "world"
+    ]
   }
 ]
-
