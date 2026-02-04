@@ -101,6 +101,85 @@
   box-shadow: 0 0 0 3px rgba(90, 122, 90, 0.1);
 }
 
+/* Style Rules Section */
+.rewrite-rules-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.rewrite-rules-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.rewrite-rules-header h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  margin: 0;
+  font-weight: 600;
+}
+
+.rewrite-rules-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.rewrite-rules-categories:empty {
+  display: none;
+}
+
+.rewrite-rules-categories .category-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: #eef0ee;
+  color: #6a7a6a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.rewrite-rules-results.stale {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.rewrite-rules-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #888;
+  font-size: 0.85rem;
+  padding: 10px 0;
+}
+
+.rewrite-rules-loading .loading-spinner {
+  border-color: rgba(90, 122, 90, 0.2);
+  border-top-color: #5a7a5a;
+}
+
+.rewrite-rules-empty {
+  color: #999;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.rewrite-rules-error {
+  color: #c00;
+  font-size: 0.85rem;
+  padding: 8px;
+  background: #fff0f0;
+  border-radius: 4px;
+}
+
 /* Directions Section */
 .rewrite-directions-section {
   background: white;

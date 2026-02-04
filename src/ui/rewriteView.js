@@ -29,8 +29,13 @@ import { renderFeedbackLog } from './feedbackLog.js';
 import { renderStats } from './stats.js';
 import { callLLM } from '../llm.js';
 import { SYSTEM_PROMPT } from '../prompts.js';
+import { resolveRules } from '../resolution.js';
 
 let onReplaceCallback = null;
+
+// Rule analysis state
+let ruleAnalysisText = null;
+let ruleAnalysisResults = null;
 
 export function setReplaceCallback(callback) {
   onReplaceCallback = callback;
@@ -50,10 +55,16 @@ export function openRewriteView(alternativeId, fullText, selectedText, startInde
 
   // Generate initial directions and variations
   generateInitialDirections();
+
+  // Run rule analysis in parallel (if style guide has rules)
+  if (styleGuide.length > 0) {
+    runRuleAnalysis();
+  }
 }
 
 export function closeRewriteView() {
   closeRewriteState();
+  clearRuleAnalysis();
   document.getElementById('rewrite-view').classList.remove('visible');
   document.querySelector('.container').classList.remove('hidden');
   document.getElementById('settings-toggle').classList.remove('hidden');
@@ -307,6 +318,7 @@ function setupConsiderationEventListeners() {
       if (item) {
         setRewriteCurrentSentence(item.text);
         document.getElementById('current-sentence').value = item.text;
+        markRulesStale();
       }
     });
   });
@@ -319,6 +331,7 @@ function setupConsiderationEventListeners() {
       if (item) {
         setRewriteCurrentSentence(item.text);
         document.getElementById('current-sentence').value = item.text;
+        markRulesStale();
         // Clear variations and regenerate
         rewriteState.variationsByDirection = {};
         generateVariationsForActiveDirections();
@@ -777,6 +790,102 @@ function saveAnnotation() {
   renderVariations(); // Re-render to show highlight
 }
 
+// --- Rule Analysis ---
+
+async function runRuleAnalysis() {
+  const section = document.getElementById('rewrite-rules-section');
+  const resultsEl = document.getElementById('rewrite-rules-results');
+  const categoriesEl = document.getElementById('rewrite-rules-categories');
+  const recheckBtn = document.getElementById('recheck-rules');
+
+  // Show section and loading state
+  section.style.display = '';
+  resultsEl.classList.remove('stale');
+  recheckBtn.style.display = 'none';
+  categoriesEl.innerHTML = '';
+  resultsEl.innerHTML = '<div class="rewrite-rules-loading"><span class="loading-spinner"></span> Checking style rules...</div>';
+
+  const textToAnalyze = rewriteState.currentSentence;
+
+  try {
+    const result = await resolveRules(textToAnalyze, {
+      onStageComplete: (stage, data) => {
+        // Update categories as soon as they arrive
+        if (stage === 'categories' && data.length > 0) {
+          categoriesEl.innerHTML = data
+            .map(c => `<span class="category-tag">${escapeHtml(c)}</span>`)
+            .join(' ');
+        }
+      }
+    });
+
+    ruleAnalysisText = textToAnalyze;
+    ruleAnalysisResults = result;
+    renderRuleAnalysis();
+  } catch (err) {
+    console.error('[RewriteView] Rule analysis failed:', err);
+    resultsEl.innerHTML = `<div class="rewrite-rules-error">Rule analysis failed: ${escapeHtml(err.message)}</div>`;
+    ruleAnalysisText = textToAnalyze;
+    ruleAnalysisResults = null;
+  }
+
+  renderStats();
+}
+
+function renderRuleAnalysis() {
+  const resultsEl = document.getElementById('rewrite-rules-results');
+
+  if (!ruleAnalysisResults || !ruleAnalysisResults.evaluations) {
+    resultsEl.innerHTML = '<span class="rewrite-rules-empty">No evaluations returned</span>';
+    return;
+  }
+
+  const evaluations = ruleAnalysisResults.evaluations;
+  if (evaluations.length === 0) {
+    resultsEl.innerHTML = '<span class="rewrite-rules-empty">No applicable rules found for this text</span>';
+    return;
+  }
+
+  const ruleMap = new Map(styleGuide.map(r => [r.id, r]));
+
+  const items = evaluations.map(ev => {
+    const rule = ruleMap.get(ev.ruleId);
+    const principle = rule ? escapeHtml(rule.principle) : escapeHtml(ev.ruleId);
+    const badgeClass = `assessment-badge ${ev.assessment}`;
+    const badgeLabel = ev.assessment.charAt(0).toUpperCase() + ev.assessment.slice(1);
+
+    return `<div class="evaluation-item">
+      <div class="evaluation-header">
+        <span class="${badgeClass}">${badgeLabel}</span>
+        <span class="evaluation-principle">${principle}</span>
+      </div>
+      ${ev.note ? `<div class="evaluation-note">${escapeHtml(ev.note)}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  resultsEl.innerHTML = items;
+}
+
+function markRulesStale() {
+  if (!ruleAnalysisText) return;
+  // Only mark stale if the text actually changed
+  if (rewriteState.currentSentence === ruleAnalysisText) return;
+
+  const resultsEl = document.getElementById('rewrite-rules-results');
+  const recheckBtn = document.getElementById('recheck-rules');
+  resultsEl.classList.add('stale');
+  recheckBtn.style.display = '';
+}
+
+function clearRuleAnalysis() {
+  ruleAnalysisText = null;
+  ruleAnalysisResults = null;
+  const section = document.getElementById('rewrite-rules-section');
+  if (section) {
+    section.style.display = 'none';
+  }
+}
+
 export function initRewriteView() {
   // Back button
   document.getElementById('rewrite-back').addEventListener('click', closeRewriteView);
@@ -787,6 +896,12 @@ export function initRewriteView() {
   // Current sentence changes
   document.getElementById('current-sentence').addEventListener('input', (e) => {
     setRewriteCurrentSentence(e.target.value);
+    markRulesStale();
+  });
+
+  // Re-check rules button
+  document.getElementById('recheck-rules').addEventListener('click', () => {
+    runRuleAnalysis();
   });
 
   // Generate more variations
