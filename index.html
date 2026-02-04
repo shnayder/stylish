@@ -316,6 +316,41 @@ Example:
     </div>
   </div>
 
+  <!-- Refinement Modal -->
+  <div class="modal-overlay" id="refinement-overlay">
+    <div class="refinement-modal">
+      <div class="modal-header">
+        <h3>Refine Style Rule</h3>
+        <button class="close-modal" id="close-refinement">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="refinement-current-rule">
+          <label>Current Rule</label>
+          <div class="current-rule-display" id="refinement-current-rule"></div>
+        </div>
+        <div class="conversation-area">
+          <div class="conversation-messages" id="refinement-messages"></div>
+        </div>
+        <div class="refinement-suggestion" id="refinement-suggestion">
+          <div class="suggestion-header">Suggested Update</div>
+          <div class="suggestion-content" id="refinement-suggestion-content"></div>
+          <div class="suggestion-actions">
+            <button class="action-btn" id="ignore-suggestion">Ignore</button>
+            <button class="action-btn primary" id="accept-suggestion">Accept</button>
+          </div>
+        </div>
+        <div class="conversation-input">
+          <textarea id="refinement-input" placeholder="What would you like to change about this rule?"></textarea>
+          <button class="action-btn primary" id="send-refinement">Send</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" id="cancel-refinement">Cancel</button>
+        <button class="action-btn primary" id="save-refinement">Done - Save Rule</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Synthesis Modal -->
   <div class="modal-overlay" id="synthesis-overlay">
     <div class="synthesis-modal">

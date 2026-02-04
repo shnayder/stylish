@@ -8,6 +8,7 @@ import {
 import { escapeHtml } from '../utils.js';
 import { callLLM } from '../llm.js';
 import { SYSTEM_PROMPT } from '../prompts.js';
+import { openRefinement } from './refinement.js';
 
 export function initStyleGuide() {
   loadFromStorage();
@@ -35,43 +36,49 @@ export function renderStyleGuide() {
       <div class="style-rule" data-rule-id="${rule.id}">
         <div class="rule-actions">
           <button class="edit" data-rule-id="${rule.id}" title="Edit">edit</button>
+          <button class="refine" data-rule-id="${rule.id}" title="Refine with AI">refine</button>
           <button class="remove" data-rule-id="${rule.id}" title="Remove">&times;</button>
         </div>
         <div class="rule-display">
           <div class="rule-principle">${escapeHtml(rule.principle)}</div>
-          ${rule.originalExample ? `
-            <div class="rule-original">
-              <span class="example-label">Example:</span> "${escapeHtml(rule.originalExample)}"
-              ${rule.betterVersion ? `<br><span class="example-label">Better:</span> "${escapeHtml(rule.betterVersion)}"` : ''}
+          ${rule.avoid && rule.avoid.length > 0 ? `
+            <div class="rule-patterns avoid">
+              <span class="pattern-label">Avoid:</span>
+              ${rule.avoid.map(a => `<span class="pattern-item">${escapeHtml(a)}</span>`).join('')}
             </div>
           ` : ''}
-          <div class="rule-examples">
-            ${rule.avoid && rule.avoid.length > 0 ? `<span class="avoid">Avoid: ${rule.avoid.join(', ')}</span>` : ''}
-            ${rule.avoid && rule.avoid.length > 0 && rule.prefer && rule.prefer.length > 0 ? ' | ' : ''}
-            ${rule.prefer && rule.prefer.length > 0 ? `<span class="prefer">Prefer: ${rule.prefer.join(', ')}</span>` : ''}
-          </div>
+          ${rule.prefer && rule.prefer.length > 0 ? `
+            <div class="rule-patterns prefer">
+              <span class="pattern-label">Prefer:</span>
+              ${rule.prefer.map(p => `<span class="pattern-item">${escapeHtml(p)}</span>`).join('')}
+            </div>
+          ` : ''}
+          ${rule.originalExample ? `
+            <div class="rule-examples-block">
+              <div class="example-bad">
+                <span class="example-label">Bad:</span>
+                <div class="example-content">${escapeHtml(rule.originalExample).replace(/\n/g, '<br>')}</div>
+              </div>
+              ${rule.betterVersion ? `
+                <div class="example-better">
+                  <span class="example-label">Better:</span>
+                  <div class="example-content">${escapeHtml(rule.betterVersion).replace(/\n/g, '<br>')}</div>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
         </div>
         <div class="edit-form">
           <label>Principle</label>
-          <input type="text" class="edit-principle" value="${escapeHtml(rule.principle || '')}">
-          <label>Original Example</label>
-          <textarea class="edit-original">${escapeHtml(rule.originalExample || '')}</textarea>
-          <label>Better Version</label>
-          <div class="better-version-row">
-            <textarea class="edit-better">${escapeHtml(rule.betterVersion || '')}</textarea>
-            <button class="action-btn suggest-btn" data-rule-id="${rule.id}" ${!rule.originalExample ? 'disabled title="Add an original example first"' : ''}>Suggest</button>
-          </div>
-          <div class="suggestions-container" data-rule-id="${rule.id}" style="display: none;">
-            <div class="suggestions-header">
-              <span>Suggestions</span>
-              <button class="action-btn suggest-more-btn" data-rule-id="${rule.id}">More</button>
-            </div>
-            <div class="suggestions-list"></div>
-          </div>
-          <label>Avoid (comma-separated)</label>
-          <input type="text" class="edit-avoid" value="${escapeHtml((rule.avoid || []).join(', '))}">
-          <label>Prefer (comma-separated)</label>
-          <input type="text" class="edit-prefer" value="${escapeHtml((rule.prefer || []).join(', '))}">
+          <textarea class="edit-principle">${escapeHtml(rule.principle || '')}</textarea>
+          <label>Avoid</label>
+          <textarea class="edit-avoid">${escapeHtml((rule.avoid || []).join('\n'))}</textarea>
+          <label>Prefer</label>
+          <textarea class="edit-prefer">${escapeHtml((rule.prefer || []).join('\n'))}</textarea>
+          <label>Bad <span class="field-hint">(select text to suggest rewrites)</span></label>
+          <textarea class="edit-original" data-rule-id="${rule.id}">${escapeHtml(rule.originalExample || '')}</textarea>
+          <label>Better</label>
+          <textarea class="edit-better">${escapeHtml(rule.betterVersion || '')}</textarea>
           <div class="edit-actions">
             <button class="action-btn cancel-edit" data-rule-id="${rule.id}">Cancel</button>
             <button class="action-btn primary save-edit" data-rule-id="${rule.id}">Save</button>
@@ -97,6 +104,13 @@ export function renderStyleGuide() {
       });
     });
 
+    rulesListEl.querySelectorAll('.refine').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openRefinement(e.target.dataset.ruleId);
+      });
+    });
+
     rulesListEl.querySelectorAll('.cancel-edit').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -115,25 +129,105 @@ export function renderStyleGuide() {
       });
     });
 
-    // Suggest button listeners
-    rulesListEl.querySelectorAll('.suggest-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const ruleId = e.target.dataset.ruleId;
-        const ruleEl = e.target.closest('.style-rule');
-        generateSuggestions(ruleId, ruleEl);
-      });
-    });
-
-    rulesListEl.querySelectorAll('.suggest-more-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const ruleId = e.target.dataset.ruleId;
-        const ruleEl = e.target.closest('.style-rule');
-        generateSuggestions(ruleId, ruleEl, true);
-      });
+    // Text selection in Bad field for suggest rewrites
+    rulesListEl.querySelectorAll('.edit-original').forEach(textarea => {
+      textarea.addEventListener('mouseup', handleBadTextSelection);
     });
   }
+}
+
+// Track current selection context for suggestions
+let suggestContext = null;
+
+function handleBadTextSelection(e) {
+  const textarea = e.target;
+  const selectedText = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd).trim();
+
+  hideSuggestPopup();
+
+  if (!selectedText || selectedText.length < 5) {
+    return;
+  }
+
+  const ruleEl = textarea.closest('.style-rule');
+  const ruleId = textarea.dataset.ruleId;
+
+  suggestContext = {
+    ruleId,
+    ruleEl,
+    selectedText,
+    textarea
+  };
+
+  // Position popup near the textarea
+  const rect = textarea.getBoundingClientRect();
+  showSuggestPopup(rect.left + 10, rect.bottom + window.scrollY + 5);
+}
+
+function showSuggestPopup(x, y) {
+  let popup = document.getElementById('suggest-rewrite-popup');
+
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'suggest-rewrite-popup';
+    popup.className = 'suggest-rewrite-popup';
+    popup.innerHTML = `
+      <div class="suggest-popup-content">
+        <span class="suggest-popup-text">Suggest rewrites for selection?</span>
+        <button class="action-btn primary suggest-popup-btn">Suggest</button>
+        <button class="suggest-popup-close">&times;</button>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    popup.querySelector('.suggest-popup-btn').addEventListener('click', generateSuggestionsForSelection);
+    popup.querySelector('.suggest-popup-close').addEventListener('click', hideSuggestPopup);
+  }
+
+  popup.style.left = `${x}px`;
+  popup.style.top = `${y}px`;
+  popup.classList.add('visible');
+}
+
+function hideSuggestPopup() {
+  const popup = document.getElementById('suggest-rewrite-popup');
+  if (popup) {
+    popup.classList.remove('visible');
+  }
+}
+
+async function generateSuggestionsForSelection() {
+  if (!suggestContext) return;
+
+  const { ruleEl, selectedText } = suggestContext;
+  const principle = ruleEl.querySelector('.edit-principle').value.trim();
+  const avoidStr = ruleEl.querySelector('.edit-avoid').value.trim();
+  const preferStr = ruleEl.querySelector('.edit-prefer').value.trim();
+
+  hideSuggestPopup();
+
+  // Show loading state in Better field
+  const betterTextarea = ruleEl.querySelector('.edit-better');
+  const originalBetter = betterTextarea.value;
+  betterTextarea.value = originalBetter + (originalBetter ? '\n' : '') + '(generating suggestions...)';
+  betterTextarea.disabled = true;
+
+  const prompt = buildSuggestionPrompt(selectedText, principle, avoidStr, preferStr);
+
+  try {
+    const response = await callLLM(prompt, SYSTEM_PROMPT);
+    const suggestions = parseSuggestions(response);
+
+    // Append suggestions as bullet points
+    const bulletSuggestions = suggestions.map(s => `• ${s}`).join('\n');
+    betterTextarea.value = originalBetter + (originalBetter ? '\n' : '') + bulletSuggestions;
+  } catch (e) {
+    betterTextarea.value = originalBetter;
+    alert(`Failed to generate suggestions: ${e.message}`);
+  }
+
+  betterTextarea.disabled = false;
+  suggestContext = null;
 }
 
 async function generateSuggestions(ruleId, ruleEl, append = false) {
@@ -240,8 +334,8 @@ function saveRuleEdit(ruleId, ruleEl) {
     principle: ruleEl.querySelector('.edit-principle').value.trim(),
     originalExample: ruleEl.querySelector('.edit-original').value.trim() || null,
     betterVersion: ruleEl.querySelector('.edit-better').value.trim() || null,
-    avoid: avoidStr ? avoidStr.split(',').map(s => s.trim()).filter(s => s) : [],
-    prefer: preferStr ? preferStr.split(',').map(s => s.trim()).filter(s => s) : []
+    avoid: avoidStr ? avoidStr.split('\n').map(s => s.trim()).filter(s => s) : [],
+    prefer: preferStr ? preferStr.split('\n').map(s => s.trim()).filter(s => s) : []
   };
 
   updateStyleRule(ruleId, updates);
@@ -264,4 +358,12 @@ export function expandStyleGuide() {
 
 function setupStyleGuideEventListeners() {
   document.getElementById('style-guide-header').addEventListener('click', toggleStyleGuide);
+
+  // Hide suggest popup on click outside
+  document.addEventListener('mousedown', (e) => {
+    const popup = document.getElementById('suggest-rewrite-popup');
+    if (popup && !popup.contains(e.target) && !e.target.classList.contains('edit-original')) {
+      hideSuggestPopup();
+    }
+  });
 }

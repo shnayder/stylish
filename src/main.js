@@ -21,6 +21,7 @@ import { initRewriteView, setReplaceCallback } from './ui/rewriteView.js';
 import { initFeedbackLog, renderFeedbackLog, setOnSynthesizeCallback } from './ui/feedbackLog.js';
 import { openSynthesisModal, initSynthesis } from './ui/synthesis.js';
 import { initStats, renderStats } from './ui/stats.js';
+import { initRefinement } from './ui/refinement.js';
 
 // Input helpers
 function getSettingInput() {
@@ -184,6 +185,7 @@ function init() {
   initFeedbackLog();
   initSynthesis();
   initStats();
+  initRefinement();
 
   // Set up rewrite view callback
   setReplaceCallback(() => {

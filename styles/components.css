@@ -438,33 +438,57 @@
   margin-bottom: 6px;
 }
 
-.style-rule .rule-examples {
+.style-rule .rule-patterns {
   font-size: 0.85rem;
-  color: #666;
+  margin: 6px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
 }
 
-.style-rule .rule-examples .avoid {
+.style-rule .rule-patterns .pattern-label {
+  font-weight: 500;
+  color: #888;
+}
+
+.style-rule .rule-patterns.avoid .pattern-item {
   color: #a55;
 }
 
-.style-rule .rule-examples .prefer {
-  color: #5a5;
+.style-rule .rule-patterns.prefer .pattern-item {
+  color: #5a7a5a;
 }
 
-.style-rule .rule-original {
+.style-rule .rule-examples-block {
   font-size: 0.85rem;
-  color: #555;
-  margin: 8px 0;
-  padding: 8px 10px;
+  margin: 10px 0;
+  padding: 10px;
   background: #fff;
   border-radius: 4px;
-  font-style: italic;
 }
 
-.style-rule .rule-original .example-label {
-  font-style: normal;
+.style-rule .example-bad,
+.style-rule .example-better {
+  margin: 6px 0;
+}
+
+.style-rule .example-bad .example-label {
   font-weight: 500;
-  color: #888;
+  color: #a55;
+}
+
+.style-rule .example-better .example-label {
+  font-weight: 500;
+  color: #5a7a5a;
+}
+
+.style-rule .example-content {
+  color: #555;
+  font-style: italic;
+  margin-top: 4px;
+  padding-left: 10px;
+  line-height: 1.6;
 }
 
 .style-rule .rule-actions {
@@ -490,6 +514,14 @@
 
 .style-rule .rule-actions button.remove:hover {
   color: #c00;
+}
+
+.style-rule .rule-actions button.refine {
+  color: #5a7a5a;
+}
+
+.style-rule .rule-actions button.refine:hover {
+  color: #3a5a3a;
 }
 
 .style-rule.editing {
@@ -630,4 +662,58 @@
 
 .style-rule .suggestion-error {
   color: #a55;
+}
+
+/* Field hint text */
+.field-hint {
+  font-weight: normal;
+  font-size: 0.75rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* Suggest rewrite popup */
+.suggest-rewrite-popup {
+  position: absolute;
+  z-index: 200;
+  display: none;
+}
+
+.suggest-rewrite-popup.visible {
+  display: block;
+}
+
+.suggest-popup-content {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.suggest-popup-text {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.suggest-popup-btn {
+  font-size: 0.8rem !important;
+  padding: 4px 10px !important;
+}
+
+.suggest-popup-close {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0 4px;
+}
+
+.suggest-popup-close:hover {
+  color: #666;
 }

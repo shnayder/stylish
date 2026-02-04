@@ -218,3 +218,119 @@
   justify-content: flex-end;
   gap: 10px;
 }
+
+/* Refinement Modal */
+.refinement-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+}
+
+.refinement-current-rule {
+  margin-bottom: 15px;
+}
+
+.refinement-current-rule label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #888;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.current-rule-display {
+  background: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 0.9rem;
+}
+
+.current-rule-display .rule-principle {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.current-rule-display .rule-patterns {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.current-rule-display .rule-patterns .pattern-label {
+  font-weight: 500;
+  color: #888;
+}
+
+.current-rule-display .rule-examples {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.current-rule-display .example-bad {
+  color: #a55;
+}
+
+.current-rule-display .example-better {
+  color: #5a5;
+}
+
+/* Refinement suggestion box */
+.refinement-suggestion {
+  background: #f0f8f0;
+  border: 1px solid #c0e0c0;
+  border-radius: 8px;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+.refinement-suggestion.visible {
+  display: block;
+}
+
+.refinement-suggestion .suggestion-header {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #5a7a5a;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.refinement-suggestion .suggestion-content {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.refinement-suggestion .suggestion-content .field-update {
+  margin-bottom: 8px;
+}
+
+.refinement-suggestion .suggestion-content .field-name {
+  font-weight: 500;
+  color: #5a7a5a;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.refinement-suggestion .suggestion-content .field-value {
+  background: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  display: block;
+}
+
+.refinement-suggestion .suggestion-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

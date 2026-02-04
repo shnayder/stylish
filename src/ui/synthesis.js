@@ -223,19 +223,19 @@ function renderRuleCard(rule) {
       <!-- Edit form (hidden by default) -->
       <div class="proposed-rule-edit-form">
         <label>Principle</label>
-        <input type="text" class="edit-principle" value="${escapeHtml(r.principle || '')}">
+        <textarea class="edit-principle">${escapeHtml(r.principle || '')}</textarea>
 
-        <label>Original Example (what to avoid)</label>
+        <label>Avoid</label>
+        <textarea class="edit-avoid">${escapeHtml((r.avoid || []).join('\n'))}</textarea>
+
+        <label>Prefer</label>
+        <textarea class="edit-prefer">${escapeHtml((r.prefer || []).join('\n'))}</textarea>
+
+        <label>Bad</label>
         <textarea class="edit-original">${escapeHtml(r.originalExample || '')}</textarea>
 
-        <label>Better Version</label>
+        <label>Better</label>
         <textarea class="edit-better">${escapeHtml(r.betterVersion || '')}</textarea>
-
-        <label>Avoid (comma-separated patterns)</label>
-        <input type="text" class="edit-avoid" value="${escapeHtml((r.avoid || []).join(', '))}">
-
-        <label>Prefer (comma-separated patterns)</label>
-        <input type="text" class="edit-prefer" value="${escapeHtml((r.prefer || []).join(', '))}">
 
         <div class="proposed-rule-edit-actions">
           <button class="action-btn cancel-edit" data-rule-id="${rule.id}">Cancel</button>
@@ -329,8 +329,8 @@ function saveProposedRuleEdit(ruleId, cardEl) {
   rule.rule.principle = cardEl.querySelector('.edit-principle').value.trim();
   rule.rule.originalExample = cardEl.querySelector('.edit-original').value.trim() || null;
   rule.rule.betterVersion = cardEl.querySelector('.edit-better').value.trim() || null;
-  rule.rule.avoid = avoidStr ? avoidStr.split(',').map(s => s.trim()).filter(s => s) : [];
-  rule.rule.prefer = preferStr ? preferStr.split(',').map(s => s.trim()).filter(s => s) : [];
+  rule.rule.avoid = avoidStr ? avoidStr.split('\n').map(s => s.trim()).filter(s => s) : [];
+  rule.rule.prefer = preferStr ? preferStr.split('\n').map(s => s.trim()).filter(s => s) : [];
 
   renderProposedRules();
 }
