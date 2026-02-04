@@ -79,8 +79,8 @@ npm run serve
 
 Plan in this order — **user-facing design first, implementation second, code last:**
 
-1. **UX/design first:** What does the user see and do? Describe the interaction flow, what appears on screen, what the user clicks/types, what feedback they get. Use plain language. Don't mention CSS classes, module names, or data structures at this stage.
-2. **Implementation plan:** Once the UX is agreed on, describe the technical approach — what modules are involved, what data flows where, what the LLM calls look like, what state changes. Update `ARCHITECTURE.md` if the feature adds new modules or significant patterns.
+1. **UX/design first:** What does the user see and do? Describe the interaction flow, what appears on screen, what the user clicks/types, what feedback they get. Use plain language. Don't mention CSS classes, module names, or data structures at this stage unless there are significant technical tradeoffs to make.
+2. **Implementation plan:** Once the UX is agreed on, describe the technical approach — what modules are involved, what data flows where, what the LLM calls look like, what state changes. Include a comprehensive testing plan. Update `ARCHITECTURE.md` if the feature adds new modules or significant patterns.
 3. **Code:** Write the code. Follow existing patterns.
 
 When discussing a feature with the user, stay at the appropriate level. A UX conversation should not include implementation details like planned CSS class names or function signatures.

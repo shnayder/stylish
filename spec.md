@@ -131,6 +131,10 @@ Each described in the following subsections.
     - Flexibity
         - allow multiple examples for a rule
     - "Suggest" better version options in style guide edit view -- show 3-5 rewrites, let me pick one or generate more.
+    - hierarchy of scope -- some rules are about the entire story, or a scene, or a character, others about a sentence
+    - hierarchy of applicability -- general rule, exceptions or more specific versions, exceptions to exceptions.
+    - general guidelines, story-specific guidelines (e.g. "write in the 3rd person", "emphasize the main character's mental state more than usually recommended, since that's a major focus of this story"), scene-specific ones ("this scene should be especially fast paced").
+
     - auto-categorization. 
         - Define a set of categories (dynamically ideally), add tags
     - move "general style" pane into style guide
