@@ -1,0 +1,141 @@
+[
+  {
+    "id": "met-cliche-001",
+    "sentence": "Her eyes were pools of liquid sapphire.",
+    "description": "Cliche decorative metaphor -- should violate met-001 and met-008",
+    "expectCategories": ["metaphor"],
+    "dontExpectCategories": ["dialogue", "scene"],
+    "expectRules": {
+      "rule-met-001": "violates",
+      "rule-met-008": "violates"
+    }
+  },
+  {
+    "id": "met-mixed-002",
+    "sentence": "His argument unraveled, collapsing into dust.",
+    "description": "Mixed metaphor (unravel vs collapse) -- should violate met-002",
+    "expectCategories": ["metaphor"],
+    "expectRules": {
+      "rule-met-002": "violates"
+    }
+  },
+  {
+    "id": "met-good-003",
+    "sentence": "Her grief pressed down on her, heavy and airless.",
+    "description": "Clean, emotionally matched metaphor -- should follow met-005 and met-001",
+    "expectCategories": ["metaphor"],
+    "expectRules": {
+      "rule-met-005": "follows",
+      "rule-met-001": "follows"
+    }
+  },
+  {
+    "id": "met-action-004",
+    "sentence": "As the car skidded, terror blossomed like a thousand screaming flowers.",
+    "description": "Florid metaphor during fast action -- should violate met-009",
+    "expectCategories": ["metaphor"],
+    "expectRules": {
+      "rule-met-009": "violates"
+    }
+  },
+  {
+    "id": "sense-good-005",
+    "sentence": "The room smelled of sour milk and damp wood.",
+    "description": "Specific sensory detail -- should follow sense-002",
+    "expectCategories": ["description/senses"],
+    "expectRules": {
+      "rule-sense-002": "follows"
+    }
+  },
+  {
+    "id": "sense-vague-006",
+    "sentence": "The room smelled bad.",
+    "description": "Generic sensory label -- should violate sense-002",
+    "expectCategories": ["description/senses"],
+    "expectRules": {
+      "rule-sense-002": "violates"
+    }
+  },
+  {
+    "id": "sense-overload-007",
+    "sentence": "The room was bright, loud, hot, smelly, rough, sweet, bitter, and dizzying.",
+    "description": "Too many simultaneous senses -- should violate sense-003",
+    "expectCategories": ["description/senses"],
+    "expectRules": {
+      "rule-sense-003": "violates"
+    }
+  },
+  {
+    "id": "dict-inflated-008",
+    "sentence": "He commenced his perambulation toward the domicile.",
+    "description": "Inflated diction -- should violate dict-002",
+    "expectCategories": ["diction"],
+    "dontExpectCategories": ["dialogue"],
+    "expectRules": {
+      "rule-dict-002": "violates"
+    }
+  },
+  {
+    "id": "rhythm-good-009",
+    "sentence": "He ran. Footsteps behind him. Faster. A door -- locked. Another. Open. Through.",
+    "description": "Staccato rhythm matching urgent action -- should follow rhy-003",
+    "expectCategories": ["rhythm"],
+    "expectRules": {
+      "rule-rhy-003": "follows"
+    }
+  },
+  {
+    "id": "voice-shift-010",
+    "sentence": "The village lay nestled among ancient hills, timeless and serene. Dude, the place was totally dead though.",
+    "description": "Unmotivated voice shift from formal to slang -- should violate voice-001",
+    "expectCategories": ["voice"],
+    "expectRules": {
+      "rule-voice-001": "violates"
+    }
+  },
+  {
+    "id": "impl-tell-011",
+    "sentence": "He was jealous.",
+    "description": "Telling emotion directly instead of showing -- should violate imp-001",
+    "expectCategories": ["implication"],
+    "expectRules": {
+      "rule-imp-001": "violates"
+    }
+  },
+  {
+    "id": "impl-show-012",
+    "sentence": "He watched them, jaw tight.",
+    "description": "Showing emotion through behavior -- should follow imp-001",
+    "expectCategories": ["implication"],
+    "expectRules": {
+      "rule-imp-001": "follows"
+    }
+  },
+  {
+    "id": "pace-dump-013",
+    "sentence": "Marcus, a retired colonel with a limp from Kandahar who'd recently divorced his second wife, entered the bar where Elena, the owner's daughter who'd studied abroad and returned reluctantly, was arguing with Jin, a local journalist investigating the mayor's corruption scandal, about whether the package should be opened.",
+    "description": "Information dump in one sentence -- should violate pace-001",
+    "expectCategories": ["pacing"],
+    "expectRules": {
+      "rule-pace-001": "violates"
+    }
+  },
+  {
+    "id": "sense-emotion-014",
+    "sentence": "Her hands were slick with sweat, and the room felt too warm.",
+    "description": "Sensory detail doing emotional work -- should follow sense-010",
+    "expectCategories": ["description/senses"],
+    "expectRules": {
+      "rule-sense-010": "follows"
+    }
+  },
+  {
+    "id": "met-anachronism-015",
+    "sentence": "The medieval knight rebooted his courage.",
+    "description": "Anachronistic metaphor breaking immersion -- should violate met-004",
+    "expectCategories": ["metaphor"],
+    "expectRules": {
+      "rule-met-004": "violates"
+    }
+  }
+]
