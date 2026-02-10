@@ -7,7 +7,7 @@
     "test": "playwright test",
     "test:screenshot": "playwright test test/screenshot.spec.js",
     "test:eval": "node test/resolution-eval.js",
-    "serve": "node server.js"
+    "serve": "node --watch server.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0"

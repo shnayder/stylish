@@ -1,6 +1,68 @@
 // Pure prompt builders and parsers for the resolution pipeline.
 // No browser dependencies — importable from Node.js for eval scripts.
 
+// --- Tool schema builders for structured output (Anthropic API) ---
+// These generate schemas dynamically with enums to constrain LLM output.
+
+export function buildCategoryMatchSchema(categoryNames) {
+  return {
+    name: "category_match",
+    description: "Return matched style categories from the provided list",
+    input_schema: {
+      type: "object",
+      properties: {
+        categories: {
+          type: "array",
+          items: { type: "string", enum: categoryNames }
+        }
+      },
+      required: ["categories"]
+    }
+  };
+}
+
+export function buildRuleTriageSchema(ruleIds) {
+  return {
+    name: "rule_triage",
+    description: "Return relevant rule IDs from the provided list",
+    input_schema: {
+      type: "object",
+      properties: {
+        ruleIds: {
+          type: "array",
+          items: { type: "string", enum: ruleIds }
+        }
+      },
+      required: ["ruleIds"]
+    }
+  };
+}
+
+export function buildRuleEvaluationSchema(ruleIds) {
+  return {
+    name: "rule_evaluation",
+    description: "Return rule evaluations",
+    input_schema: {
+      type: "object",
+      properties: {
+        evaluations: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              ruleId: { type: "string", enum: ruleIds },
+              assessment: { type: "string", enum: ["follows", "violates", "partial"] },
+              note: { type: "string" }
+            },
+            required: ["ruleId", "assessment", "note"]
+          }
+        }
+      },
+      required: ["evaluations"]
+    }
+  };
+}
+
 // --- Prompt builders ---
 
 export function buildCategoryMatchPrompt(text, categoryRegistry) {

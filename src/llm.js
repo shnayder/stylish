@@ -2,13 +2,13 @@
 
 import { settings, recordLLMCall } from './state.js';
 
-export async function callLLM(prompt, systemPrompt = '') {
+export async function callLLM(prompt, systemPrompt = '', tool = null) {
   const provider = settings.provider;
 
   if (provider === 'local') {
     return callLocalLLM(prompt, systemPrompt);
   } else {
-    return callAnthropicLLM(prompt, systemPrompt);
+    return callAnthropicLLM(prompt, systemPrompt, tool);
   }
 }
 
@@ -58,9 +58,20 @@ function estimateTokens(text) {
   return Math.ceil((text || '').length / 4);
 }
 
-async function callAnthropicLLM(prompt, systemPrompt) {
-  // Note: This won't work directly from browser due to CORS
-  // User would need to use a proxy or the Anthropic API allows browser requests
+async function callAnthropicLLM(prompt, systemPrompt, tool = null) {
+  const body = {
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 4000,
+    system: systemPrompt || undefined,
+    messages: [{ role: 'user', content: prompt }]
+  };
+
+  // Use tool use for structured output when tool schema is provided
+  if (tool) {
+    body.tools = [tool];
+    body.tool_choice = { type: 'tool', name: tool.name };
+  }
+
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -69,12 +80,7 @@ async function callAnthropicLLM(prompt, systemPrompt) {
       'anthropic-version': '2023-06-01',
       'anthropic-dangerous-direct-browser-access': 'true'
     },
-    body: JSON.stringify({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 2000,
-      system: systemPrompt || undefined,
-      messages: [{ role: 'user', content: prompt }]
-    })
+    body: JSON.stringify(body)
   });
 
   if (!response.ok) {
@@ -87,9 +93,20 @@ async function callAnthropicLLM(prompt, systemPrompt) {
   // Track token usage
   const usage = data.usage || {};
   const inputTokens = usage.input_tokens || estimateTokens(prompt + (systemPrompt || ''));
-  const outputTokens = usage.output_tokens || estimateTokens(data.content[0].text);
-  recordLLMCall(inputTokens, outputTokens, 'claude-3-haiku-20240307');
 
+  // Extract tool use result if tool was used
+  if (tool) {
+    const toolUse = data.content.find(c => c.type === 'tool_use');
+    if (!toolUse) {
+      throw new Error('Expected tool_use response but got none');
+    }
+    const outputTokens = usage.output_tokens || estimateTokens(JSON.stringify(toolUse.input));
+    recordLLMCall(inputTokens, outputTokens, 'claude-haiku-4-5-20251001');
+    return { toolInput: toolUse.input };
+  }
+
+  const outputTokens = usage.output_tokens || estimateTokens(data.content[0].text);
+  recordLLMCall(inputTokens, outputTokens, 'claude-haiku-4-5-20251001');
   return data.content[0].text;
 }
 

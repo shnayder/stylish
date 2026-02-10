@@ -7,10 +7,14 @@
 //   node test/resolution-eval.js [options]
 //     --provider local|anthropic   (default: local)
 //     --url <url>                  (default: http://localhost:1234)
-//     --key <key>                  (for anthropic provider)
+//     --key <key>                  (for anthropic provider; or set ANTHROPIC_API_KEY env var)
 //     --log <path>                 (log file path, default: test/resolution-eval.log)
 //     --case <id>                  (run single test case)
 //     --verbose                    (print detailed results to console too)
+//
+// Examples:
+//   ANTHROPIC_API_KEY=sk-ant-... node test/resolution-eval.js --provider anthropic
+//   npm run test:eval -- --provider anthropic   # with env var already set
 
 import { readFileSync, writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -22,7 +26,10 @@ import {
   parseCategoryMatch,
   parseTriageResponse,
   parseEvaluation,
-  buildCategoryIndex
+  buildCategoryIndex,
+  buildCategoryMatchSchema,
+  buildRuleTriageSchema,
+  buildRuleEvaluationSchema
 } from '../src/resolution-prompts.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -36,7 +43,7 @@ function parseArgs() {
   const opts = {
     provider: 'local',
     url: 'http://localhost:1234',
-    key: '',
+    key: process.env.ANTHROPIC_API_KEY || '',
     log: resolve(__dirname, 'resolution-eval.log'),
     caseId: null,
     verbose: false
@@ -56,14 +63,21 @@ function parseArgs() {
     }
   }
 
+  // Validate API key for anthropic provider
+  if (opts.provider === 'anthropic' && !opts.key) {
+    console.error('Error: Anthropic API key required.');
+    console.error('Set ANTHROPIC_API_KEY environment variable or use --key <key>');
+    process.exit(1);
+  }
+
   return opts;
 }
 
 // --- LLM call ---
 
-async function callLLM(prompt, opts) {
+async function callLLM(prompt, opts, tool = null) {
   if (opts.provider === 'anthropic') {
-    return callAnthropic(prompt, opts);
+    return callAnthropic(prompt, opts, tool);
   }
   return callLocal(prompt, opts);
 }
@@ -95,7 +109,19 @@ async function callLocal(prompt, opts) {
   };
 }
 
-async function callAnthropic(prompt, opts) {
+async function callAnthropic(prompt, opts, tool = null) {
+  const body = {
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 4000,
+    messages: [{ role: 'user', content: prompt }]
+  };
+
+  // Use tool use for structured output when tool schema is provided
+  if (tool) {
+    body.tools = [tool];
+    body.tool_choice = { type: 'tool', name: tool.name };
+  }
+
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -103,11 +129,7 @@ async function callAnthropic(prompt, opts) {
       'x-api-key': opts.key,
       'anthropic-version': '2023-06-01'
     },
-    body: JSON.stringify({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }]
-    })
+    body: JSON.stringify(body)
   });
 
   if (!response.ok) {
@@ -116,9 +138,24 @@ async function callAnthropic(prompt, opts) {
   }
 
   const data = await response.json();
+
+  // Extract tool use result if tool was used
+  if (tool) {
+    const toolUse = data.content.find(c => c.type === 'tool_use');
+    if (!toolUse) {
+      throw new Error('Expected tool_use response but got none');
+    }
+    return {
+      toolInput: toolUse.input,
+      model: data.model || 'claude-3-5-haiku',
+      usage: data.usage || {}
+    };
+  }
+
+  // Fallback to text response (shouldn't happen in current usage)
   return {
     text: data.content[0].text,
-    model: data.model || 'claude-3-haiku',
+    model: data.model || 'claude-3-5-haiku',
     usage: data.usage || {}
   };
 }
@@ -143,11 +180,21 @@ async function runPipeline(testCase, styleGuide, categoryRegistry, opts) {
   const catPrompt = buildCategoryMatchPrompt(sentence, categoryRegistry);
   logEntry('category-match-prompt', { prompt: catPrompt });
 
-  const catResponse = await callLLM(catPrompt, opts);
+  const catTool = opts.provider === 'anthropic' ? buildCategoryMatchSchema(knownCategories) : null;
+  const catResponse = await callLLM(catPrompt, opts, catTool);
   timings.categoryMatch = Date.now() - t0;
-  logEntry('category-match-response', { raw: catResponse.text, model: catResponse.model });
 
-  const matchedCategories = parseCategoryMatch(catResponse.text, knownCategories);
+  let matchedCategories;
+  if (catResponse.toolInput) {
+    // Anthropic tool use: already-parsed JSON
+    logEntry('category-match-response', { toolInput: catResponse.toolInput, model: catResponse.model });
+    matchedCategories = (catResponse.toolInput.categories || [])
+      .filter(c => typeof c === 'string' && knownCategories.includes(c));
+  } else {
+    // Local LLM: parse from text
+    logEntry('category-match-response', { raw: catResponse.text, model: catResponse.model });
+    matchedCategories = parseCategoryMatch(catResponse.text, knownCategories);
+  }
   logEntry('category-match-parsed', { matchedCategories });
 
   if (matchedCategories.length === 0) {
@@ -178,11 +225,21 @@ async function runPipeline(testCase, styleGuide, categoryRegistry, opts) {
     const triagePrompt = buildRuleTriagePrompt(sentence, candidateRules);
     logEntry('triage-prompt', { prompt: triagePrompt });
 
-    const triageResponse = await callLLM(triagePrompt, opts);
+    const candidateIds = candidateRules.map(r => r.id);
+    const triageTool = opts.provider === 'anthropic' ? buildRuleTriageSchema(candidateIds) : null;
+    const triageResponse = await callLLM(triagePrompt, opts, triageTool);
     timings.triage = Date.now() - t0;
-    logEntry('triage-response', { raw: triageResponse.text, model: triageResponse.model });
 
-    const triagedIds = parseTriageResponse(triageResponse.text);
+    let triagedIds;
+    if (triageResponse.toolInput) {
+      // Anthropic tool use: already-parsed JSON
+      logEntry('triage-response', { toolInput: triageResponse.toolInput, model: triageResponse.model });
+      triagedIds = (triageResponse.toolInput.ruleIds || []).filter(id => typeof id === 'string');
+    } else {
+      // Local LLM: parse from text
+      logEntry('triage-response', { raw: triageResponse.text, model: triageResponse.model });
+      triagedIds = parseTriageResponse(triageResponse.text);
+    }
     triagedRules = candidateRules.filter(r => triagedIds.includes(r.id));
     logEntry('triage-parsed', { triagedIds, triagedCount: triagedRules.length });
   }
@@ -196,11 +253,29 @@ async function runPipeline(testCase, styleGuide, categoryRegistry, opts) {
   const evalPrompt = buildRuleEvaluationPrompt(sentence, triagedRules);
   logEntry('eval-prompt', { prompt: evalPrompt });
 
-  const evalResponse = await callLLM(evalPrompt, opts);
+  const triagedIds = triagedRules.map(r => r.id);
+  const evalTool = opts.provider === 'anthropic' ? buildRuleEvaluationSchema(triagedIds) : null;
+  const evalResponse = await callLLM(evalPrompt, opts, evalTool);
   timings.evaluation = Date.now() - t0;
-  logEntry('eval-response', { raw: evalResponse.text, model: evalResponse.model });
 
-  const evaluations = parseEvaluation(evalResponse.text);
+  let evaluations;
+  if (evalResponse.toolInput) {
+    // Anthropic tool use: already-parsed JSON, but still normalize field names
+    logEntry('eval-response', { toolInput: evalResponse.toolInput, model: evalResponse.model });
+    const validAssessments = ['follows', 'violates', 'partial'];
+    evaluations = (evalResponse.toolInput.evaluations || []).map(item => {
+      if (!item || typeof item !== 'object') return null;
+      const ruleId = item.ruleId || '';
+      let assessment = (item.assessment || 'partial').toLowerCase();
+      if (!validAssessments.includes(assessment)) assessment = 'partial';
+      const note = item.note || '';
+      return { ruleId, assessment, note };
+    }).filter(Boolean);
+  } else {
+    // Local LLM: parse from text
+    logEntry('eval-response', { raw: evalResponse.text, model: evalResponse.model });
+    evaluations = parseEvaluation(evalResponse.text);
+  }
   logEntry('eval-parsed', { evaluations });
 
   return { matchedCategories, candidateRules, triagedRules, evaluations, log, timings };
