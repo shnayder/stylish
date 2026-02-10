@@ -140,67 +140,10 @@ export function cleanCoachResponse(response) {
     .trim();
 }
 
-// --- Resolution pipeline prompts ---
+// --- Resolution pipeline prompts (re-exported from resolution-prompts.js) ---
 
-export function buildCategoryMatchPrompt(text, categoryRegistry) {
-  const categoryLines = Object.entries(categoryRegistry)
-    .map(([name, info]) => `- ${name}: ${info.description}`)
-    .join('\n');
-
-  return `Analyze this creative writing text and determine which style categories are relevant.
-
-Categories:
-${categoryLines}
-
-Text:
-"${text}"
-
-Which categories does this text exercise? Return ONLY a JSON array of category names.
-Only include categories where the text actually uses that aspect of writing.`;
-}
-
-export function buildRuleTriagePrompt(text, candidateRules) {
-  const ruleLines = candidateRules
-    .map(r => `- ${r.id}: ${r.principle}`)
-    .join('\n');
-
-  return `Given this text, which style rules could potentially apply (either followed or violated)?
-
-Text:
-"${text}"
-
-Rules:
-${ruleLines}
-
-Return ONLY a JSON array of rule IDs that are relevant to this text.`;
-}
-
-export function buildRuleEvaluationPrompt(text, rules) {
-  const ruleDetails = rules.map(r => {
-    let detail = `Rule ${r.id}: ${r.principle}`;
-    if (r.avoid && r.avoid.length > 0) {
-      detail += `\n  Avoid: ${r.avoid.join('; ')}`;
-    }
-    if (r.prefer && r.prefer.length > 0) {
-      detail += `\n  Prefer: ${r.prefer.join('; ')}`;
-    }
-    if (r.originalExample) {
-      detail += `\n  Example (bad): "${r.originalExample}"`;
-    }
-    if (r.betterVersion) {
-      detail += `\n  Example (better): "${r.betterVersion}"`;
-    }
-    return detail;
-  }).join('\n\n');
-
-  return `Evaluate this text against each style rule.
-
-Text:
-"${text}"
-
-Rules:
-${ruleDetails}
-
-For each rule, return a JSON array:
-[{"ruleId": "...", "assessment": "follows|violates|partial", "note": "brief explanation"}]`;
-}
+export {
+  buildCategoryMatchPrompt,
+  buildRuleTriagePrompt,
+  buildRuleEvaluationPrompt
+} from './resolution-prompts.js';

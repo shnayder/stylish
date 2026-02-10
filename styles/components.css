@@ -418,6 +418,27 @@
   font-size: 0.9rem;
 }
 
+/* Category groups in style guide */
+.category-group {
+  margin-bottom: 8px;
+}
+
+.category-group-header {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #999;
+  margin: 16px 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.category-group:first-child .category-group-header {
+  margin-top: 0;
+}
+
 .style-rule {
   background: #f8f8f8;
   border-radius: 6px;

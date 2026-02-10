@@ -53,13 +53,13 @@ Dual provider support:
 
 Single `callLLM(prompt, systemPrompt)` entry point. Token usage tracked via `recordLLMCall()` in state.
 
-## Prompt System (`src/prompts.js`)
+## Prompt System (`src/prompts.js`, `src/resolution-prompts.js`)
 
 Prompt builders return plain strings. Response parsers extract structured data from LLM output.
 
 **Generation prompts**: `buildGenerationPrompt()`, `parseGeneratedResponse()`
 **Coaching prompts**: `buildCoachStartPrompt()`, `buildCoachFollowupPrompt()`, `cleanCoachResponse()`
-**Resolution pipeline prompts**: `buildCategoryMatchPrompt()`, `buildRuleTriagePrompt()`, `buildRuleEvaluationPrompt()`
+**Resolution pipeline prompts** (in `resolution-prompts.js`): `buildCategoryMatchPrompt()`, `buildRuleTriagePrompt()`, `buildRuleEvaluationPrompt()`, plus parsers `parseCategoryMatch()`, `parseTriageResponse()`, `parseEvaluation()`, and `buildCategoryIndex()`. These are pure functions with zero browser dependencies, importable from Node.js for the eval script. `prompts.js` re-exports the prompt builders; `resolution.js` imports parsers directly.
 
 `getStyleGuideText(ruleSubset?)` formats rules for inclusion in prompts; accepts optional subset array.
 
@@ -109,4 +109,6 @@ Currently local development only. Dev server on port 3000. Future: GitHub Pages 
 
 ## Testing
 
-Playwright for browser-level tests (`test/screenshot.spec.js`). Run with `npm test`.
+**Browser tests**: Playwright for browser-level tests (`test/screenshot.spec.js`). Run with `npm test`.
+
+**Resolution pipeline eval**: Standalone Node.js script (`test/resolution-eval.js`) that runs test sentences through the resolution pipeline and compares to hand-authored expectations in `test/resolution-cases.json`. Produces console summary, detailed log file, and a JSON results snapshot (`test/resolution-eval-results.json`). Run with `npm run test:eval`. Supports `--provider`, `--url`, `--key`, `--case`, `--verbose` options.

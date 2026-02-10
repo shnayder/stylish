@@ -6,6 +6,7 @@
   "scripts": {
     "test": "playwright test",
     "test:screenshot": "playwright test test/screenshot.spec.js",
+    "test:eval": "node test/resolution-eval.js",
     "serve": "node server.js"
   },
   "devDependencies": {

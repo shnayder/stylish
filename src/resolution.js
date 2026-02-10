@@ -4,8 +4,9 @@
 import { styleGuide, categoryRegistry, buildCategoryIndex } from './state.js';
 import { callLLM } from './llm.js';
 import {
-  buildCategoryMatchPrompt, buildRuleTriagePrompt, buildRuleEvaluationPrompt
-} from './prompts.js';
+  buildCategoryMatchPrompt, buildRuleTriagePrompt, buildRuleEvaluationPrompt,
+  parseCategoryMatch as parseCategoryMatchRaw, parseTriageResponse, parseEvaluation
+} from './resolution-prompts.js';
 
 const TRIAGE_THRESHOLD = 15;
 
@@ -75,68 +76,11 @@ export async function resolveRules(text, options = {}) {
   return { matchedCategories, candidateRules, triagedRules, evaluations };
 }
 
-// --- Parse helpers ---
-
-function extractJSONArray(text) {
-  // Try to find a JSON array in the response, handling markdown code blocks, preamble text, etc.
-  // Strip markdown code blocks
-  const stripped = text.replace(/```(?:json)?\s*/g, '').replace(/```/g, '');
-
-  // Find the first [ ... ] block
-  const match = stripped.match(/\[[\s\S]*\]/);
-  if (match) {
-    try {
-      return JSON.parse(match[0]);
-    } catch (e) {
-      // Try cleaning trailing commas
-      const cleaned = match[0].replace(/,\s*([\]}])/g, '$1');
-      try {
-        return JSON.parse(cleaned);
-      } catch (e2) {
-        console.warn('[Resolution] Failed to parse JSON array:', e2, match[0]);
-      }
-    }
-  }
-  return null;
-}
-
-export function parseCategoryMatch(response) {
-  const arr = extractJSONArray(response);
-  if (!Array.isArray(arr)) {
-    console.warn('[Resolution] Could not parse category match response:', response);
-    return [];
-  }
-  // Filter to only known categories
+// Wrap parseCategoryMatch to inject known categories from state
+function parseCategoryMatch(response) {
   const knownCategories = Object.keys(categoryRegistry);
-  return arr.filter(c => typeof c === 'string' && knownCategories.includes(c));
+  return parseCategoryMatchRaw(response, knownCategories);
 }
 
-export function parseTriageResponse(response) {
-  const arr = extractJSONArray(response);
-  if (!Array.isArray(arr)) {
-    console.warn('[Resolution] Could not parse triage response:', response);
-    return [];
-  }
-  return arr.filter(id => typeof id === 'string');
-}
-
-export function parseEvaluation(response) {
-  const arr = extractJSONArray(response);
-  if (!Array.isArray(arr)) {
-    console.warn('[Resolution] Could not parse evaluation response:', response);
-    return [];
-  }
-
-  const validAssessments = ['follows', 'violates', 'partial'];
-
-  return arr.map(item => {
-    if (!item || typeof item !== 'object') return null;
-    const ruleId = item.ruleId || item.rule_id || item.id || '';
-    let assessment = (item.assessment || item.status || 'partial').toLowerCase();
-    if (!validAssessments.includes(assessment)) {
-      assessment = 'partial';
-    }
-    const note = item.note || item.explanation || item.comment || '';
-    return { ruleId, assessment, note };
-  }).filter(Boolean);
-}
+// Re-export for any code that imports from here
+export { parseCategoryMatch, parseTriageResponse, parseEvaluation };

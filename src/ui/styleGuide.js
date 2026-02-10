@@ -41,29 +41,30 @@ export async function initStyleGuide() {
   setupStyleGuideEventListeners();
 }
 
-export function renderStyleGuide() {
-  const countEl = document.getElementById('rule-count');
-  const contentEl = document.getElementById('style-guide-content');
-  const rulesListEl = document.getElementById('rules-list');
-  const emptyMsg = contentEl.querySelector('.empty-message');
-  const guideEl = document.getElementById('style-guide');
+function groupRulesByCategory(rules) {
+  const groups = new Map();
+  for (const rule of rules) {
+    const category = (rule.categories && rule.categories.length > 0)
+      ? rule.categories[0]
+      : 'Uncategorized';
+    if (!groups.has(category)) {
+      groups.set(category, []);
+    }
+    groups.get(category).push(rule);
+  }
+  // Sort alphabetically, with "Uncategorized" last
+  return [...groups.entries()].sort((a, b) => {
+    if (a[0] === 'Uncategorized') return 1;
+    if (b[0] === 'Uncategorized') return -1;
+    return a[0].localeCompare(b[0]);
+  });
+}
 
-  countEl.textContent = styleGuide.length > 0 ? `(${styleGuide.length} rules)` : '';
-  updateTabBadge(styleGuide.length);
-
-  if (styleGuide.length === 0) {
-    guideEl.classList.add('empty');
-    emptyMsg.style.display = 'block';
-    rulesListEl.innerHTML = '';
-  } else {
-    guideEl.classList.remove('empty');
-    emptyMsg.style.display = 'none';
-    const expandedIds = getExpandedRuleIds();
-    rulesListEl.innerHTML = styleGuide.map(rule => {
-      const hasDetails = (rule.avoid && rule.avoid.length > 0) ||
-        (rule.prefer && rule.prefer.length > 0) || rule.originalExample;
-      const isExpanded = expandedIds.has(rule.id);
-      return `
+function renderRuleHtml(rule, expandedIds) {
+  const hasDetails = (rule.avoid && rule.avoid.length > 0) ||
+    (rule.prefer && rule.prefer.length > 0) || rule.originalExample;
+  const isExpanded = expandedIds.has(rule.id);
+  return `
       <div class="style-rule${isExpanded ? ' expanded' : ''}" data-rule-id="${rule.id}">
         <div class="rule-actions">
           <button class="edit" data-rule-id="${rule.id}" title="Edit">edit</button>
@@ -125,7 +126,33 @@ export function renderStyleGuide() {
           </div>
         </div>
       </div>`;
-    }).join('');
+}
+
+export function renderStyleGuide() {
+  const countEl = document.getElementById('rule-count');
+  const contentEl = document.getElementById('style-guide-content');
+  const rulesListEl = document.getElementById('rules-list');
+  const emptyMsg = contentEl.querySelector('.empty-message');
+  const guideEl = document.getElementById('style-guide');
+
+  countEl.textContent = styleGuide.length > 0 ? `(${styleGuide.length} rules)` : '';
+  updateTabBadge(styleGuide.length);
+
+  if (styleGuide.length === 0) {
+    guideEl.classList.add('empty');
+    emptyMsg.style.display = 'block';
+    rulesListEl.innerHTML = '';
+  } else {
+    guideEl.classList.remove('empty');
+    emptyMsg.style.display = 'none';
+    const expandedIds = getExpandedRuleIds();
+    const groups = groupRulesByCategory(styleGuide);
+    rulesListEl.innerHTML = groups.map(([categoryName, rules]) => `
+      <div class="category-group">
+        <h3 class="category-group-header">${escapeHtml(categoryName)}</h3>
+        ${rules.map(rule => renderRuleHtml(rule, expandedIds)).join('')}
+      </div>
+    `).join('');
 
     // Add event listeners - principle click to expand/collapse
     rulesListEl.querySelectorAll('.rule-principle.has-details').forEach(el => {
