@@ -15,7 +15,8 @@ export function initStyleGuidePanel() {
   });
 
   // Manage Rules button — open full view
-  document.getElementById('manage-rules-btn').addEventListener('click', () => {
+  document.getElementById('manage-rules-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
     openFullGuideView();
   });
 

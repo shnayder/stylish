@@ -172,7 +172,6 @@ function renderLensResults() {
   // Dismiss buttons
   card.querySelectorAll('[data-action="dismiss"]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const idx = parseInt(btn.dataset.index);
       const annotation = btn.closest('.lens-annotation');
       annotation.style.opacity = '0.4';
       annotation.style.textDecoration = 'line-through';

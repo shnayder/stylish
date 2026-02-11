@@ -1,8 +1,8 @@
 // Writing area — central text surface with selection-based actions
 
-import { styleGuide, isGenerating, setGenerating } from '../state.js';
+import { isGenerating, setGenerating } from '../state.js';
 import { callLLM } from '../llm.js';
-import { SYSTEM_PROMPT, buildGenerationPrompt, getStyleGuideText } from '../prompts.js';
+import { SYSTEM_PROMPT, buildGenerationPrompt } from '../prompts.js';
 import { escapeHtml } from '../utils.js';
 import { renderStats } from './stats.js';
 

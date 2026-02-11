@@ -1,13 +1,12 @@
 // Mirror flow — inline reaction threads (coaching conversations)
 
-import { addStyleRule, styleGuide } from '../state.js';
+import { addStyleRule } from '../state.js';
 import { callLLM } from '../llm.js';
 import {
   COACH_SYSTEM_PROMPT,
   buildCoachStartPrompt,
   buildCoachFollowupPrompt,
-  cleanCoachResponse,
-  getStyleGuideText
+  cleanCoachResponse
 } from '../prompts.js';
 import { escapeHtml } from '../utils.js';
 import { renderStyleGuidePanel } from './styleGuidePanel.js';
