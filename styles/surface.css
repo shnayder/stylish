@@ -1,0 +1,594 @@
+/* Surface layout — text-centered redesign */
+
+/* App container */
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  color: #2a4a2a;
+  margin: 0;
+}
+
+/* Collapsible panels */
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 12px 16px;
+}
+
+.collapsible-header h2 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  margin: 0;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.collapsible-header .collapse-icon {
+  font-size: 0.75rem;
+  color: #999;
+  transition: transform 0.2s;
+}
+
+.collapsible-body {
+  padding: 0 16px 16px;
+  transition: max-height 0.2s ease;
+}
+
+.collapsible.collapsed .collapsible-body {
+  display: none;
+}
+
+.collapsible.collapsed .collapse-icon {
+  transform: rotate(-90deg);
+}
+
+/* Context Panel */
+.context-panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+
+.context-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.context-pane label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.context-pane textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: vertical;
+  color: #444;
+  box-sizing: border-box;
+}
+
+.context-pane textarea:focus {
+  outline: none;
+  border-color: #5a7a5a;
+}
+
+/* Writing Surface */
+.writing-surface {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+
+.surface-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.surface-toolbar .toolbar-spacer {
+  flex: 1;
+}
+
+#writing-text {
+  width: 100%;
+  min-height: 300px;
+  padding: 20px;
+  border: none;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  resize: vertical;
+  color: #333;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+#writing-text:focus {
+  outline: none;
+}
+
+#writing-text::placeholder {
+  color: #bbb;
+}
+
+/* Annotations Area — Mirror threads, Lens results, Variations */
+.annotations-area {
+  margin-bottom: 16px;
+}
+
+.annotations-area:empty {
+  display: none;
+}
+
+/* Annotation cards (shared base) */
+.annotation-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.annotation-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.annotation-card-header .quote-text {
+  font-style: italic;
+  color: #666;
+  font-size: 0.9rem;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 12px;
+}
+
+.annotation-card-header .annotation-type {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.annotation-card-header .annotation-type.mirror {
+  background: #e8e8f0;
+  color: #4a4a7a;
+}
+
+.annotation-card-header .annotation-type.lens {
+  background: #f0ece8;
+  color: #7a6a4a;
+}
+
+.annotation-card-header .annotation-type.variations {
+  background: #e8f0e8;
+  color: #3a5a3a;
+}
+
+.annotation-card .close-annotation {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0 4px;
+  margin-left: 8px;
+}
+
+.annotation-card .close-annotation:hover {
+  color: #999;
+}
+
+.annotation-card-body {
+  padding: 0 16px 16px;
+}
+
+.annotation-card.collapsed .annotation-card-body {
+  display: none;
+}
+
+/* --- Mirror Thread (React flow) --- */
+.mirror-thread .thread-messages {
+  margin-bottom: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.mirror-thread .thread-message {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.mirror-thread .thread-message .speaker {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #888;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.mirror-thread .thread-message.user .speaker {
+  color: #5a7a5a;
+}
+
+.mirror-thread .thread-message.coach .speaker {
+  color: #4a4a7a;
+}
+
+.mirror-thread .thread-message .message-content {
+  color: #444;
+}
+
+.mirror-thread .thread-input {
+  display: flex;
+  gap: 8px;
+}
+
+.mirror-thread .thread-input textarea {
+  flex: 1;
+  min-height: 36px;
+  max-height: 100px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: none;
+}
+
+.mirror-thread .thread-input textarea:focus {
+  outline: none;
+  border-color: #5a7a5a;
+}
+
+.mirror-thread .thread-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+/* Proposed rule in mirror thread */
+.mirror-thread .proposed-rule {
+  background: #f0f8f0;
+  border: 1px solid #c0e0c0;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.mirror-thread .proposed-rule h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #5a7a5a;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mirror-thread .proposed-rule .rule-principle {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.mirror-thread .proposed-rule .rule-details {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.mirror-thread .proposed-rule .rule-details .avoid {
+  color: #a55;
+}
+
+.mirror-thread .proposed-rule .rule-details .prefer {
+  color: #5a7a5a;
+}
+
+.mirror-thread .proposed-rule .rule-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* --- Lens Evaluation (Evaluate flow) --- */
+.lens-results .lens-summary {
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #f8f8f5;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.lens-results .lens-annotation {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: #f8f8f8;
+  border-radius: 6px;
+  border-left: 3px solid #ddd;
+}
+
+.lens-results .lens-annotation.follows {
+  border-left-color: #5a7a5a;
+}
+
+.lens-results .lens-annotation.violates {
+  border-left-color: #a55;
+}
+
+.lens-results .lens-annotation.partial {
+  border-left-color: #c90;
+}
+
+.lens-results .lens-annotation-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.lens-results .lens-annotation-quote {
+  font-style: italic;
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.lens-results .lens-annotation-note {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.lens-results .lens-annotation-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lens-results .lens-annotation-actions .action-btn {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+}
+
+/* --- Inline Variations (Pen flow) --- */
+.inline-variations .variations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.inline-variations .variation-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: #f8f8f8;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.inline-variations .variation-option:hover {
+  border-color: #5a7a5a;
+}
+
+.inline-variations .variation-text {
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.inline-variations .variation-option .action-btn {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+
+.inline-variations .variations-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* --- Selection Menu (floating popup) --- */
+.selection-menu {
+  position: absolute;
+  display: none;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  padding: 4px;
+  z-index: 200;
+  gap: 2px;
+}
+
+.selection-menu.visible {
+  display: flex;
+}
+
+.selection-menu .sel-btn {
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.8rem;
+  color: #555;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s;
+}
+
+.selection-menu .sel-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* --- Style Guide Panel (collapsible footer) --- */
+.style-guide-panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+
+.style-guide-panel .collapsible-header .panel-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.style-guide-panel .rule-summary {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.style-guide-panel .rule-summary:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.style-guide-panel .rule-summary .rule-principle-text {
+  font-weight: 500;
+  color: #333;
+}
+
+.style-guide-panel .rule-summary .rule-category-tags {
+  display: inline;
+  margin-left: 8px;
+}
+
+.style-guide-panel .rule-summary .rule-category-tags .category-tag {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #eef0ee;
+  color: #6a7a6a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.style-guide-panel .empty-guide {
+  color: #999;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+/* --- Full Style Guide View (overlay) --- */
+.fullscreen-panel {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #f5f5f0;
+  z-index: 500;
+  overflow-y: auto;
+}
+
+.fullscreen-panel.visible {
+  display: block;
+}
+
+.fullscreen-panel-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 1;
+}
+
+.fullscreen-panel-header h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  margin: 0;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  flex: 1;
+}
+
+.fullscreen-panel-body {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Loading state for annotations */
+.annotation-loading {
+  padding: 16px;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.annotation-loading .loading-indicator {
+  border-color: #5a7a5a;
+}
+
+/* Generate draft loading state */
+.writing-surface.loading #writing-text {
+  opacity: 0.5;
+}

@@ -1,19 +1,49 @@
-// Writing area UI — editable text with selection-based actions
+// Writing area — central text surface with selection-based actions
 
-import { styleGuide } from '../state.js';
+import { styleGuide, isGenerating, setGenerating } from '../state.js';
+import { callLLM } from '../llm.js';
+import { SYSTEM_PROMPT, buildGenerationPrompt, getStyleGuideText } from '../prompts.js';
 import { escapeHtml } from '../utils.js';
-import { openRewriteView } from './rewriteView.js';
-import { openDrillDown } from './drillDown.js';
-import { resolveRules } from '../resolution.js';
 import { renderStats } from './stats.js';
 
 const STORAGE_KEY = 'writing-text';
+let selectionMenuVisible = false;
+let currentSelectionData = null;
+
+// Callbacks for the three flows
+let onReactCallback = null;
+let onVariationsCallback = null;
+let onEvaluateSelectionCallback = null;
+let onEvaluateFullCallback = null;
+
+export function setOnReact(cb) { onReactCallback = cb; }
+export function setOnVariations(cb) { onVariationsCallback = cb; }
+export function setOnEvaluateSelection(cb) { onEvaluateSelectionCallback = cb; }
+export function setOnEvaluateFull(cb) { onEvaluateFullCallback = cb; }
+
+export function getWritingText() {
+  return document.getElementById('writing-text').value;
+}
+
+export function setWritingText(text) {
+  const textarea = document.getElementById('writing-text');
+  textarea.value = text;
+  localStorage.setItem(STORAGE_KEY, text);
+}
+
+export function replaceSelection(start, end, newText) {
+  const textarea = document.getElementById('writing-text');
+  const before = textarea.value.substring(0, start);
+  const after = textarea.value.substring(end);
+  textarea.value = before + newText + after;
+  localStorage.setItem(STORAGE_KEY, textarea.value);
+}
 
 export function initWritingArea() {
   const textarea = document.getElementById('writing-text');
-  const rewriteBtn = document.getElementById('writing-rewrite');
-  const drillDownBtn = document.getElementById('writing-drill-down');
-  const analyzeBtn = document.getElementById('writing-analyze');
+  const selectionMenu = document.getElementById('selection-menu');
+  const generateBtn = document.getElementById('generate-draft-btn');
+  const evaluateBtn = document.getElementById('evaluate-btn');
 
   // Restore saved text
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -26,18 +56,62 @@ export function initWritingArea() {
     localStorage.setItem(STORAGE_KEY, textarea.value);
   });
 
-  // Selection tracking
-  textarea.addEventListener('mouseup', updateToolbarState);
-  textarea.addEventListener('keyup', updateToolbarState);
-  textarea.addEventListener('select', updateToolbarState);
+  // Selection tracking — show/hide selection menu
+  textarea.addEventListener('mouseup', () => {
+    setTimeout(() => showSelectionMenu(textarea, selectionMenu), 10);
+  });
 
-  // Button handlers
-  rewriteBtn.addEventListener('click', handleRewrite);
-  drillDownBtn.addEventListener('click', handleDrillDown);
-  analyzeBtn.addEventListener('click', handleAnalyze);
+  // Hide selection menu on various events
+  textarea.addEventListener('keydown', () => hideSelectionMenu(selectionMenu));
+  textarea.addEventListener('blur', () => {
+    // Delay to allow button clicks to fire
+    setTimeout(() => {
+      if (!selectionMenuVisible) return;
+      hideSelectionMenu(selectionMenu);
+    }, 200);
+  });
+
+  // Selection menu button handlers
+  document.getElementById('sel-react').addEventListener('click', () => {
+    if (currentSelectionData && onReactCallback) {
+      onReactCallback(currentSelectionData);
+    }
+    hideSelectionMenu(selectionMenu);
+  });
+
+  document.getElementById('sel-variations').addEventListener('click', () => {
+    if (currentSelectionData && onVariationsCallback) {
+      onVariationsCallback(currentSelectionData);
+    }
+    hideSelectionMenu(selectionMenu);
+  });
+
+  document.getElementById('sel-evaluate').addEventListener('click', () => {
+    if (currentSelectionData && onEvaluateSelectionCallback) {
+      onEvaluateSelectionCallback(currentSelectionData);
+    }
+    hideSelectionMenu(selectionMenu);
+  });
+
+  // Generate Draft button
+  generateBtn.addEventListener('click', handleGenerateDraft);
+
+  // Evaluate button (full text)
+  evaluateBtn.addEventListener('click', () => {
+    if (onEvaluateFullCallback) {
+      onEvaluateFullCallback();
+    }
+  });
+
+  // Click outside to hide selection menu
+  document.addEventListener('mousedown', (e) => {
+    if (selectionMenu.contains(e.target)) return;
+    if (e.target === textarea) return;
+    hideSelectionMenu(selectionMenu);
+  });
 }
 
-function getSelection() {
+function getTextSelection() {
   const textarea = document.getElementById('writing-text');
   const start = textarea.selectionStart;
   const end = textarea.selectionEnd;
@@ -50,152 +124,90 @@ function getSelection() {
   };
 }
 
-function updateToolbarState() {
-  const sel = getSelection();
-  const hasSelection = sel !== null;
-  document.getElementById('writing-rewrite').disabled = !hasSelection;
-  document.getElementById('writing-drill-down').disabled = !hasSelection;
-  document.getElementById('writing-analyze').disabled = !hasSelection;
+function showSelectionMenu(textarea, menu) {
+  const sel = getTextSelection();
+  if (!sel) {
+    hideSelectionMenu(menu);
+    return;
+  }
+
+  currentSelectionData = sel;
+
+  // Position near the selection
+  const rect = textarea.getBoundingClientRect();
+  // Approximate position: use selectionEnd to find roughly where to put the menu
+  const textBeforeEnd = textarea.value.substring(0, sel.end);
+  const lines = textBeforeEnd.split('\n');
+  const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight) || 28;
+  const paddingTop = parseFloat(getComputedStyle(textarea).paddingTop) || 20;
+  const paddingLeft = parseFloat(getComputedStyle(textarea).paddingLeft) || 20;
+
+  // Rough vertical position
+  const scrollTop = textarea.scrollTop;
+  const yOffset = paddingTop + (lines.length * lineHeight) - scrollTop;
+  const top = rect.top + Math.min(yOffset, rect.height - 40) + window.scrollY;
+  const left = rect.left + paddingLeft + 50;
+
+  menu.style.top = `${top}px`;
+  menu.style.left = `${Math.min(left, rect.right - 200)}px`;
+  menu.classList.add('visible');
+  selectionMenuVisible = true;
 }
 
-function handleRewrite() {
-  const sel = getSelection();
-  if (!sel) return;
-  openRewriteView(null, sel.fullText, sel.text, sel.start, sel.end);
+function hideSelectionMenu(menu) {
+  menu.classList.remove('visible');
+  selectionMenuVisible = false;
 }
 
-function handleDrillDown() {
-  const sel = getSelection();
-  if (!sel) return;
-  openDrillDown(sel.text, '', null);
-}
+async function handleGenerateDraft() {
+  if (isGenerating) return;
 
-async function handleAnalyze() {
-  const sel = getSelection();
-  if (!sel) return;
+  const settingInput = document.getElementById('setting-input').value.trim();
+  const sceneInput = document.getElementById('scene-input').value.trim();
 
-  const resultsEl = document.getElementById('writing-analysis-results');
-  const analyzeBtn = document.getElementById('writing-analyze');
+  if (!settingInput) {
+    alert('Please describe what you\'re writing about in the Context panel.');
+    return;
+  }
 
-  // Set up results container with stage placeholders
-  resultsEl.style.display = 'block';
-  resultsEl.innerHTML = `
-    <div class="analysis-stage" id="wa-stage-categories">
-      <h4>Matched Categories</h4>
-      <div class="stage-content" id="wa-categories-content">
-        <span class="loading-indicator"></span> Matching categories...
-      </div>
-    </div>
-    <div class="analysis-stage" id="wa-stage-candidates">
-      <h4>Candidate Rules <span class="stage-count" id="wa-candidates-count"></span></h4>
-      <div class="stage-content" id="wa-candidates-content"></div>
-    </div>
-    <div class="analysis-stage" id="wa-stage-evaluated">
-      <h4>Evaluation</h4>
-      <div class="stage-content" id="wa-evaluated-content"></div>
-    </div>
-  `;
+  setGenerating(true);
+  const btn = document.getElementById('generate-draft-btn');
+  const surface = document.getElementById('writing-surface');
+  const origText = btn.textContent;
+  btn.textContent = 'Generating...';
+  btn.disabled = true;
+  surface.classList.add('loading');
 
-  analyzeBtn.disabled = true;
-  analyzeBtn.textContent = 'Analyzing...';
+  let guidance = '';
+  if (sceneInput) {
+    guidance = `Scene guidance:\n${sceneInput}`;
+  }
 
   try {
-    await resolveRules(sel.text, {
-      onStageComplete: (stage, data) => renderStageResult(stage, data)
-    });
-  } catch (err) {
-    console.error('[WritingArea] Analysis error:', err);
-    document.getElementById('wa-evaluated-content').innerHTML =
-      `<div class="analyzer-error">Analysis failed: ${escapeHtml(err.message)}</div>`;
+    const prompt = buildGenerationPrompt(settingInput, guidance);
+    const response = await callLLM(prompt, SYSTEM_PROMPT);
+
+    // Parse response — strip JSON tags line if present
+    const lines = response.trim().split('\n');
+    let textStartIndex = 0;
+    for (let i = 0; i < Math.min(3, lines.length); i++) {
+      try {
+        const jsonMatch = lines[i].match(/^\s*\{[^}]+\}\s*$/);
+        if (jsonMatch) {
+          textStartIndex = i + 1;
+          break;
+        }
+      } catch (e) { /* not json */ }
+    }
+    const text = lines.slice(textStartIndex).join('\n').trim() || response.trim();
+    setWritingText(text);
+  } catch (e) {
+    alert(`Draft generation failed: ${e.message}`);
   }
 
-  analyzeBtn.disabled = false;
-  analyzeBtn.textContent = 'Analyze Style';
-  updateToolbarState();
+  btn.textContent = origText;
+  btn.disabled = false;
+  surface.classList.remove('loading');
+  setGenerating(false);
   renderStats();
-}
-
-function renderStageResult(stage, data) {
-  switch (stage) {
-    case 'categories':
-      renderCategories(data);
-      break;
-    case 'candidates':
-      renderCandidates(data);
-      break;
-    case 'triaged':
-      renderTriaged(data);
-      break;
-    case 'evaluated':
-      renderEvaluations(data);
-      break;
-  }
-}
-
-function renderCategories(categories) {
-  const el = document.getElementById('wa-categories-content');
-  if (categories.length === 0) {
-    el.innerHTML = '<span class="analyzer-empty">No matching categories found</span>';
-    return;
-  }
-  el.innerHTML = categories
-    .map(c => `<span class="category-tag">${escapeHtml(c)}</span>`)
-    .join(' ');
-}
-
-function renderCandidates(rules) {
-  const countEl = document.getElementById('wa-candidates-count');
-  const contentEl = document.getElementById('wa-candidates-content');
-  countEl.textContent = `(${rules.length})`;
-
-  if (rules.length === 0) {
-    contentEl.innerHTML = '<span class="analyzer-empty">No candidate rules found</span>';
-    return;
-  }
-
-  const list = rules.map(r =>
-    `<div class="candidate-rule"><span class="candidate-id">${escapeHtml(r.id)}</span> ${escapeHtml(r.principle)}</div>`
-  ).join('');
-
-  contentEl.innerHTML = `<details class="candidates-details">
-    <summary>${rules.length} rules from matched categories</summary>
-    ${list}
-  </details>`;
-
-  // Show loading for next stage
-  document.getElementById('wa-evaluated-content').innerHTML =
-    '<span class="loading-indicator"></span> Evaluating rules...';
-}
-
-function renderTriaged(rules) {
-  const evalEl = document.getElementById('wa-evaluated-content');
-  evalEl.innerHTML = `<span class="loading-indicator"></span> Evaluating ${rules.length} triaged rules...`;
-}
-
-function renderEvaluations(evaluations) {
-  const el = document.getElementById('wa-evaluated-content');
-
-  if (evaluations.length === 0) {
-    el.innerHTML = '<span class="analyzer-empty">No evaluations returned</span>';
-    return;
-  }
-
-  const ruleMap = new Map(styleGuide.map(r => [r.id, r]));
-
-  const items = evaluations.map(ev => {
-    const rule = ruleMap.get(ev.ruleId);
-    const principle = rule ? escapeHtml(rule.principle) : escapeHtml(ev.ruleId);
-    const badgeClass = `assessment-badge ${ev.assessment}`;
-    const badgeLabel = ev.assessment.charAt(0).toUpperCase() + ev.assessment.slice(1);
-
-    return `<div class="evaluation-item">
-      <div class="evaluation-header">
-        <span class="${badgeClass}">${badgeLabel}</span>
-        <span class="evaluation-principle">${principle}</span>
-      </div>
-      ${ev.note ? `<div class="evaluation-note">${escapeHtml(ev.note)}</div>` : ''}
-    </div>`;
-  }).join('');
-
-  el.innerHTML = items;
 }

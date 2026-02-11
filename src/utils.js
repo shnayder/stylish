@@ -17,7 +17,7 @@ export function autoResizeTextarea(textarea) {
 }
 
 export function setupAutoResize() {
-  const textareas = document.querySelectorAll('#setting-input, #style-input, #scene-input');
+  const textareas = document.querySelectorAll('#setting-input, #scene-input');
   textareas.forEach(textarea => {
     autoResizeTextarea(textarea);
     textarea.addEventListener('input', () => autoResizeTextarea(textarea));

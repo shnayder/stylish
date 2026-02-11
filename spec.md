@@ -59,56 +59,46 @@ Each described in the following subsections.
 ## Features
 (Add as new ones are added)
 
-- for quick initial iteration, start with a static html prototype based on hard-coded data structures inside the file, capturing a moment mid-user-journey. We'll turn into a real app later.
-    - Pane for what we're trying to describe.
-    - Pane for my guidance on how to describe settings
-    - Several alternatives, each with a few words or tags or bullet points of meta-description
-    - Use rivendell from LotR/the Hobbit as the example setting.
-- Reactions system for collecting user feedback on alternatives
-    - Add reactions to an entire alternative via text input below each one
-    - Select text within an alternative to react to a specific passage (popup appears)
-    - Reactions panel at bottom collects all reactions across alternatives
-    - "Apply to Guidance" button to update guidance based on reactions
-    - "Generate New Version" button to create new description incorporating feedback
-- Style Properties palette for exploring and selecting style attributes
-    - ~50 properties organized into categories: Tone, Pacing, Technique, Sensory Focus, Perspective, Mood, Structure
-    - Multi-select with visual feedback
-    - "Generate with Selected Styles" to create new variant based on selected properties
-    - Selection count displayed in header
-- LLM Integration
-    - Settings panel (gear icon, top right) for configuring LLM provider
-    - Local mode: LM Studio (OpenAI-compatible API at localhost:1234)
-    - Cloud mode: Anthropic Claude API
-    - Test connection button to verify setup
-    - Settings persisted in localStorage
-- Editable input panes
-    - "What I'm Describing" - setting details (auto-sizes to content)
-    - "General Style" - rules that apply to whole project (POV, tense, prose style)
-    - "This Scene" - goals specific to this description (mood, tension, purpose)
-    - Content used as context for LLM generation
-- Style Guide (per-project)
-    - Dedicated tab (separate from the main Writing tab)
-    - Each rule has: principle, avoid examples, prefer examples
-    - Rules are fed into all generation prompts
-    - Persisted to `style-guide.json` on disk (via server API), with localStorage as backup
-    - "Reload from file" button to pick up external edits to the JSON file
-    - Human-editable JSON format (pretty-printed)
-- Style Drill-Down (coaching conversation)
-    - Select text + click "Drill Down" to explore your reaction
-    - Modal opens with AI writing coach
-    - Coach asks clarifying questions to help articulate preferences
-    - After 2-3 exchanges, proposes a crystallized style rule
-    - User can edit rule before adding to Style Guide
-    - Helps move from vague feelings to specific principles
-- Generation features
-    - "Generate More" creates 2 new alternatives using current setting/guidance
-    - "Generate with Selected Styles" creates 1 alternative with specified style properties
-    - "Generate New Version" (from reactions) creates 1 alternative incorporating user feedback
-    - Loading states shown during generation
-    - Alternatives parsed for style tags (tone, technique, pacing)
-- JSON export and import for backup
-  - export all the data to json. 
-  - loading from JSON will be more painful as schemas change, but perhaps best-effort makes sense
+### Text-centered UI redesign (current)
+
+The UI is organized around the writer's text as the central surface. No tabs — everything happens on one page. Three interaction postures:
+
+1. **The Pen (direct editing)**
+   - Central writing textarea — always visible, always editable
+   - "Generate Draft" button creates a starting draft from context (setting + scene)
+   - Select text → "Variations" generates 5 alternative phrasings inline below the text
+   - Click "Use" on any variation to replace the selected text
+
+2. **The Mirror (express reactions)**
+   - Select text → "React" opens an inline coaching thread
+   - Multi-turn conversation with AI writing coach
+   - Coach asks clarifying questions to help articulate preferences
+   - "Crystallize as Rule" proposes a style rule from the conversation
+   - "Add to Style Guide" saves the rule; coach can keep exploring otherwise
+   - Multiple threads can exist (only one expanded at a time)
+
+3. **The Lens (system evaluation)**
+   - "Evaluate" button runs the resolution pipeline on the full text
+   - Results appear as annotation cards showing which rules are followed, violated, or partially met
+   - Each annotation has actions: Dismiss, Challenge (opens Mirror thread about the rule)
+   - Summary shows counts by assessment type
+
+### Supporting infrastructure
+
+- **Context panel** (collapsible header): "What I'm Describing" + "This Scene" panes
+- **Selection menu**: Floating popup on text selection with React / Variations / Evaluate
+- **Style Guide panel** (collapsible footer): Compact rule summaries, "Manage Rules" for full view
+- **Full style guide view**: Overlay with full rule management (expand/collapse, edit, delete, refine with AI, reload from file)
+- **LLM Integration**: Settings panel for Local (LM Studio) or Cloud (Claude API), with test connection
+- **LLM Stats**: Token usage tracking and estimated costs
+- **JSON export/import**: Backup and restore all data
+
+### Previous features (available via full style guide view)
+
+- Style rule editing: principle, avoid/prefer patterns, examples, categories
+- Rule refinement modal: AI-assisted conversation to improve a rule
+- Suggest rewrites for example "Bad" text in rule editing
+- Category-based rule organization with expand/collapse
 
 ## Roadmap -- not implemented yet
 

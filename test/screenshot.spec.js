@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Writing Style Explorer - Visual Tests', () => {
+test.describe('Writing Style Explorer - Text-Centered UI', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // Wait for the app to initialize
-    await page.waitForSelector('#alternatives');
+    // Wait for the app to initialize — writing surface should be visible
+    await page.waitForSelector('#writing-text');
   });
 
-  test('initial page load shows all sections', async ({ page }) => {
+  test('initial page load shows text-centered layout', async ({ page }) => {
     // Take full page screenshot
     await page.screenshot({
       path: 'test/screenshots/full-page.png',
@@ -16,23 +16,86 @@ test.describe('Writing Style Explorer - Visual Tests', () => {
 
     // Verify main sections are present
     await expect(page.locator('h1')).toHaveText('Writing Style Explorer');
-    await expect(page.locator('.tab-bar')).toBeVisible();
+
+    // Context panel
+    await expect(page.locator('#context-panel')).toBeVisible();
     await expect(page.locator('#setting-input')).toBeVisible();
-    await expect(page.locator('#style-input')).toBeVisible();
     await expect(page.locator('#scene-input')).toBeVisible();
-    await expect(page.locator('#alternatives')).toBeVisible();
-    await expect(page.locator('#style-categories')).toBeVisible();
-    await expect(page.locator('#all-reactions')).toBeVisible();
+
+    // Writing surface
+    await expect(page.locator('#writing-text')).toBeVisible();
+    await expect(page.locator('#generate-draft-btn')).toBeVisible();
+    await expect(page.locator('#evaluate-btn')).toBeVisible();
+
+    // Style guide panel
+    await expect(page.locator('#style-guide-panel')).toBeVisible();
+
+    // No tabs (old UI removed)
+    await expect(page.locator('.tab-bar')).toHaveCount(0);
   });
 
-  test('alternatives grid shows initial alternatives', async ({ page }) => {
-    // Check that alternatives are rendered
-    const alternatives = page.locator('.alternative');
-    await expect(alternatives).toHaveCount(4);
+  test('context panel is collapsible', async ({ page }) => {
+    const panel = page.locator('#context-panel');
+    const settingInput = page.locator('#setting-input');
 
-    // Screenshot of alternatives section
-    await page.locator('.alternatives-grid').screenshot({
-      path: 'test/screenshots/alternatives-grid.png'
+    // Initially visible
+    await expect(settingInput).toBeVisible();
+
+    // Click header to collapse
+    await page.locator('#context-toggle').click();
+    await expect(panel).toHaveClass(/collapsed/);
+
+    // Click again to expand
+    await page.locator('#context-toggle').click();
+    await expect(panel).not.toHaveClass(/collapsed/);
+    await expect(settingInput).toBeVisible();
+  });
+
+  test('writing surface has textarea and toolbar', async ({ page }) => {
+    const textarea = page.locator('#writing-text');
+    const generateBtn = page.locator('#generate-draft-btn');
+    const evaluateBtn = page.locator('#evaluate-btn');
+
+    await expect(textarea).toBeVisible();
+    await expect(generateBtn).toBeVisible();
+    await expect(evaluateBtn).toBeVisible();
+
+    // Textarea should be empty initially (or have restored text)
+    await textarea.screenshot({
+      path: 'test/screenshots/writing-surface.png'
+    });
+  });
+
+  test('selection menu appears on text selection', async ({ page }) => {
+    const textarea = page.locator('#writing-text');
+
+    // Type some text
+    await textarea.fill('The valley opened before them, a hidden fold in the mountains.');
+
+    // Select some text
+    await textarea.click();
+    await page.keyboard.down('Shift');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Home'); // Go to beginning
+    await page.keyboard.up('Shift');
+
+    // Use evaluate to select text programmatically
+    await textarea.evaluate((el) => {
+      el.setSelectionRange(4, 20);
+    });
+    await textarea.dispatchEvent('mouseup');
+
+    // Wait for selection menu to appear
+    const selMenu = page.locator('#selection-menu');
+    await expect(selMenu).toHaveClass(/visible/, { timeout: 2000 });
+
+    // Verify menu has all three action buttons
+    await expect(page.locator('#sel-react')).toBeVisible();
+    await expect(page.locator('#sel-variations')).toBeVisible();
+    await expect(page.locator('#sel-evaluate')).toBeVisible();
+
+    await selMenu.screenshot({
+      path: 'test/screenshots/selection-menu.png'
     });
   });
 
@@ -56,68 +119,40 @@ test.describe('Writing Style Explorer - Visual Tests', () => {
     await expect(settingsPanel).not.toHaveClass(/visible/);
   });
 
-  test('style palette allows selection', async ({ page }) => {
-    // Click on a style option
-    const firstOption = page.locator('.style-option').first();
-    await firstOption.click();
+  test('style guide panel is collapsible', async ({ page }) => {
+    const panel = page.locator('#style-guide-panel');
 
-    // Check it's selected
-    await expect(firstOption).toHaveClass(/selected/);
+    // Initially visible
+    await expect(panel).toBeVisible();
+    await expect(page.locator('#manage-rules-btn')).toBeVisible();
 
-    // Check selection count is updated
-    await expect(page.locator('#style-selection-count')).toHaveText('1 selected');
+    // Click header to collapse
+    await page.locator('#style-guide-toggle').click();
+    await expect(panel).toHaveClass(/collapsed/);
 
-    // Generate button should be enabled
-    await expect(page.locator('#generate-from-styles')).toBeEnabled();
-
-    await page.locator('.style-palette').screenshot({
-      path: 'test/screenshots/style-palette-selected.png'
-    });
+    // Click again to expand
+    await page.locator('#style-guide-toggle').click();
+    await expect(panel).not.toHaveClass(/collapsed/);
   });
 
-  test('text selection shows popup', async ({ page }) => {
-    // Select text in the first alternative
-    const descriptionText = page.locator('.description-text').first();
+  test('manage rules opens full style guide view', async ({ page }) => {
+    const manageBtn = page.locator('#manage-rules-btn');
+    const fullView = page.locator('#style-guide-full-view');
 
-    // Triple-click to select a paragraph
-    await descriptionText.click({ clickCount: 3 });
+    // Initially hidden
+    await expect(fullView).not.toHaveClass(/visible/);
 
-    // Wait for popup to appear
-    const popup = page.locator('#selection-popup');
-    await expect(popup).toHaveClass(/visible/, { timeout: 1000 });
+    // Click Manage Rules
+    await manageBtn.click();
+    await expect(fullView).toHaveClass(/visible/);
 
-    await popup.screenshot({
-      path: 'test/screenshots/selection-popup.png'
-    });
-  });
-
-  test('tab switching between Writing and Style Guide', async ({ page }) => {
-    const writingTab = page.locator('.tab[data-tab="writing"]');
-    const styleGuideTab = page.locator('.tab[data-tab="style-guide"]');
-    const writingContent = page.locator('#tab-writing');
-    const styleGuideContent = page.locator('#tab-style-guide');
-
-    // Writing tab is active by default
-    await expect(writingTab).toHaveClass(/active/);
-    await expect(writingContent).not.toHaveClass(/hidden/);
-    await expect(styleGuideContent).toHaveClass(/hidden/);
-
-    // Switch to Style Guide tab
-    await styleGuideTab.click();
-    await expect(styleGuideTab).toHaveClass(/active/);
-    await expect(writingTab).not.toHaveClass(/active/);
-    await expect(styleGuideContent).not.toHaveClass(/hidden/);
-    await expect(writingContent).toHaveClass(/hidden/);
-
-    await page.locator('#tab-style-guide').screenshot({
-      path: 'test/screenshots/style-guide-tab.png'
+    await fullView.screenshot({
+      path: 'test/screenshots/full-style-guide.png'
     });
 
-    // Switch back to Writing tab
-    await writingTab.click();
-    await expect(writingTab).toHaveClass(/active/);
-    await expect(writingContent).not.toHaveClass(/hidden/);
-    await expect(styleGuideContent).toHaveClass(/hidden/);
+    // Close with back button
+    await page.locator('#close-full-guide').click();
+    await expect(fullView).not.toHaveClass(/visible/);
   });
 
   test('responsive layout at different widths', async ({ page }) => {
@@ -143,71 +178,11 @@ test.describe('Writing Style Explorer - Visual Tests', () => {
     });
   });
 
-  test('selection popup has Rewrite This button', async ({ page }) => {
-    // Select text in the first alternative
-    const descriptionText = page.locator('.description-text').first();
-
-    // Triple-click to select a paragraph
-    await descriptionText.click({ clickCount: 3 });
-
-    // Wait for popup to appear
-    const popup = page.locator('#selection-popup');
-    await expect(popup).toHaveClass(/visible/, { timeout: 1000 });
-
-    // Verify Rewrite This button exists
-    const rewriteBtn = page.locator('#popup-rewrite');
-    await expect(rewriteBtn).toBeVisible();
-    await expect(rewriteBtn).toHaveText('Rewrite This');
-  });
-
-  test('rewrite view opens and has correct structure', async ({ page }) => {
-    // Select text in the first alternative
-    const descriptionText = page.locator('.description-text').first();
-    await descriptionText.click({ clickCount: 3 });
-
-    // Wait for popup and click Rewrite This
-    const popup = page.locator('#selection-popup');
-    await expect(popup).toHaveClass(/visible/, { timeout: 1000 });
-    await page.locator('#popup-rewrite').click();
-
-    // Wait for rewrite view to open
-    const rewriteView = page.locator('#rewrite-view');
-    await expect(rewriteView).toHaveClass(/visible/, { timeout: 1000 });
-
-    // Verify main sections exist
-    await expect(page.locator('#rewrite-back')).toBeVisible();
-    await expect(page.locator('#rewrite-replace')).toBeVisible();
-    await expect(page.locator('#current-sentence')).toBeVisible();
-    await expect(page.locator('#active-directions')).toBeVisible();
-    await expect(page.locator('#more-directions')).toBeVisible(); // More directions chips
-    await expect(page.locator('#variations-by-direction')).toBeVisible();
-    await expect(page.locator('.rewrite-consideration-section')).toBeVisible(); // Consideration section wrapper
-
-    // Main container should be hidden
-    await expect(page.locator('.container')).toHaveClass(/hidden/);
-
-    await rewriteView.screenshot({
-      path: 'test/screenshots/rewrite-view.png'
-    });
-  });
-
-  test('rewrite view closes with back button', async ({ page }) => {
-    // Select text and open rewrite view
-    const descriptionText = page.locator('.description-text').first();
-    await descriptionText.click({ clickCount: 3 });
-    await page.locator('#popup-rewrite').click();
-
-    // Wait for rewrite view to open
-    const rewriteView = page.locator('#rewrite-view');
-    await expect(rewriteView).toHaveClass(/visible/, { timeout: 1000 });
-
-    // Click back button
-    await page.locator('#rewrite-back').click();
-
-    // Rewrite view should be hidden
-    await expect(rewriteView).not.toHaveClass(/visible/);
-
-    // Main container should be visible again
-    await expect(page.locator('.container')).not.toHaveClass(/hidden/);
+  test('annotations area is initially empty', async ({ page }) => {
+    const annotationsArea = page.locator('#annotations-area');
+    // Should exist but be empty
+    await expect(annotationsArea).toBeAttached();
+    const children = await annotationsArea.locator('> *').count();
+    expect(children).toBe(0);
   });
 });

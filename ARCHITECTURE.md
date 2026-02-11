@@ -80,28 +80,37 @@ Parse helpers (`parseCategoryMatch`, `parseTriageResponse`, `parseEvaluation`) h
 
 ## UI Modules (`src/ui/`)
 
+**Text-centered layout**: The UI is organized around the writer's text as the central surface. No tabs — everything happens on one page with three interaction postures:
+
+1. **Pen** (direct editing): Write/paste text or generate a draft. Select text → "Variations" for inline alternatives.
+2. **Mirror** (express reactions): Select text → "React" opens an inline coaching thread. Multi-turn conversation to explore preferences, with "Crystallize as Rule" to save insights.
+3. **Lens** (system evaluation): "Evaluate" button runs the resolution pipeline. Results appear as annotation cards with Dismiss/Challenge actions.
+
 Each module owns a section of the UI. Pattern: `init*()` function wires event listeners, `render*()` functions update DOM.
 
 | Module | Responsibility |
 |--------|---------------|
+| `writingArea.js` | Central text surface, selection menu, generate draft |
+| `mirror.js` | Mirror flow — inline reaction threads (coaching conversations) |
+| `lens.js` | Lens flow — evaluation annotations from resolution pipeline |
+| `variations.js` | Inline variations for selected text |
+| `styleGuidePanel.js` | Collapsible style guide panel + full management view |
 | `settings.js` | Settings panel, data import/export |
-| `alternatives.js` | Alternatives grid, selection popup, reactions |
-| `styleGuide.js` | Style guide tab — rule list, edit, delete, expand/collapse |
-| `tabs.js` | Tab switching (Writing / Style Guide) |
-| `drillDown.js` | Coaching modal — conversation with LLM to crystallize rules |
-| `stylePalette.js` | Style properties palette for directed generation |
-| `rewriteView.js` | Sentence rewrite view with variation directions |
-| `feedbackLog.js` | Feedback log within rewrite view |
-| `synthesis.js` | Feedback-to-rules synthesis modal |
+| `styleGuide.js` | Full style guide management — rule list, edit, delete, expand/collapse |
+| `drillDown.js` | Coaching modal (legacy, used as fallback by Mirror flow) |
 | `refinement.js` | Style rule refinement modal |
+| `synthesis.js` | Feedback-to-rules synthesis modal |
 | `stats.js` | LLM usage stats panel |
-| `analyzer.js` | Text analyzer — runs resolution pipeline, shows progressive results |
+
+Legacy modules (still in source, not imported): `alternatives.js`, `tabs.js`, `stylePalette.js`, `rewriteView.js`, `feedbackLog.js`, `analyzer.js`.
 
 ## Entry Point (`src/main.js`)
 
-Initializes all modules in sequence, wires cross-module callbacks, sets up generation button handlers.
+Initializes all modules in sequence, wires cross-module callbacks via setter functions on `writingArea.js`.
 
-Init order: settings → tabs → style guide (async) → category registry (async) → render → event listeners → callbacks.
+Init order: settings → style guide (async) → category registry (async) → writingArea → mirror → lens → variations → styleGuidePanel → stats → refinement → drillDown → wire callbacks → auto-resize.
+
+**Callback wiring**: `writingArea.js` exposes `setOnReact`, `setOnVariations`, `setOnEvaluateSelection`, `setOnEvaluateFull`. `main.js` connects these to the corresponding flow modules (mirror, variations, lens). `lens.js` exposes `setOnChallenge` which connects Lens → Mirror flow for rule challenges.
 
 ## Deployment
 

@@ -8,7 +8,6 @@ import { escapeHtml } from '../utils.js';
 import { callLLM } from '../llm.js';
 import { SYSTEM_PROMPT } from '../prompts.js';
 import { openRefinement } from './refinement.js';
-import { updateTabBadge } from './tabs.js';
 
 // Track which rules are expanded (by ID)
 const expandedRules = new Set();
@@ -129,22 +128,22 @@ function renderRuleHtml(rule, expandedIds) {
 }
 
 export function renderStyleGuide() {
-  const countEl = document.getElementById('rule-count');
+  const countEl = document.getElementById('full-rule-count');
   const contentEl = document.getElementById('style-guide-content');
   const rulesListEl = document.getElementById('rules-list');
-  const emptyMsg = contentEl.querySelector('.empty-message');
-  const guideEl = document.getElementById('style-guide');
+  const emptyMsg = contentEl ? contentEl.querySelector('.empty-message') : null;
 
-  countEl.textContent = styleGuide.length > 0 ? `(${styleGuide.length} rules)` : '';
-  updateTabBadge(styleGuide.length);
+  if (countEl) {
+    countEl.textContent = styleGuide.length > 0 ? `(${styleGuide.length} rules)` : '';
+  }
+
+  if (!rulesListEl) return;
 
   if (styleGuide.length === 0) {
-    guideEl.classList.add('empty');
-    emptyMsg.style.display = 'block';
+    if (emptyMsg) emptyMsg.style.display = 'block';
     rulesListEl.innerHTML = '';
   } else {
-    guideEl.classList.remove('empty');
-    emptyMsg.style.display = 'none';
+    if (emptyMsg) emptyMsg.style.display = 'none';
     const expandedIds = getExpandedRuleIds();
     const groups = groupRulesByCategory(styleGuide);
     rulesListEl.innerHTML = groups.map(([categoryName, rules]) => `
