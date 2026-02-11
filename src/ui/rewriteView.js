@@ -602,10 +602,19 @@ function replaceOriginal() {
   // Build the new full text
   const newFullText = fullText.substring(0, startIndex) + newText + fullText.substring(endIndex);
 
-  // Update the alternative
-  const alt = alternatives.find(a => a.id === alternativeId);
-  if (alt) {
-    alt.text = newFullText;
+  if (alternativeId) {
+    // Update the alternative
+    const alt = alternatives.find(a => a.id === alternativeId);
+    if (alt) {
+      alt.text = newFullText;
+    }
+  } else {
+    // Write back to writing textarea
+    const writingText = document.getElementById('writing-text');
+    if (writingText) {
+      writingText.value = newFullText;
+      writingText.dispatchEvent(new Event('input'));
+    }
   }
 
   // Close the view and notify

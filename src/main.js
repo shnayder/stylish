@@ -24,6 +24,7 @@ import { initStats, renderStats } from './ui/stats.js';
 import { initRefinement } from './ui/refinement.js';
 import { initTabs } from './ui/tabs.js';
 import { initAnalyzer } from './ui/analyzer.js';
+import { initWritingArea } from './ui/writingArea.js';
 
 // Input helpers
 function getSettingInput() {
@@ -191,6 +192,7 @@ async function init() {
   initStats();
   initRefinement();
   initAnalyzer();
+  initWritingArea();
 
   // Set up rewrite view callback
   setReplaceCallback(() => {
