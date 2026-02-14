@@ -114,7 +114,6 @@ export function exportData() {
   // Add input pane content
   state.inputs = {
     setting: document.getElementById('setting-input').value,
-    style: document.getElementById('style-input').value,
     scene: document.getElementById('scene-input').value
   };
 
@@ -144,7 +143,6 @@ export function importData() {
       // Restore input panes if present
       if (inputs) {
         if (inputs.setting) document.getElementById('setting-input').value = inputs.setting;
-        if (inputs.style) document.getElementById('style-input').value = inputs.style;
         if (inputs.scene) document.getElementById('scene-input').value = inputs.scene;
       }
 

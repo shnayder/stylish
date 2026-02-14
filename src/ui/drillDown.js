@@ -13,7 +13,7 @@ import {
 } from '../prompts.js';
 import { escapeHtml } from '../utils.js';
 import { renderStyleGuide } from './styleGuide.js';
-import { switchTab } from './tabs.js';
+import { renderStyleGuidePanel } from './styleGuidePanel.js';
 
 export function openDrillDown(selectedText, initialReaction, alternativeId) {
   initDrillDownState(selectedText, initialReaction, alternativeId);
@@ -195,7 +195,7 @@ function addRuleToStyleGuide() {
     addStyleRule(drillDownState.proposedRule);
     closeDrillDown();
     renderStyleGuide();
-    switchTab('style-guide');
+    renderStyleGuidePanel();
   }
 }
 

@@ -1,231 +1,86 @@
-// Main entry point - initialization and event wiring
+// Main entry point — initialization and event wiring for text-centered UI
 
-import {
-  alternatives, addAlternative, reactions, selectedStyles,
-  isGenerating, setGenerating, loadCategoryRegistry
-} from './state.js';
-import { callLLM } from './llm.js';
-import { SYSTEM_PROMPT, buildGenerationPrompt, parseGeneratedResponse } from './prompts.js';
-import { setupAutoResize, autoResizeTextarea, truncate } from './utils.js';
+import { loadCategoryRegistry } from './state.js';
+import { setupAutoResize } from './utils.js';
 
-// UI modules
-import { initSettings, setDataImportedCallback, applySettingsToUI } from './ui/settings.js';
-import {
-  renderAlternatives, renderAllReactions,
-  setReactionsChangedCallback, initPopupEventListeners
-} from './ui/alternatives.js';
+// UI modules — new surface-based layout
+import { initSettings } from './ui/settings.js';
 import { initStyleGuide, renderStyleGuide } from './ui/styleGuide.js';
-import { initDrillDownEventListeners } from './ui/drillDown.js';
-import { renderStylePalette, setGenerateWithStylesCallback, initStylePaletteEventListeners } from './ui/stylePalette.js';
-import { initRewriteView, setReplaceCallback } from './ui/rewriteView.js';
-import { initFeedbackLog, renderFeedbackLog, setOnSynthesizeCallback } from './ui/feedbackLog.js';
-import { openSynthesisModal, initSynthesis } from './ui/synthesis.js';
+import {
+  initWritingArea, setOnReact, setOnVariations,
+  setOnEvaluateSelection, setOnEvaluateFull, getWritingText
+} from './ui/writingArea.js';
+import { initMirror, openMirrorThread } from './ui/mirror.js';
+import { initLens, runEvaluation, runEvaluationOnSelection, setOnChallenge } from './ui/lens.js';
+import { initVariations, showVariations } from './ui/variations.js';
+import { initStyleGuidePanel, renderStyleGuidePanel } from './ui/styleGuidePanel.js';
 import { initStats, renderStats } from './ui/stats.js';
 import { initRefinement } from './ui/refinement.js';
-import { initTabs } from './ui/tabs.js';
-import { initAnalyzer } from './ui/analyzer.js';
-import { initWritingArea } from './ui/writingArea.js';
-
-// Input helpers
-function getSettingInput() {
-  return document.getElementById('setting-input').value;
-}
-
-function getStyleInput() {
-  return document.getElementById('style-input').value;
-}
-
-function getSceneInput() {
-  return document.getElementById('scene-input').value;
-}
-
-function getGuidanceInput() {
-  const style = getStyleInput().trim();
-  const scene = getSceneInput().trim();
-
-  let guidance = '';
-  if (style) {
-    guidance += `General style rules:\n${style}`;
-  }
-  if (scene) {
-    if (guidance) guidance += '\n\n';
-    guidance += `For this scene:\n${scene}`;
-  }
-  return guidance;
-}
-
-// Generation functions
-async function generateAlternatives(count = 2, additionalInstructions = '') {
-  if (isGenerating) return;
-  setGenerating(true);
-
-  const settingInfo = getSettingInput();
-  const guidance = getGuidanceInput();
-
-  if (!settingInfo.trim()) {
-    alert('Please describe what you want to write about in the "What I\'m Describing" pane.');
-    setGenerating(false);
-    return;
-  }
-
-  // Show loading state
-  const container = document.getElementById('alternatives');
-
-  // Add loading placeholders
-  for (let i = 0; i < count; i++) {
-    const loadingDiv = document.createElement('div');
-    loadingDiv.className = 'alternative loading';
-    loadingDiv.innerHTML = '<span class="loading-indicator"></span> Generating...';
-    container.appendChild(loadingDiv);
-  }
-
-  try {
-    const prompt = buildGenerationPrompt(settingInfo, guidance, additionalInstructions);
-
-    // Generate multiple alternatives
-    const promises = [];
-    for (let i = 0; i < count; i++) {
-      promises.push(callLLM(prompt, SYSTEM_PROMPT));
-    }
-
-    const results = await Promise.all(promises);
-
-    // Remove loading placeholders
-    container.querySelectorAll('.alternative.loading').forEach(el => el.remove());
-
-    // Add new alternatives
-    results.forEach((response, i) => {
-      const parsed = parseGeneratedResponse(response);
-      const newAlt = {
-        id: `alt-${Date.now()}-${i}`,
-        tags: parsed.tags,
-        text: parsed.text
-      };
-      addAlternative(newAlt);
-    });
-
-    renderAlternatives();
-  } catch (e) {
-    // Remove loading placeholders
-    container.querySelectorAll('.alternative.loading').forEach(el => el.remove());
-    alert(`Generation failed: ${e.message}\n\nMake sure LM Studio is running with a model loaded.`);
-  }
-
-  setGenerating(false);
-  renderStats();
-}
-
-async function generateWithStyles() {
-  const stylesArray = Array.from(selectedStyles);
-  if (stylesArray.length === 0) return;
-
-  const instructions = `Apply these specific style properties:
-${stylesArray.map(s => `- ${s}`).join('\n')}
-
-Make sure the description clearly embodies these stylistic choices.`;
-
-  await generateAlternatives(1, instructions);
-}
-
-async function generateWithReactions() {
-  if (reactions.length === 0) return;
-
-  const reactionText = reactions.map(r => {
-    if (r.quote) {
-      return `Regarding "${r.quote}": ${r.text}`;
-    }
-    return r.text;
-  }).join('\n');
-
-  const instructions = `The writer has provided this feedback on previous attempts:
-${reactionText}
-
-Use this feedback to create an improved version that addresses their concerns and preferences.`;
-
-  await generateAlternatives(1, instructions);
-}
-
-// Panel button state
-function updatePanelButtons() {
-  const applyBtn = document.getElementById('apply-to-guidance');
-  const generateBtn = document.getElementById('generate-with-reactions');
-  const hasReactions = reactions.length > 0;
-
-  applyBtn.disabled = !hasReactions;
-  generateBtn.disabled = !hasReactions;
-}
+import { initDrillDownEventListeners } from './ui/drillDown.js';
 
 // Initialize application
 async function init() {
-  // Initialize UI components
+  // Initialize core infrastructure
   initSettings();
-  initTabs();
   await initStyleGuide();
   await loadCategoryRegistry();
 
-  // Render initial state
-  renderAlternatives();
-  renderAllReactions();
-  renderStylePalette();
-  setupAutoResize();
-
-  // Set up callbacks
-  setReactionsChangedCallback(updatePanelButtons);
-  setGenerateWithStylesCallback(generateWithStyles);
-  setDataImportedCallback(() => {
-    applySettingsToUI();
-    renderAlternatives();
-    renderAllReactions();
-    renderStylePalette();
-    renderStyleGuide();
-    setupAutoResize();
-    updatePanelButtons();
-  });
-
-  // Initialize event listeners
-  initPopupEventListeners();
-  initDrillDownEventListeners();
-  initStylePaletteEventListeners();
-  initRewriteView();
-  initFeedbackLog();
-  initSynthesis();
+  // Initialize UI modules
+  initWritingArea();
+  initMirror();
+  initLens();
+  initVariations();
+  initStyleGuidePanel();
   initStats();
   initRefinement();
-  initAnalyzer();
-  initWritingArea();
+  initDrillDownEventListeners();
 
-  // Set up rewrite view callback
-  setReplaceCallback(() => {
-    renderAlternatives();
-    renderAllReactions();
+  // Wire up the three flows via callbacks
+
+  // 1. React (Mirror flow): selection → coaching conversation
+  setOnReact((selectionData) => {
+    openMirrorThread(selectionData);
   });
 
-  // Set up feedback log to synthesis callback
-  setOnSynthesizeCallback(() => {
-    openSynthesisModal();
+  // 2. Variations (Pen flow): selection → inline alternatives
+  setOnVariations((selectionData) => {
+    showVariations(selectionData);
   });
 
-  // Generation button listeners
-  document.querySelector('.regenerate-btn').addEventListener('click', () => {
-    generateAlternatives(2);
+  // 3. Evaluate (Lens flow): selection → evaluation, or full text → evaluation
+  setOnEvaluateSelection((selectionData) => {
+    runEvaluationOnSelection(selectionData);
   });
 
-  document.getElementById('generate-with-reactions').addEventListener('click', generateWithReactions);
-
-  // Apply to Guidance button - adds reactions to scene guidance
-  document.getElementById('apply-to-guidance').addEventListener('click', () => {
-    const sceneEl = document.getElementById('scene-input');
-    const reactionText = reactions.map(r => {
-      if (r.quote) {
-        return `- Re "${truncate(r.quote, 40)}": ${r.text}`;
-      }
-      return `- ${r.text}`;
-    }).join('\n');
-
-    sceneEl.value += '\n\nFeedback from reviewing alternatives:\n' + reactionText;
-    autoResizeTextarea(sceneEl);
-    alert('Reactions added to scene guidance!');
+  setOnEvaluateFull(() => {
+    const text = getWritingText();
+    runEvaluation(text);
   });
+
+  // 4. Challenge from Lens → opens Mirror thread about the rule
+  setOnChallenge((evaluation) => {
+    // Create a selection-like object for the challenge
+    const text = getWritingText();
+    const ruleId = evaluation.ruleId;
+    const note = evaluation.note || '';
+    openMirrorThread({
+      text: `[Challenging rule: ${ruleId}] ${note}`,
+      start: 0,
+      end: 0,
+      fullText: text
+    });
+  });
+
+  // Collapsible context panel
+  document.getElementById('context-toggle').addEventListener('click', () => {
+    document.getElementById('context-panel').classList.toggle('collapsed');
+  });
+
+  // Auto-resize context textareas
+  setupAutoResize();
+
+  // Render initial state
+  renderStats();
 }
 
 // Start the app

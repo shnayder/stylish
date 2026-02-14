@@ -12,7 +12,7 @@ import { SYSTEM_PROMPT } from '../prompts.js';
 import { renderStyleGuide } from './styleGuide.js';
 import { renderFeedbackLog } from './feedbackLog.js';
 import { renderStats } from './stats.js';
-import { switchTab } from './tabs.js';
+import { renderStyleGuidePanel } from './styleGuidePanel.js';
 
 let proposedRules = [];
 let selectedRuleIds = new Set();
@@ -361,8 +361,8 @@ function applySelectedRules() {
 
   closeSynthesisModal();
   renderStyleGuide();
+  renderStyleGuidePanel();
   renderFeedbackLog();
-  switchTab('style-guide');
 }
 
 export function initSynthesis() {

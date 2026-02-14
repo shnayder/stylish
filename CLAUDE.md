@@ -19,35 +19,34 @@ AI-assisted writing style explorer that helps writers find and articulate descri
 **Structure:**
 ```
 /
-├── index.html              # HTML shell, loads CSS and JS module
+├── index.html              # HTML shell — text-centered single-page layout
 ├── server.js               # Dev server: static files + style guide & category registry APIs
 ├── style-guide.json        # Style guide data (human-editable JSON)
 ├── category-registry.json  # Category definitions for rule resolution pipeline
 ├── styles/
-│   ├── main.css            # Base styles, layout, settings panel, tabs
-│   ├── components.css      # Alternatives, reactions, style palette, style guide, analyzer
-│   ├── modal.css           # Drill-down modal
-│   └── rewrite.css         # Rewrite view styles
+│   ├── main.css            # Base styles, settings panel, stats panel
+│   ├── components.css      # Style guide rules, selection popups, assessment badges
+│   ├── surface.css         # Text-centered layout: context panel, writing surface, annotations
+│   └── modal.css           # Drill-down, refinement, synthesis modals
 ├── src/
-│   ├── main.js             # Entry point, initialization, event wiring
+│   ├── main.js             # Entry point, initialization, callback wiring
 │   ├── state.js            # All app state, localStorage + file-backed persistence
 │   ├── llm.js              # LLM API calls (local + cloud)
 │   ├── prompts.js          # Prompt templates and response parsing
 │   ├── resolution.js       # Hierarchical rule resolution pipeline
 │   ├── utils.js            # Shared utilities
 │   └── ui/
-│       ├── settings.js     # Settings panel
-│       ├── alternatives.js # Alternatives grid, reactions
-│       ├── styleGuide.js   # Style guide tab
-│       ├── tabs.js         # Tab switching (Writing / Style Guide)
-│       ├── drillDown.js    # Coaching modal
-│       ├── stylePalette.js # Style properties palette
-│       ├── rewriteView.js  # Sentence rewrite view
-│       ├── feedbackLog.js  # Feedback log in rewrite view
-│       ├── synthesis.js    # Feedback synthesis modal
-│       ├── refinement.js   # Style rule refinement modal
-│       ├── stats.js        # LLM usage stats panel
-│       └── analyzer.js     # Text analyzer (rule resolution UI)
+│       ├── writingArea.js      # Central text surface, selection menu, generate draft
+│       ├── mirror.js           # Mirror flow: inline reaction threads (coaching)
+│       ├── lens.js             # Lens flow: evaluation annotations
+│       ├── variations.js       # Inline variations for selected text
+│       ├── styleGuidePanel.js  # Collapsible style guide panel + full management view
+│       ├── settings.js         # Settings panel
+│       ├── styleGuide.js       # Full style guide management (rules CRUD)
+│       ├── drillDown.js        # Coaching modal (legacy fallback)
+│       ├── refinement.js       # Style rule refinement modal
+│       ├── synthesis.js        # Feedback synthesis modal
+│       └── stats.js            # LLM usage stats panel
 ├── test/
 │   └── screenshot.spec.js  # Playwright visual tests
 ├── package.json            # npm config

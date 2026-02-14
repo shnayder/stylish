@@ -6,8 +6,8 @@
   <title>Writing Style Explorer</title>
   <link rel="stylesheet" href="styles/main.css">
   <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/surface.css">
   <link rel="stylesheet" href="styles/modal.css">
-  <link rel="stylesheet" href="styles/rewrite.css">
 </head>
 <body>
   <!-- Settings toggle button -->
@@ -91,30 +91,22 @@
     </div>
   </div>
 
-  <div class="container">
-    <h1>Writing Style Explorer</h1>
+  <div class="app">
+    <header class="app-header">
+      <h1>Writing Style Explorer</h1>
+    </header>
 
-    <div class="tab-bar">
-      <button class="tab active" data-tab="writing">Writing</button>
-      <button class="tab" data-tab="style-guide">Style Guide <span id="tab-rule-count"></span></button>
-    </div>
-
-    <div class="tab-content" id="tab-writing">
-      <div class="input-section">
-        <div class="pane">
-          <h2>What I'm Describing</h2>
-          <textarea id="setting-input" placeholder="Describe your setting...
-
-Example:
-Setting: Rivendell, the Last Homely House
-
-Known details:
-- Hidden valley in the Misty Mountains
-- Elven refuge founded by Elrond
-- Waterfalls, pine trees, ancient stone buildings
-- A place of rest, learning, and healing
-
-Context: First arrival of weary travelers seeking sanctuary">Setting: Rivendell, the Last Homely House
+    <!-- Context Panel (collapsible) -->
+    <div class="context-panel collapsible" id="context-panel">
+      <div class="collapsible-header" id="context-toggle">
+        <h2>Context</h2>
+        <span class="collapse-icon">&#9662;</span>
+      </div>
+      <div class="collapsible-body" id="context-body">
+        <div class="context-panes">
+          <div class="context-pane">
+            <label for="setting-input">What I'm Describing</label>
+            <textarea id="setting-input" placeholder="Describe your setting, characters, situation...">Setting: Rivendell, the Last Homely House
 
 Known details:
 - Hidden valley in the Misty Mountains
@@ -124,140 +116,75 @@ Known details:
 - Twilight atmosphere, stars visible even at dusk
 
 Context: First arrival of weary travelers seeking sanctuary</textarea>
-        </div>
-
-        <div class="pane">
-          <h2>General Style</h2>
-          <textarea id="style-input" placeholder="Style rules that apply to your whole project...
-
-Example:
-- First person POV
-- Past tense
-- Spare, grounded prose
-- Avoid adverbs
-- Show don't tell">- First person POV from Bilbo
-- Past tense
-- Spare, grounded prose style
-- Avoid purple prose or overly ornate language
-- Show don't tell</textarea>
-        </div>
-      </div>
-
-      <div class="input-section" style="margin-top: -10px;">
-        <div class="pane" style="grid-column: 1 / -1;">
-          <h2>This Scene</h2>
-          <textarea id="scene-input" placeholder="What this specific scene should accomplish...
-
-Example:
-- Build tension before the reveal
-- Convey exhaustion and relief
-- Foreshadow the danger ahead">- Convey sense of relief and safety after danger
+          </div>
+          <div class="context-pane">
+            <label for="scene-input">This Scene</label>
+            <textarea id="scene-input" placeholder="Goals for this specific scene...">- Convey sense of relief and safety after danger
 - Show the otherworldly, timeless quality of the Elves
 - Use sensory details beyond just visual
-- Length: 2-3 paragraphs</textarea>
-        </div>
-      </div>
-
-      <div class="writing-section">
-        <h2>My Writing</h2>
-        <div class="writing-toolbar">
-          <button class="action-btn" id="writing-rewrite" disabled>Rewrite</button>
-          <button class="action-btn" id="writing-drill-down" disabled>Drill Down</button>
-          <button class="action-btn" id="writing-analyze" disabled>Analyze Style</button>
-        </div>
-        <textarea id="writing-text" class="writing-text" placeholder="Paste or write your text here..."></textarea>
-        <div class="writing-analysis-results" id="writing-analysis-results" style="display:none"></div>
-      </div>
-
-      <div class="alternatives-header">
-      <h2>Alternatives</h2>
-      <button class="regenerate-btn">Generate More</button>
-    </div>
-
-    <div class="alternatives-grid" id="alternatives">
-    </div>
-
-    <div class="style-palette" id="style-palette">
-      <div class="style-palette-header">
-        <h2>Style Properties</h2>
-        <span class="selection-count" id="style-selection-count"></span>
-      </div>
-      <div class="style-categories" id="style-categories">
-      </div>
-      <div class="panel-actions">
-        <button class="action-btn primary" id="generate-from-styles" disabled>Generate with Selected Styles</button>
-        <button class="action-btn clear-styles-btn" id="clear-styles" disabled>Clear Selection</button>
-      </div>
-    </div>
-
-    <div class="reactions-panel" id="reactions-panel">
-      <h2>My Reactions</h2>
-      <div class="all-reactions" id="all-reactions">
-        <p class="empty-state">Select text or add reactions to alternatives to collect your thoughts here.</p>
-      </div>
-      <div class="panel-actions">
-        <button class="action-btn" id="apply-to-guidance" disabled>Apply to Guidance</button>
-        <button class="action-btn primary" id="generate-with-reactions" disabled>Generate New Version</button>
-      </div>
-    </div>
-    </div><!-- /tab-writing -->
-
-    <div class="tab-content hidden" id="tab-style-guide">
-      <div class="rule-analyzer" id="rule-analyzer">
-        <div class="analyzer-header">
-          <h2>Analyze Text</h2>
-        </div>
-        <div class="analyzer-input">
-          <textarea id="analyzer-text" placeholder="Paste text to analyze against your style guide..."></textarea>
-          <button class="action-btn primary" id="analyze-btn">Analyze</button>
-        </div>
-        <div class="analyzer-results" id="analyzer-results" style="display:none">
-          <div class="analyzer-stage" id="stage-categories">
-            <h4>Matched Categories</h4>
-            <div class="stage-content" id="stage-categories-content"></div>
-          </div>
-          <div class="analyzer-stage" id="stage-candidates">
-            <h4>Candidate Rules <span class="stage-count" id="stage-candidates-count"></span></h4>
-            <div class="stage-content" id="stage-candidates-content"></div>
-          </div>
-          <div class="analyzer-stage" id="stage-evaluated">
-            <h4>Evaluation</h4>
-            <div class="stage-content" id="stage-evaluated-content"></div>
+- Length: 2-3 paragraphs
+- First person POV from Bilbo, past tense
+- Spare, grounded prose style</textarea>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="style-guide" id="style-guide">
-        <div class="style-guide-header" id="style-guide-header">
-          <h2>Style Guide <span class="rule-count" id="rule-count"></span></h2>
-          <div class="style-guide-actions">
-            <button class="action-btn" id="expand-all-rules">Expand All</button>
-            <button class="action-btn" id="collapse-all-rules">Collapse All</button>
-            <button class="action-btn" id="reload-style-guide">Reload from file</button>
-          </div>
-        </div>
-        <div class="style-guide-content" id="style-guide-content">
-          <p class="empty-message">No style rules yet. Select text in alternatives and drill down to crystallize your preferences.</p>
-          <div class="rules-list" id="rules-list"></div>
+    <!-- Main Writing Surface -->
+    <div class="writing-surface" id="writing-surface">
+      <div class="surface-toolbar">
+        <button class="action-btn primary" id="generate-draft-btn">Generate Draft</button>
+        <div class="toolbar-spacer"></div>
+        <button class="action-btn" id="evaluate-btn">Evaluate</button>
+      </div>
+      <textarea id="writing-text" placeholder="Write or paste your text here, or click Generate Draft to get a starting point..."></textarea>
+    </div>
+
+    <!-- Annotations Area (Mirror threads, Lens results, Variations) -->
+    <div class="annotations-area" id="annotations-area"></div>
+
+    <!-- Style Guide Panel (collapsible) -->
+    <div class="style-guide-panel collapsible" id="style-guide-panel">
+      <div class="collapsible-header" id="style-guide-toggle">
+        <h2>Style Guide <span class="rule-count" id="rule-count"></span></h2>
+        <div class="panel-actions">
+          <button class="action-btn" id="manage-rules-btn">Manage Rules</button>
+          <span class="collapse-icon">&#9662;</span>
         </div>
       </div>
-    </div><!-- /tab-style-guide -->
-
-  </div>
-
-  <!-- Selection popup (hidden by default) -->
-  <div class="selection-popup" id="selection-popup">
-    <div class="selected-text" id="popup-selected-text"></div>
-    <textarea id="popup-reaction-input" placeholder="What do you think about this?"></textarea>
-    <div class="popup-actions">
-      <button class="action-btn" id="popup-cancel">Cancel</button>
-      <button class="action-btn" id="popup-drill-down">Drill Down</button>
-      <button class="action-btn" id="popup-rewrite">Rewrite This</button>
-      <button class="action-btn primary" id="popup-save">Add Reaction</button>
+      <div class="collapsible-body" id="style-guide-body">
+        <div id="style-guide-summary"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Drill-down modal -->
+  <!-- Selection Menu (floating, shown on text selection) -->
+  <div class="selection-menu" id="selection-menu">
+    <button class="sel-btn" id="sel-react">React</button>
+    <button class="sel-btn" id="sel-variations">Variations</button>
+    <button class="sel-btn" id="sel-evaluate">Evaluate</button>
+  </div>
+
+  <!-- Full Style Guide Management View -->
+  <div class="fullscreen-panel" id="style-guide-full-view">
+    <div class="fullscreen-panel-header">
+      <button class="action-btn" id="close-full-guide">&larr; Back to Writing</button>
+      <h2>Style Guide <span class="rule-count" id="full-rule-count"></span></h2>
+      <div class="style-guide-actions">
+        <button class="action-btn" id="expand-all-rules">Expand All</button>
+        <button class="action-btn" id="collapse-all-rules">Collapse All</button>
+        <button class="action-btn" id="reload-style-guide">Reload from file</button>
+      </div>
+    </div>
+    <div class="fullscreen-panel-body">
+      <div class="style-guide-content" id="style-guide-content">
+        <p class="empty-message">No style rules yet. Use the Mirror flow to crystallize your preferences into rules.</p>
+        <div class="rules-list" id="rules-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drill-down modal (used by Mirror flow for coaching conversations) -->
   <div class="modal-overlay" id="drill-down-overlay">
     <div class="drill-down-modal">
       <div class="modal-header">
@@ -294,80 +221,6 @@ Example:
       <div class="modal-footer">
         <button class="action-btn" id="keep-exploring">Keep Exploring</button>
         <button class="action-btn primary" id="add-to-style-guide" disabled>Add to Style Guide</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rewrite View (full page, hidden by default) -->
-  <div class="rewrite-view" id="rewrite-view">
-    <div class="rewrite-header">
-      <button class="action-btn" id="rewrite-back">&larr; Back to Main</button>
-      <button class="action-btn primary" id="rewrite-replace">Replace Original</button>
-    </div>
-
-    <div class="rewrite-content">
-      <!-- Context and Current Sentence -->
-      <div class="rewrite-context-section">
-        <div class="context-before" id="context-before"></div>
-        <div class="current-sentence-wrapper">
-          <label>Current Sentence</label>
-          <textarea id="current-sentence" class="current-sentence"></textarea>
-        </div>
-        <div class="context-after" id="context-after"></div>
-      </div>
-
-      <!-- Style Rules Analysis -->
-      <div class="rewrite-rules-section" id="rewrite-rules-section" style="display:none">
-        <div class="rewrite-rules-header">
-          <h3>Style Rules</h3>
-          <button class="action-btn" id="recheck-rules" style="display:none">Re-check</button>
-        </div>
-        <div class="rewrite-rules-categories" id="rewrite-rules-categories"></div>
-        <div class="rewrite-rules-results" id="rewrite-rules-results"></div>
-      </div>
-
-      <!-- Directions to Explore -->
-      <div class="rewrite-directions-section">
-        <h3>Directions to Explore</h3>
-        <div class="active-directions" id="active-directions"></div>
-        <h4 class="more-directions-header">Explore other directions?</h4>
-        <div class="more-directions" id="more-directions"></div>
-      </div>
-
-      <!-- Variations Grid -->
-      <div class="rewrite-variations-section">
-        <div class="variations-header">
-          <h3>Variations</h3>
-          <button class="action-btn primary" id="generate-more-variations">Generate More</button>
-        </div>
-        <div class="variations-by-direction" id="variations-by-direction"></div>
-      </div>
-
-      <!-- Consideration Set -->
-      <div class="rewrite-consideration-section">
-        <h3>Consideration Set <span class="consideration-count" id="consideration-count"></span></h3>
-        <div class="consideration-empty" id="consideration-empty">
-          Add variations you like here to compare them
-        </div>
-        <div class="consideration-list" id="consideration-list"></div>
-      </div>
-
-      <!-- Feedback Log -->
-      <div class="feedback-log-section">
-        <div class="feedback-log-header" id="feedback-log-header">
-          <h3>Feedback Log <span class="feedback-count" id="feedback-count"></span></h3>
-          <button class="toggle-feedback-log" id="toggle-feedback-log">Expand</button>
-        </div>
-        <div class="feedback-log-content" id="feedback-log-content">
-          <div class="feedback-log-empty" id="feedback-log-empty">
-            Vote on variations or add annotations to build your feedback log
-          </div>
-          <div class="feedback-log-list" id="feedback-log-list"></div>
-          <div class="feedback-log-actions" id="feedback-log-actions">
-            <button class="action-btn" id="clear-feedback">Clear All</button>
-            <button class="action-btn primary" id="synthesize-rules">Synthesize Rules</button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
